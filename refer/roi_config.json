@@ -16,6 +16,7 @@
 			}
 		},
 		{
+			"_comment": "Display Headup(not in use)",
 			"id": 2,
 			"head_only_id": 2,
 			"priority": 1,
@@ -27,6 +28,7 @@
 			}
 		},
 		{
+			"_comment": "Windshield_Strict",
 			"id": 3,
 			"head_only_id": 3,
 			"priority": 1,
@@ -110,6 +112,7 @@
 			}
 		},
 		{
+			"_comment": "Display_Passenger(Only EVA2 HES)",
 			"id": 10,
 			"head_only_id": 10,
 			"priority": 1,
