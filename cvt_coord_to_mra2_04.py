@@ -12,26 +12,38 @@ import csv
 import pandas as pd
 import sys
 
+
+#mra2 세팅에 맞춰서 저장함
+flag_mra2_match = False
+
+# 최대 줄 수 설정
+pd.set_option('display.max_rows', 2500)
+# 최대 열 수 설정
+pd.set_option('display.max_columns', 200)
+# 표시할 가로의 길이
+pd.set_option('display.width', 160)
+# 출력값 소숫점4자리로 설정
+pd.options.display.float_format = '{:.4f}'.format
+
 #기존모델에서 meter으로 정의하였기에, 사용된는 단위는 모두 m로 한다
 #또한 degree(default)로 함
 #basic model use meter, then this code also use unit of m.
 #same as use degree(default)
 
-
 deg2Rad = math.pi/180
 rad2Deg = 180/math.pi
 
 # master camera point on Vehicle coord
-cam2veh_rot = np.array([0, -111, 0.99999999999999978])
-cam2veh_trans = [1.0058888249122007, -0.354837076526334749, 0.68375427481211271]
+cam2veh_rot = np.array([0, -11, 0.99999999999999978])
+cam2veh_trans = [1.0058888249122007, -0.35483707652634749, 0.68375427481211271]
 
 # display center point on Vehicle coord
-disp2veh_rot = np.array([0, -81, 1])
-disp2veh_trans = [1.0252906, -0.40303454, 0.6392974]
+disp2veh_rot = np.array([0, -8, 1])
+disp2veh_trans = [1.0252906, -0.4003454, 0.6392974]
 
 # display center point on Camera coord
-disp2cam_rot = np.array([0.0, 31.0, 0.0])
-disp2cam_trans = [0.00978, -0.041584, -0.04719]
+disp2cam_rot = np.array([0.0, 3.0, 0.0])
+disp2cam_trans = [0.00978, -0.04584, -0.04719]
 
 def funcname():
     return sys._getframe(1).f_code.co_name + "()"
@@ -237,6 +249,53 @@ def load_jsonfile_preValue(fname1, fname2, fname3):
     print("update... disp2cam_rot, disp2cam_trans",disp2cam_rot, disp2cam_trans)
     return True
 
+def load_jsonfile_preValue_extend(fname1, fname2):
+    fp1 = open(fname1)
+    fjs1 = json.load(fp1)
+    fp1.close()
+
+    fp2 = open(fname2)
+    fjs2 = json.load(fp2)
+    fp2.close()
+
+    # fp3 = open(fname3)
+    # fjs3 = json.load(fp3)
+    # fp3.close()
+
+    print('\nLoading...', fname1,'\n', fjs1)
+    print('\nLoading...', fname2,'\n',fjs2)
+    # print('\nLoading...', fname3,'\n', fjs3)
+    print('\n')
+
+    global cam2veh_rot, cam2veh_trans, disp2veh_rot, disp2veh_trans, disp2cam_rot, disp2cam_trans
+    cam2veh_rot = fjs1['master']['camera_pose']['rot']
+    cam2veh_trans = fjs1['master']['camera_pose']['trans']
+    disp2veh_rot = fjs2['master']['display_pose']['rot']
+    disp2veh_trans = fjs2['master']['display_pose']['trans']
+
+    print("update... cam2veh_rot, cam2veh_trans", cam2veh_rot, cam2veh_trans)
+    print("update... disp2veh_rot, disp2veh_trans",disp2veh_rot, disp2veh_trans)
+
+    veh2cam_rot, veh2cam_trans = transform_3by3_inverse(cam2veh_rot, cam2veh_trans)
+    # print("update... veh2cam_rot, veh2cam_trans", veh2cam_rot , veh2cam_trans)
+
+    disp2cam_matrix, _ = transform_A2Bcoord_and_B2Ccoord(disp2veh_rot, disp2veh_trans, veh2cam_rot , veh2cam_trans )
+    # print('disp2cam_matrix',rotationMatrixToEulerAngles(disp2cam_matrix[0:3, 0:3])*rad2Deg, disp2cam_matrix[0:3, 3])
+
+    disp2cam_rot = rotationMatrixToEulerAngles(disp2cam_matrix[0:3, 0:3])*rad2Deg
+    disp2cam_trans = disp2cam_matrix[0:3, 3]
+
+    print("update... disp2cam_rot, disp2cam_trans",disp2cam_rot, disp2cam_trans)
+    return True
+
+def load_jsonfile_ROI(fname):
+    print("//////////", funcname(), "//////////")
+
+    fp = open(fname)
+    fjs = json.load(fp)
+    fp.close()
+    # print(fjs)
+    return fjs
 
 def make_prototype_on_pandas(frameId):
     print("//////////", funcname(), "//////////")
@@ -414,26 +473,6 @@ def save_csvfile(tdatas, filename):
     tdata.to_csv(tfilename, mode='w', index=False, header=True, sep=',', quotechar=" ", float_format='%.4f')
     pass
 
-def eulerAnglesToRotationMatrix(theta):
-    R_x = np.array([[1, 0, 0],
-                    [0, math.cos(theta[0]), -math.sin(theta[0])],
-                    [0, math.sin(theta[0]), math.cos(theta[0])]
-                    ])
-
-    R_y = np.array([[math.cos(theta[1]), 0, math.sin(theta[1])],
-                    [0, 1, 0],
-                    [-math.sin(theta[1]), 0, math.cos(theta[1])]
-                    ])
-
-    R_z = np.array([[math.cos(theta[2]), -math.sin(theta[2]), 0],
-                    [math.sin(theta[2]), math.cos(theta[2]), 0],
-                    [0, 0, 1]
-                    ])
-
-    R = np.dot(R_z, np.dot(R_y, R_x))
-
-    return R
-
 def changeAxis_opencv2daimler(nR, nT):
     #opencv     x    y    z axis-> daimler   -y    -z   x
     #opencv  pitch, yaw, roll   -> daimler -pitch -yaw roll
@@ -470,7 +509,20 @@ def changeAxis_daimler2opencv(nR, nT):
 
     return ret_nR, ret_nT
 
+'''reverse direction_from A to B -> from B to A'''
+def transform_3by3_inverse(nR, nT):
+    t_matrix_1 = np.eye(4)
+    s_trot = np.zeros((3, 1))
+    s_trot[0] = deg2Rad * nR[0]
+    s_trot[1] = deg2Rad * nR[1]
+    s_trot[2] = deg2Rad * nR[2]
+    t_matrix_1[0:3, 0:3] = eulerAnglesToRotationMatrix(s_trot)
+    t_matrix_1[0:3, 3] = nT
+    mat_result_inv = np.linalg.inv(t_matrix_1)
 
+    return (rotationMatrixToEulerAngles(mat_result_inv[0:3, 0:3]) * rad2Deg), (mat_result_inv[0:3, 3])
+
+'''transform point on A coordination to B coordination'''
 def transform_A2Bcoord_with_point_Of_Acoord(nR, nT, pos3D):
     t_matrix = np.eye(4)
     s_trot = np.zeros((3, 1))
@@ -491,7 +543,30 @@ def transform_A2Bcoord_with_point_Of_Acoord(nR, nT, pos3D):
     mat_result_inv = np.matmul(t_matrix_inv, s_pos3D)
     return mat_result[0:3,0], mat_result_inv[0:3,0]
 
-def transform_A2Bcoord_and_B2Ccoord(nR, nT, nR2, nT2):
+'''make transform-matrix about A2B2C that mean from A to C coordination '''
+def transform_A2Bcoord_and_B2Ccoord(nR_A2B, nT_A2B, nR2_B2C, nT2_B2C):
+    t_matrix_1 = np.eye(4)
+    s_trot = np.zeros((3, 1))
+    s_trot[0] = deg2Rad * nR_A2B[0]
+    s_trot[1] = deg2Rad * nR_A2B[1]
+    s_trot[2] = deg2Rad * nR_A2B[2]
+    t_matrix_1[0:3, 0:3] = eulerAnglesToRotationMatrix(s_trot)
+    t_matrix_1[0:3, 3] = nT_A2B
+
+    t_matrix_2 = np.eye(4)
+    s_trot2 = np.zeros((3, 1))
+    s_trot2[0] = deg2Rad * nR2_B2C[0]
+    s_trot2[1] = deg2Rad * nR2_B2C[1]
+    s_trot2[2] = deg2Rad * nR2_B2C[2]
+    t_matrix_2[0:3, 0:3] = eulerAnglesToRotationMatrix(s_trot2)
+    t_matrix_2[0:3, 3] = nT2_B2C
+
+    mat_result = np.matmul(t_matrix_2, t_matrix_1)
+    mat_result_inv = np.linalg.inv(mat_result)
+    return mat_result, mat_result_inv
+
+'''transform object(included R&T) on A coordination to B coordination'''
+def transform_A2Bcoord_with_Object_Of_Acoord(nR, nT, nObjR2, nObjT2):
     t_matrix_1 = np.eye(4)
     s_trot = np.zeros((3, 1))
     s_trot[0] = deg2Rad * nR[0]
@@ -502,17 +577,107 @@ def transform_A2Bcoord_and_B2Ccoord(nR, nT, nR2, nT2):
 
     t_matrix_2 = np.eye(4)
     s_trot2 = np.zeros((3, 1))
-    s_trot2[0] = deg2Rad * nR2[0]
-    s_trot2[1] = deg2Rad * nR2[1]
-    s_trot2[2] = deg2Rad * nR2[2]
+    s_trot2[0] = deg2Rad * nObjR2[0]
+    s_trot2[1] = deg2Rad * nObjR2[1]
+    s_trot2[2] = deg2Rad * nObjR2[2]
     t_matrix_2[0:3, 0:3] = eulerAnglesToRotationMatrix(s_trot2)
-    t_matrix_2[0:3, 3] = nT2
+    t_matrix_2[0:3, 3] = nObjT2
 
-    mat_result = np.matmul(t_matrix_2, t_matrix_1)
+    mat_result = np.matmul(t_matrix_1, t_matrix_2)
     mat_result_inv = np.linalg.inv(mat_result)
     return mat_result, mat_result_inv
 
+def rotationMatrixToEulerAngles(R):
 
+    sy = math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
+
+    singular = sy < 1e-6
+
+    if not singular:
+        x = math.atan2(R[2, 1], R[2, 2])
+        y = math.atan2(-R[2, 0], sy)
+        z = math.atan2(R[1, 0], R[0, 0])
+    else:
+        x = math.atan2(-R[1, 2], R[1, 1])
+        y = math.atan2(-R[2, 0], sy)
+        z = 0
+
+    return np.array([x, y, z])
+
+def rotateX(vect, angle):
+    matrix = np.array([[1, 0, 0],
+                       [0, np.cos(angle), -np.sin(angle)],
+                       [0, np.sin(angle), np.cos(angle)]])
+    return np.matmul(matrix, vect)
+
+
+def rotateY(vect, angle):
+    matrix = np.array([[np.cos(angle), 0, np.sin(angle)],
+                       [0.0, 1.0, 0.0],
+                       [-np.sin(angle), 0.0, np.cos(angle)]])
+    return np.matmul(matrix, vect)
+
+
+def rotateZ(vect, angle):
+    matrix = np.array([[np.cos(angle), -np.sin(angle), 0],
+                       [np.sin(angle), np.cos(angle), 0],
+                       [0, 0, 1]])
+    return np.matmul(matrix, vect)
+
+
+def distort(x, y): #input: homogenous or 이미지 센터에서 뺸 후 width.heght 나누기
+    r2 = x * x + y * y
+    dist = 1.0 + ((distortion[4] * r2 + distortion[1]) * r2 + distortion[0]) * r2
+    deltaX = 2.0 * distortion[2] * x * y + distortion[3] * (r2 + 2.0 * x * x)
+    deltaY = distortion[2] * (r2 + 2.0 * y * y) + 2.0 * distortion[3] * x * y
+
+    x = x * dist + deltaX
+    y = y * dist + deltaY
+
+    return x, y
+
+
+def applyPoseRotation(vect, pitch, yaw, roll):
+    vect = rotateZ(vect, roll)
+    vect = rotateY(vect, yaw)
+    vect = rotateX(vect, pitch)
+
+    return vect
+
+
+def applyPoseRotation_ZXY(vect, pitch, yaw, roll):
+    vect = rotateY(vect, yaw)
+    vect = rotateX(vect, pitch)
+    vect = rotateZ(vect, roll)
+
+    return vect
+
+
+def applyPoseTranslation(vect, translationVect):
+    vect += translationVect
+
+    return vect
+
+# Calculates Rotation Matrix given euler angles.
+def eulerAnglesToRotationMatrix(theta):
+    R_x = np.array([[1, 0, 0],
+                    [0, math.cos(theta[0]), -math.sin(theta[0])],
+                    [0, math.sin(theta[0]), math.cos(theta[0])]
+                    ])
+
+    R_y = np.array([[math.cos(theta[1]), 0, math.sin(theta[1])],
+                    [0, 1, 0],
+                    [-math.sin(theta[1]), 0, math.cos(theta[1])]
+                    ])
+
+    R_z = np.array([[math.cos(theta[2]), -math.sin(theta[2]), 0],
+                    [math.sin(theta[2]), math.cos(theta[2]), 0],
+                    [0, 0, 1]
+                    ])
+
+    R = np.dot(R_z, np.dot(R_y, R_x))
+
+    return R
 
 def modify_frameId_craft_to_daimler(extData, tpd):
     for tindex in extData.index.values:
@@ -521,29 +686,7 @@ def modify_frameId_craft_to_daimler(extData, tpd):
     # print(tpd)
     return tpd
 
-def modify_HeadRotation_from_craft_to_daimler(extData, tpd):
-    # print('extData.headOri', extData.headOri,'\n\n')
-    # print('extData.headPos3D', extData.headPos3D,'\n\n')
-
-    # tpd.loc[tindex, 'CAN_S_face_detection']
-
-    for tindex in extData.index.values:
-        if (extData.isFaceDetected[tindex] != True):
-            tpd.loc[tindex, 'MS_S_Head_rot_X'] = 'nan'
-            tpd.loc[tindex, 'MS_S_Head_rot_Y'] = 'nan'
-            tpd.loc[tindex, 'MS_S_Head_rot_Z'] = 'nan'
-        else:
-            tR, tT = changeAxis_opencv2daimler(extData.headOri.loc[tindex], extData.headPos3D.loc[tindex])
-            # print('tR',tR, 'tT',tT)
-            tpd.loc[tindex, 'MS_S_Head_rot_X'] = tR[0]
-            tpd.loc[tindex, 'MS_S_Head_rot_Y'] = tR[1]
-            tpd.loc[tindex, 'MS_S_Head_rot_Z'] = tR[2]
-
-    print('\n',tpd['MS_S_Head_rot_X'],'\n',tpd['MS_S_Head_rot_Y'],'\n',tpd['MS_S_Head_rot_Z'],'\n')
-
-    return tpd
-
-def modify_HeadPos_from_craft_to_daimler(extData, tpd):
+def modify_HeadObject_from_craft_to_daimler(extData, tpd):
     print('extData.headOri', extData.headOri, '\n\n')
     print('extData.headPos3D', extData.headPos3D, '\n\n')
 
@@ -558,28 +701,56 @@ def modify_HeadPos_from_craft_to_daimler(extData, tpd):
             tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Disp_X'] = 'nan'
             tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Disp_Y'] = 'nan'
             tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Disp_Z'] = 'nan'
+            tpd.loc[tindex, 'MS_S_Head_rot_X'] = 'nan'
+            tpd.loc[tindex, 'MS_S_Head_rot_Y'] = 'nan'
+            tpd.loc[tindex, 'MS_S_Head_rot_Z'] = 'nan'
+            tpd.loc[tindex, 'HSVL_S_Head_dir_h'] = 'nan'
+            tpd.loc[tindex, 'HSVL_S_Head_dir_v'] = 'nan'
         else:
             tR, tT = changeAxis_opencv2daimler(extData.headOri.loc[tindex], extData.headPos3D.loc[tindex])
-            # print('tR', tR, 'tT', tT)
+            print('tR', tR, 'tT', tT)
 
-            mat_C2V, _ = transform_A2Bcoord_with_point_Of_Acoord(cam2veh_rot, cam2veh_trans, tT)
-            # print("mat_C2V", mat_C2V)
-            _, mat_C2D = transform_A2Bcoord_with_point_Of_Acoord(disp2cam_rot, disp2cam_trans, tT)
-            # print("mat_C2D", mat_C2D)
+            # cam->disp
+            #
+            # transform_A2Bcoord_with_point_Of_Acoord(nR, nT, pos3D):
+            # cam->veh
+            # mat_C2V, _ = transform_A2Bcoord_with_point_Of_Acoord(cam2veh_rot, cam2veh_trans, tT)
+            mat_C2V_44, _ = transform_A2Bcoord_with_Object_Of_Acoord(cam2veh_rot, cam2veh_trans, tR, tT.T)
+            print("mat_C2V_44", mat_C2V_44)
 
-            tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_X'] = mat_C2V[0]*1000
-            tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Y'] = mat_C2V[1]*1000
-            tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Z'] = mat_C2V[2]*1000
-            tpd.loc[tindex, 'S_Head_Pos_Disp_x'] = mat_C2D[0]*1000
-            tpd.loc[tindex, 'S_Head_Pos_Disp_y'] = mat_C2D[1]*1000
-            tpd.loc[tindex, 'S_Head_Pos_Disp_z'] = mat_C2D[2]*1000
-            tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Disp_X'] = np.int64(mat_C2D[0]*1000)
-            tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Disp_Y'] = np.int64(mat_C2D[1]*1000)
-            tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Disp_Z'] = np.int64(mat_C2D[2]*1000)
+            cam2disp_rot, cam2disp_trans = transform_3by3_inverse(disp2cam_rot, disp2cam_trans)
 
-    print('\n', tpd['HSVL_MS_S_Head_Pos_Veh_X'], '\n', tpd['HSVL_MS_S_Head_Pos_Veh_Y'], '\n', tpd['HSVL_MS_S_Head_Pos_Veh_Z'], '\n')
+            # _, mat_C2D = transform_A2Bcoord_with_point_Of_Acoord(disp2cam_rot, disp2cam_trans, tT)
+            mat_C2D_44, _  = transform_A2Bcoord_with_Object_Of_Acoord(cam2disp_rot, cam2disp_trans, tR, tT.T)
+            print("mat_C2D_44", mat_C2D_44)
+
+            # cam->disp->veh
+
+            tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_X'] = mat_C2V_44[0,3]*1000
+            tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Y'] = mat_C2V_44[1,3]*1000
+            tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Z'] = mat_C2V_44[2,3]*1000
+            tpd.loc[tindex, 'S_Head_Pos_Disp_x'] = mat_C2D_44[0,3]*1000
+            tpd.loc[tindex, 'S_Head_Pos_Disp_y'] = mat_C2D_44[1,3]*1000
+            tpd.loc[tindex, 'S_Head_Pos_Disp_z'] = mat_C2D_44[2,3]*1000
+            tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Disp_X'] = np.int64(mat_C2D_44[0,3]*1000)
+            tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Disp_Y'] = np.int64(mat_C2D_44[1,3]*1000)
+            tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Disp_Z'] = np.int64(mat_C2D_44[2,3]*1000)
+
+            tpd.loc[tindex, 'MS_S_Head_rot_X'] = rotationMatrixToEulerAngles(mat_C2V_44[0:3, 0:3])[0]*rad2Deg
+            tpd.loc[tindex, 'MS_S_Head_rot_Y'] = rotationMatrixToEulerAngles(mat_C2V_44[0:3, 0:3])[1]*rad2Deg
+            tpd.loc[tindex, 'MS_S_Head_rot_Z'] = rotationMatrixToEulerAngles(mat_C2V_44[0:3, 0:3])[2]*rad2Deg
+
+            tpd.loc[tindex, 'HSVL_S_Head_dir_h'] = math.atan(mat_C2D_44[1,3]/mat_C2D_44[0,3]) *rad2Deg
+            tpd.loc[tindex, 'HSVL_S_Head_dir_v'] = math.atan(mat_C2D_44[2,3]/mat_C2D_44[0,3]) *rad2Deg
+
+
     print('\n', tpd['S_Head_Pos_Disp_x'], '\n', tpd['S_Head_Pos_Disp_y'], '\n', tpd['S_Head_Pos_Disp_z'], '\n')
     print('\n', tpd['HSVL_MS_S_Head_Pos_Disp_X'], '\n', tpd['HSVL_MS_S_Head_Pos_Disp_Y'], '\n', tpd['HSVL_MS_S_Head_Pos_Disp_Z'], '\n')
+    print('\n', tpd['HSVL_MS_S_Head_Pos_Veh_X'], '\n', tpd['HSVL_MS_S_Head_Pos_Veh_Y'], '\n', tpd['HSVL_MS_S_Head_Pos_Veh_Z'], '\n')
+    print('\n',tpd['MS_S_Head_rot_X'],'\n',tpd['MS_S_Head_rot_Y'],'\n',tpd['MS_S_Head_rot_Z'],'\n')
+
+
+    print('\n', tpd['HSVL_S_Head_dir_h'], '\n', tpd['HSVL_S_Head_dir_v'], '\n')
 
     return tpd
 
@@ -592,42 +763,6 @@ def modify_EyeClosureHeight_craft_to_daimler(extData, tpd):
         tpd.loc[tindex, 'eyeclose_height_right'] = extData.irisHeight.loc[tindex][1]
 
     print('\n',tpd['eyeclose_height_left'],'\n',tpd['eyeclose_height_right'],'\n')
-
-    return tpd
-
-def modify_HeadDirection_craft_to_daimler(extData, tpd):
-    print('extData.headOri', extData.headOri, '\n\n')
-    print('extData.headPos3D', extData.headPos3D, '\n\n')
-
-    for tindex in extData.index.values:
-        if (extData.isFaceDetected[tindex] != True):
-            tpd.loc[tindex, 'HSVL_S_Head_dir_h'] = 'nan'
-            tpd.loc[tindex, 'HSVL_S_Head_dir_v'] = 'nan'
-        else:
-            tR, tT = changeAxis_opencv2daimler(extData.headOri.loc[tindex], extData.headPos3D.loc[tindex])
-            # print('tR', tR, 'tT', tT)
-
-            # mat_C2V, _ = transform_A2Bcoord_with_point_Of_Acoord(cam2veh_rot, cam2veh_trans, tT)
-            # print("mat_C2V", mat_C2V)
-            _, mat_C2D = transform_A2Bcoord_with_point_Of_Acoord(disp2cam_rot, disp2cam_trans, tT)
-            print("mat_C2D", mat_C2D)
-
-            # HSVL_S_Head_dir_h = math.atan(S_Head_Pos_Disp_y / S_Head_Pos_Disp_x)
-            # HSVL_S_Head_dir_v = math.atan(S_Head_Pos_Disp_z / S_Head_Pos_Disp_x)
-            # -0.287461
-            # 18.055828
-
-            # cam->disp->veh
-            # S_Head_Pos_Disp_x
-            # S_Head_Pos_Disp_y
-            # S_Head_Pos_Disp_z
-            # 507.038195
-            # - 2.543902
-            # 165.293075
-            tpd.loc[tindex, 'HSVL_S_Head_dir_h'] = math.atan(mat_C2D[1]/mat_C2D[0]) *rad2Deg
-            tpd.loc[tindex, 'HSVL_S_Head_dir_v'] = math.atan(mat_C2D[2]/mat_C2D[0]) *rad2Deg
-
-    print('\n', tpd['HSVL_S_Head_dir_h'], '\n', tpd['HSVL_S_Head_dir_v'], '\n')
 
     return tpd
 
@@ -657,18 +792,27 @@ def modify_HeadDetect_craft_to_daimler(extData, tpd):
     print('\n', tpd['MS_EyeDetection'], '\n')
     return tpd
 
-
-
 if __name__ == '__main__':
-    inputPath_HET = "./input/HetData_1614867983883741729.json"
-    inputPath_C2V = "./refer/pose_config.json"
+
+    inputPath_HET = "D:/Project/CVT/demo/result101/HetData_01.json"
+    inputPath_C2V = "D:/Project/CVT/demo/Standalone_Player/1_DRCAM_KOR40BU4578_20190219_114431/pose_config.json"
+    # inputPath_C2V = "D:/Project/CVT/성능비교/DRCAM_KOR40BU4578_20190214_113824_0021_2/Result0001_20210205/pose_config.json"
     # pose_config.json
-    inputPath_D2V = "./refer/display_config.json"
+
+    inputPath_D2V = "D:/Project/CVT/demo/Standalone_Player/1_DRCAM_KOR40BU4578_20190219_114431/display_config.json"
+    # inputPath_D2V = "D:/Project/CVT/성능비교/DRCAM_KOR40BU4578_20190214_113824_0021_2/Result0001_20210205/display_config.json"
     # display_config.json
-    inputPath_D2C = "./refer/CamToDisplay_config.json"
+
+    inputPath_D2C = ""
+    # "D:/Project/CVT/성능비교/DRCAM_KOR40BU4578_20190214_113824_0021_2/Result0001_20210205/CamToDisplay_config.json"
     # CamToDisplay_config.json
 
-    ret = load_jsonfile_preValue(inputPath_C2V, inputPath_D2V, inputPath_D2C)
+    # inputPath_ROI = "D:/Project/CVT/demo/Standalone_Player/1_DRCAM_KOR40BU4578_20190219_114431/roi_config.json"
+    # roi_config.json
+
+    # ret = load_jsonfile_preValue(inputPath_C2V, inputPath_D2V, inputPath_D2C)
+    ret = load_jsonfile_preValue_extend(inputPath_C2V, inputPath_D2V)
+
     ret_json = load_jsonfile_HET(inputPath_HET)
     ret_ExtData = extract_availData_from_craft_algo(ret_json)
 
@@ -677,18 +821,12 @@ if __name__ == '__main__':
     #todo : 데이터 업데이트 추가 필요
 
     tout = modify_frameId_craft_to_daimler(ret_ExtData, tout)
-    tout = modify_HeadRotation_from_craft_to_daimler(ret_ExtData, tout)
-    tout = modify_HeadPos_from_craft_to_daimler(ret_ExtData, tout)
+    tout = modify_HeadObject_from_craft_to_daimler(ret_ExtData, tout)
 
+    tout = modify_EyeClosureHeight_craft_to_daimler(ret_ExtData, tout)
     tout = modify_frameCounterVirtual_craft_to_daimler(ret_ExtData, tout)
     tout = modify_HeadDetect_craft_to_daimler(ret_ExtData, tout)
-    tout = modify_HeadDirection_craft_to_daimler(ret_ExtData, tout)
-    tout = modify_EyeClosureHeight_craft_to_daimler(ret_ExtData, tout)
-
-
-
 
     save_csvfile(tout, "./final_output.csv")
 
 
-    print("\n\nend")

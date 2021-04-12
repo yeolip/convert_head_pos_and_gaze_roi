@@ -1,0 +1,12 @@
+{
+    "type": "Camera Position in vehicle coordinate system",
+	"_comment": "Trans : [X,Y,Z], Rot : [roll, pitch, yaw]",
+    "version": 1.0,
+    "master": {
+        "serial": 0,
+        "camera_pose": {
+            "trans": [1.01442,-0.35443,0.68633],
+            "rot": [0.0,-11.0,1.0]
+        }
+    }
+}

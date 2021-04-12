@@ -1,0 +1,12 @@
+{
+    "type": "display Position",
+    "_comment": "Display Coordinate system", 
+    "version": 1.0,
+    "master": {
+        "serial": 0,
+        "display_pose": {
+            "trans": [1.023952, -0.400269, 0.639109],
+            "rot": [0.0, -8.0, 1.0]
+        }
+    }
+}

@@ -1,0 +1,9 @@
+{
+	"type": "display Position",
+	"_comment": "Display Coordinate system", 
+	"version": 1.0,
+	"display_pose_wrt_master_camera": {
+		"trans": [-0.00044005, -0.04599837, -0.04801928],
+		"rot": [2.32726207e-17, 3.00000000e+00, 1.01316913e-17]
+	}
+}
