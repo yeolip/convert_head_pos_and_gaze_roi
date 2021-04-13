@@ -58,7 +58,47 @@ def rotationMatrixToEulerAngles(R):
     return np.array([x, y, z])
 
 # converting from Cartesian Coordinates to Spherical Coordinates.
-# def changeRotation_radian2unitvec_rad_check(typeIn, nR_unitvec, typeOut ):
+def changeRotation_pitchyaw2unitvec(typeIn, nR_eulerangle, typeOut ):
+    print("//////////", funcname(), "//////////")
+    up = np.array([0,0,1])
+    print('\n')
+    t_pitch_ang = 0
+    t_yaw_ang = 0
+    t_roll_ang = 0
+
+    print(" Enter", typeIn, "return", typeOut)
+    if (typeIn == "PYR"):  # Pitch / Yaw / Roll
+        t_pitch_ang = nR_eulerangle[0]
+        t_yaw_ang = nR_eulerangle[1]
+        t_roll_ang = nR_eulerangle[2]
+    elif (typeIn == "RPY"):  # Roll / Pitch / Yaw
+        t_pitch_ang = nR_eulerangle[1]
+        t_yaw_ang = nR_eulerangle[2]
+        t_roll_ang = nR_eulerangle[0]
+    else:
+        print("Not support!!",1/0)
+
+    beta_tilt = -t_pitch_ang
+    alpha_yaw = t_yaw_ang
+    gazeVector = [math.sin(alpha_yaw) * math.cos(beta_tilt), math.sin(beta_tilt),
+                  math.cos(alpha_yaw) * math.cos(beta_tilt)]
+    # gazeVector = lpupil_roll_pitch_yaw * deg2Rad
+
+    if (typeOut == "PYR"):  # Pitch / Yaw / Roll
+        t_x =  gazeVector[0]
+        t_y = gazeVector[1]
+        t_z = gazeVector[2]
+    elif (typeOut == "RPY"):  # Roll / Pitch / Yaw
+        t_x = gazeVector[2]
+        t_y = gazeVector[0]
+        t_z = gazeVector[1]
+    else:
+        print("Not support!!",1/0)
+
+    print('gazeVector=',typeOut, np.array([t_x, t_y, t_z]))
+    return np.array([t_x, t_y, t_z])
+
+
 '''
 This is related to the problem of converting from Cartesian Coordinates to Spherical Coordinates. Note that the reverse operation is not unique: there are many possible angle triplets that produce the same rotation transformation, so any function we choose will necessarily have to standardize on one option. This means an angle triplet might not necessarily round-trip convert to vectors and back as you expect, even though the result will be equivalent in effect when rotating vectors.
 
@@ -85,13 +125,14 @@ Yaw
 '''
 # https://gamedev.stackexchange.com/questions/172147/convert-3d-direction-vectors-to-yaw-pitch-roll-angles
 def changeRotation_unitvec2radian_check2(typeIn, nR_unitvec, typeOut ):
+    print("//////////", funcname(), "//////////")
     up = np.array([0,0,1])
-    print('\n\n')
+    print('\n')
     t_pitch_vec = 0
     t_yaw_vec = 0
     t_roll_vec = 0
 
-    print("Enter", typeIn, "return", typeOut)
+    print(" Enter", typeIn, "return", typeOut)
     if (typeIn == "PYR"):  # Pitch / Yaw / Roll
         t_pitch_vec = nR_unitvec[0]
         t_yaw_vec = nR_unitvec[1]
@@ -109,9 +150,11 @@ def changeRotation_unitvec2radian_check2(typeIn, nR_unitvec, typeOut ):
     yaw = math.atan(t_pitch_vec/t_roll_vec)
 
     # Pitch is the altitude of the forward vector off the xy plane, toward the down direction.
-    pitch = -math.asin(*t_yaw_vec)
-
+    pitch = -math.asin(t_yaw_vec)
+    # pitch2 = math.acos(t_yaw_vec/1)
+    # print("--------------pitch", pitch*rad2Deg, 'pitch2',pitch2*rad2Deg)
     # Find the vector in the xy plane 90 degrees to the right of our bearing.
+
     planeRightX = math.sin(yaw)
     planeRightY = -math.cos(yaw)
 
@@ -152,12 +195,12 @@ def changeRotation_unitvec2radian_check(typeIn, nR_unitvec, typeOut ):
     # print('tilt',math.acos(nR_unitvec[1]), beta_tilt*rad2Deg)
     # print('r3', [math.sin(alpha_yaw)*math.sin(beta_tilt), math.cos(beta_tilt), math.cos(alpha_yaw)*math.sin(beta_tilt) ])
     # print("degree", ret2 * rad2Deg)
-    print('\n\n')
+    print('\n')
     t_pitch_vec = 0
     t_yaw_vec = 0
     t_roll_vec = 0
 
-    print("Enter", typeIn, "return", typeOut)
+    print(" Enter", typeIn, "return", typeOut)
     if (typeIn == "PYR"):  # Pitch / Yaw / Roll
         t_pitch_vec = nR_unitvec[0]
         t_yaw_vec = nR_unitvec[1]
@@ -170,7 +213,7 @@ def changeRotation_unitvec2radian_check(typeIn, nR_unitvec, typeOut ):
         print("Not support!!",1/0)
 
     alpha_yaw = math.atan(t_pitch_vec / t_roll_vec)
-    beta_tilt = math.asin(t_yaw_vec)
+    beta_tilt = -math.asin(t_yaw_vec)
     print('yaw',math.atan(t_pitch_vec / t_roll_vec), alpha_yaw*rad2Deg)
     print('tilt',math.asin(t_yaw_vec), beta_tilt*rad2Deg)
     print('r3', [math.sin(alpha_yaw)*math.cos(beta_tilt), math.sin(beta_tilt), math.cos(alpha_yaw)*math.cos(beta_tilt) ])
@@ -268,7 +311,8 @@ def extract_availData_from_3D_target_ROI(pROI):
                 ttop_left.append(data['obj_params']['top_left'])
                 ttop_right.append(data['obj_params']['top_right'])
                 tbottom_left.append(data['obj_params']['bottom_left'])
-                tbottom_right.append((np.array(tbottom_left) + np.array(ttop_right) - np.array(ttop_left)).tolist()[0])
+                temp = np.round((np.array(tbottom_left) + np.array(ttop_right) - np.array(ttop_left)),5).tolist()[0]
+                tbottom_right.append(temp)
             elif(name == '_comment'):
                 print('_comment', data['_comment'])
                 tTargetName[-1] = data['_comment']
@@ -276,7 +320,7 @@ def extract_availData_from_3D_target_ROI(pROI):
             tValid.append([tID, tTargetName, ttop_left, ttop_right, tbottom_left, tbottom_right])
 
     print('tValid', tValid)
-    tValid = np.array(tValid)
+    tValid = np.array(tValid.copy())
     available_dict = {"tID":tValid.T[0][0],"tTargetName":tValid.T[0][1],
                       "ttop_left":tValid.T[0][2],
                       "ttop_right": tValid.T[0][3],
@@ -291,6 +335,117 @@ def extract_availData_from_3D_target_ROI(pROI):
     print(available_df)
     return available_df
 
+def extract_availData_from_GT(inputPath_GT):
+    print("//////////", funcname(), "//////////")
+    extGT = pd.read_csv(inputPath_GT)
+    df_extGT = extGT[['f_frame_counter_left_camera', 'CAN_S_Gaze_ROI', 'CAN_S_Gaze_ROI_X', 'CAN_S_Gaze_ROI_Y',
+                          'MS_S_Head_rot_X', 'MS_S_Head_rot_Y', 'MS_S_Head_rot_Z',
+                          'HSVL_MS_S_Head_Pos_Veh_X', 'HSVL_MS_S_Head_Pos_Veh_Y', 'HSVL_MS_S_Head_Pos_Veh_Z',
+                          'MS_S_Gaze_LE_Center_X', 'MS_S_Gaze_LE_Center_Y', 'MS_S_Gaze_LE_Center_Z',
+                          'MS_S_Gaze_LE_VA_rot_X', 'MS_S_Gaze_LE_VA_rot_Y', 'MS_S_Gaze_LE_VA_rot_Z',
+                          'MS_S_Gaze_RE_Center_X', 'MS_S_Gaze_RE_Center_Y', 'MS_S_Gaze_RE_Center_Z',
+                          'MS_S_Gaze_RE_VA_rot_X', 'MS_S_Gaze_RE_VA_rot_Y', 'MS_S_Gaze_RE_VA_rot_Z']]
+    df_extGT = df_extGT.dropna()
+    # print('ret_ExtGT\n\n',ret_ExtGT)
+    print('df_extGT\n\n', df_extGT)
+    return df_extGT
+
+def retcalcuate_head_eye_direction(extData):
+    print("//////////", funcname(), "//////////")
+    # print(extData)
+    tframecnt = 0
+    troi_result = 0
+    troi_x = 0
+    troi_y = 0
+    thead_pos = 0
+    thead_rot = 0
+    tgaze_pos_l = 0
+    tgaze_vec_l = 0
+    tgaze_pos_r = 0
+    tgaze_vec_r = 0
+
+    headPos3D_meter = np.array([0, 0, 0])
+    headOri_radian = np.array([0, 0, 0])
+
+    # 'CAN_S_Gaze_ROI', 'CAN_S_Gaze_ROI_X', 'CAN_S_Gaze_ROI_Y',
+    # 'MS_S_Head_rot_X', 'MS_S_Head_rot_Y', 'MS_S_Head_rot_Z',
+    # 'HSVL_MS_S_Head_Pos_Veh_X', 'HSVL_MS_S_Head_Pos_Veh_Y', 'HSVL_MS_S_Head_Pos_Veh_Z',
+    # 'MS_S_Gaze_LE_Center_X', 'MS_S_Gaze_LE_Center_Y', 'MS_S_Gaze_LE_Center_Z',
+    # 'MS_S_Gaze_LE_VA_rot_X', 'MS_S_Gaze_LE_VA_rot_Y', 'MS_S_Gaze_LE_VA_rot_Z',
+    # 'MS_S_Gaze_RE_Center_X', 'MS_S_Gaze_RE_Center_Y', 'MS_S_Gaze_RE_Center_Z',
+    # 'MS_S_Gaze_RE_VA_rot_X', 'MS_S_Gaze_RE_VA_rot_Y', 'MS_S_Gaze_RE_VA_rot_Z'
+
+
+    for tindex in extData.index.values:
+        # print(extData.irisHeight.loc[tindex])
+        print(tindex)
+        tframecnt = extData.loc[tindex, 'f_frame_counter_left_camera']
+        troi_result = extData.loc[tindex, 'CAN_S_Gaze_ROI']
+        troi_x = extData.loc[tindex, 'CAN_S_Gaze_ROI_X']
+        troi_y = extData.loc[tindex, 'CAN_S_Gaze_ROI_Y']
+        thead_pos = np.array((extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_X'], extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Y'], extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Z']))
+        thead_rot = np.array((extData.loc[tindex, 'MS_S_Head_rot_X'], extData.loc[tindex, 'MS_S_Head_rot_Y'], extData.loc[tindex, 'MS_S_Head_rot_Z']))
+        tgaze_pos_l = np.array((extData.loc[tindex, 'MS_S_Gaze_LE_Center_X'], extData.loc[tindex, 'MS_S_Gaze_LE_Center_Y'], extData.loc[tindex, 'MS_S_Gaze_LE_Center_Z']))
+        tgaze_vec_l = np.array((extData.loc[tindex, 'MS_S_Gaze_LE_VA_rot_X'], extData.loc[tindex, 'MS_S_Gaze_LE_VA_rot_Y'], extData.loc[tindex, 'MS_S_Gaze_LE_VA_rot_Z']))
+        tgaze_pos_r = np.array((extData.loc[tindex, 'MS_S_Gaze_RE_Center_X'], extData.loc[tindex, 'MS_S_Gaze_RE_Center_Y'], extData.loc[tindex, 'MS_S_Gaze_RE_Center_Z']))
+        tgaze_vec_r = np.array((extData.loc[tindex, 'MS_S_Gaze_RE_VA_rot_X'], extData.loc[tindex, 'MS_S_Gaze_RE_VA_rot_Y'], extData.loc[tindex, 'MS_S_Gaze_RE_VA_rot_Z']))
+        print(tframecnt, troi_result, troi_x, troi_y, thead_pos, thead_rot, tgaze_pos_l, tgaze_vec_l, tgaze_pos_r, tgaze_vec_r )
+        # print(tframecnt, troi_result, troi_x, troi_y)
+
+        headPos3D_mm = thead_pos
+        headOri_radian = thead_rot * deg2Rad
+        print("headPos3D_mm", headPos3D_mm)
+        print("headOri_radian", headOri_radian)
+
+        lpupil_roll_pitch_yaw_rad = tgaze_vec_l * deg2Rad #np.array([0, -9.8, 0.2])
+        rpupil_roll_pitch_yaw_rad = tgaze_vec_r * deg2Rad #np.array([0, -9.8, 0.2])
+        # print("eulerAngles\n", eulerAnglesToRotationMatrix(lpupil_roll_pitch_yaw_rad))
+
+        # print('lpupil_roll_pitch_yaw_deg', lpupil_roll_pitch_yaw_rad * rad2Deg)
+        # aaa = changeRotation_pitchyaw2unitvec('RPY',lpupil_roll_pitch_yaw_rad ,'RPY')
+        # print('---gaze_vector', aaa)
+        # bbb = changeRotation_unitvec2radian_check('RPY', aaa, 'RPY')
+        # print('---radian ', bbb*rad2Deg)
+        # bbb2 = changeRotation_unitvec2radian_check2('RPY', aaa, 'RPY')
+        # print('---radian2 ', bbb2*rad2Deg)
+
+        # beta_tilt = lpupil_roll_pitch_yaw[1] * deg2Rad
+        # alpha_yaw = lpupil_roll_pitch_yaw[2] * deg2Rad
+        # gazeVector = [math.sin(alpha_yaw) * math.cos(beta_tilt), math.sin(beta_tilt),
+        #                    math.cos(alpha_yaw) * math.cos(beta_tilt)]
+        # # gazeVector = lpupil_roll_pitch_yaw * deg2Rad
+        # print('gazeVector_pitch_yaw_roll', gazeVector)
+        #
+        # # origin = tgaze_pos_l
+        # origin = (headPos3D_mm)
+        #
+        # pitch_yaw_roll = changeRotation_unitvec2radian_check2('PYR',gazeVector,'PYR')
+        # _, roll_pitch_yaw = changeAxis_opencv2daimler(np.array([0, 0, 0]), pitch_yaw_roll)
+        # print('roll_pitch_yaw', roll_pitch_yaw.T)
+        #
+        # print('pitch_yaw_roll', pitch_yaw_roll * rad2Deg)
+        # print('roll_pitch_yaw', roll_pitch_yaw * rad2Deg,'\n')
+        # roll_pitch_yaw = lpupil_roll_pitch_yaw * deg2Rad
+
+        rt = eulerAnglesToRotationMatrix(headOri_radian)
+        # rt1 = eulerAnglesToRotationMatrix(np.array([0, 0, 0]))
+        # rt = rt1
+        # rot2 = np.eye(3)
+        rot2_l = eulerAnglesToRotationMatrix(lpupil_roll_pitch_yaw_rad)
+        rot2_r = eulerAnglesToRotationMatrix(rpupil_roll_pitch_yaw_rad)
+        print('rot2_l',rot2_l)
+        headDir_l = np.dot(rot2_l, np.dot(rt, [1, 0, 0]))
+        headDir_r = np.dot(rot2_r, np.dot(rt, [1, 0, 0]))
+        print('headDir_l',headDir_l)
+
+
+        print(1/0)
+
+    return ret_ExtGT
+
+def check_match_roi(ret_ExtGT_with_direction, ret_ExtROI):
+    pass
+
 if __name__ == '__main__':
     print("\n\n\n test/////////////////////")
     inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
@@ -301,29 +456,11 @@ if __name__ == '__main__':
 
     ret_ExtROI = extract_availData_from_3D_target_ROI(ret_roi)
 
-    ret_ExtGT = pd.read_csv(inputPath_GT)
+    ret_ExtGT = extract_availData_from_GT(inputPath_GT)
+    # print('ret_ExtGT\n\n', ret_ExtGT)
 
-    print('ret_ExtGT\n\n',ret_ExtGT)
-    # target_roi = t_roi['ROI']
-    #
-    # for i, data in enumerate(target_roi):
-    #     # print(i, data)
-    #     for name in data:
-    #         # print('name',name)
-    #         if (name == 'id'):
-    #             print('id', data['id'])
-    #         elif(name == 'obj_params'):
-    #             # print('obj_params', data['obj_params'])
-    #             print('obj_params', data['obj_params']['top_left'], data['obj_params']['top_right'], data['obj_params']['bottom_left'])
-    #
-    #         elif(name == '_comment'):
-    #             print('_comment', data['_comment'])
-
-    # for i in target_roi:
-    #     print(i)
-    #     if(i == 'id'):
-    #         print(i.values)
-    # print(target_roi['id'])
+    ret_ExtGT_with_direction = retcalcuate_head_eye_direction(ret_ExtGT)
+    # check_match_roi(ret_ExtGT_with_direction, ret_ExtROI)
 
     print(1/0)
 

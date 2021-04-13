@@ -14,6 +14,12 @@
 
 <img  src = "./desc/coordinate.png"  width="800px" > 
 
+# 3D target ROI 영역
+<img  src = "./desc/3d_target_roi3.png"  width="1058px" > 
+
+# Final gaze 조합
+<img  src = "./desc/gaze_method.png"  width="619px" >
+
 # Gaze ROI 성능 검증 작업 예상일정
  1. 기존 제품 차량좌표계, 디스플레이 좌표계, 카메라 좌표계의 차이 파악 및 변환식 검토(~1 weeks)
  2. 타사 제품 카메라 좌표계 파악 및 차이점 분석/Eyeclosure 정의 및 iris관련 변환 파악(~1 weeks)
