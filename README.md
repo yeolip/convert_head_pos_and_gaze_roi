@@ -43,5 +43,6 @@
  
  
 # 참고문헌
-https://stackoverflow.com/questions/5666222/3d-line-plane-intersection
+https://stackoverflow.com/questions/5666222/3d-line-plane-intersection <BR>
+https://gist.github.com/TimSC/8c25ca941d614bf48ebba6b473747d72 <BR>
 and so on
