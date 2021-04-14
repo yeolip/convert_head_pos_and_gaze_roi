@@ -353,19 +353,12 @@ def extract_availData_from_GT(inputPath_GT):
 def retcalcuate_head_eye_direction(extData):
     print("//////////", funcname(), "//////////")
     # print(extData)
-    tframecnt = 0
-    troi_result = 0
-    troi_x = 0
-    troi_y = 0
-    thead_pos = 0
-    thead_rot = 0
-    tgaze_pos_l = 0
-    tgaze_vec_l = 0
-    tgaze_pos_r = 0
-    tgaze_vec_r = 0
-
-    headPos3D_meter = np.array([0, 0, 0])
-    headOri_radian = np.array([0, 0, 0])
+    extData['headDir_X_L'] =  0
+    extData['headDir_Y_L'] =  0
+    extData['headDir_Z_L'] =  0
+    extData['headDir_X_R'] = 0
+    extData['headDir_Y_R'] = 0
+    extData['headDir_Z_R'] = 0
 
     # 'CAN_S_Gaze_ROI', 'CAN_S_Gaze_ROI_X', 'CAN_S_Gaze_ROI_Y',
     # 'MS_S_Head_rot_X', 'MS_S_Head_rot_Y', 'MS_S_Head_rot_Z',
@@ -437,18 +430,60 @@ def retcalcuate_head_eye_direction(extData):
         headDir_l = np.dot(rot2_l, np.dot(rt, [1, 0, 0]))
         headDir_r = np.dot(rot2_r, np.dot(rt, [1, 0, 0]))
         print('headDir_l',headDir_l)
+        extData.loc[tindex, 'headDir_X_L'] = headDir_l[0]
+        extData.loc[tindex, 'headDir_Y_L'] = headDir_l[1]
+        extData.loc[tindex, 'headDir_Z_L'] = headDir_l[2]
+        extData.loc[tindex, 'headDir_X_R'] = headDir_r[0]
+        extData.loc[tindex, 'headDir_Y_R'] = headDir_r[1]
+        extData.loc[tindex, 'headDir_Z_R'] = headDir_r[2]
 
+    return extData
 
-        print(1/0)
+def check_match_roi(extData, ret_ExtROI):
 
-    return ret_ExtGT
+    for tindex in extData.index.values:
+        print(tindex,"번째 index, frameID = ", extData.loc[tindex, 'f_frame_counter_left_camera'],'\n')
+        headDir_l = np.array((extData.loc[tindex, 'headDir_X_L'], extData.loc[tindex, 'headDir_Y_L'], extData.loc[tindex, 'headDir_Z_L']))
+        headDir_r = np.array((extData.loc[tindex, 'headDir_X_R'], extData.loc[tindex, 'headDir_Y_R'], extData.loc[tindex, 'headDir_Z_R']))
+        # print(tindex, 'headDir_l',headDir_l)
+        headPos = np.array((extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_X'], extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Y'], extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Z']))
 
-def check_match_roi(ret_ExtGT_with_direction, ret_ExtROI):
+        for tidx in ret_ExtROI.index.values:
+            # print(tidx)
+            # print(ret_ExtROI['tID'], ret_ExtROI['tTargetName'], ret_ExtROI['ttop_left'], ret_ExtROI['ttop_right'], ret_ExtROI['tbottom_left'], ret_ExtROI['tbottom_right'])
+            print(' ',tidx, ret_ExtROI['tID'][tidx], ret_ExtROI['tTargetName'][tidx])
+            troi_id = ret_ExtROI["tID"][tidx]
+            troi_name = ret_ExtROI["tTargetName"][tidx]
+            p0 = np.array(ret_ExtROI["ttop_left"][tidx]) * 1000
+            p1 = np.array(ret_ExtROI["ttop_right"][tidx]) * 1000
+            p2 = np.array(ret_ExtROI["tbottom_left"][tidx]) * 1000
+            p3 = np.array(ret_ExtROI["tbottom_right"][tidx]) * 1000
+
+            camPlaneOrthVector = np.cross((p3 - p1), (p2 - p3))/np.linalg.norm(np.cross((p3 - p1), (p2 - p3)))
+            pointOnPlan = (p0+p1+p2+p3)/4
+
+            # #최단거리
+            # d = np.dot(camPlaneOrthVector, p0)
+            # t = -(np.dot(origin,camPlaneOrthVector)+d)/ np.dot(gazeVector,camPlaneOrthVector)
+            # pResult = origin + np.dot(t,gazeVector)
+            # print('d',d)
+            # print('t',t)
+            # print('pResult',pResult)
+            print(' ',"p0", p0, "\n  p1",p1, "\n  p2", p2, "\n  p3", p3)
+            print(' ','headPos',headPos)
+            print(' ','headDir_l', headDir_l)
+            print(' ','camPlaneOrthVector',camPlaneOrthVector)
+            print(' ','pointOnPlan',pointOnPlan)
+
+            tview_point = intersectionWithPlan(headPos, headDir_l, camPlaneOrthVector, pointOnPlan)
+            print(' ','tview_point', tview_point)
+            print('\n')
     pass
 
 if __name__ == '__main__':
     print("\n\n\n test/////////////////////")
-    inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
+    # inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
+    inputPath_GT = "./refer/GT_3531_96_670222_0001_small.csv"
 
     inputPath_ROI = "./refer/roi_config.json"
     # roi_config.json
@@ -460,7 +495,8 @@ if __name__ == '__main__':
     # print('ret_ExtGT\n\n', ret_ExtGT)
 
     ret_ExtGT_with_direction = retcalcuate_head_eye_direction(ret_ExtGT)
-    # check_match_roi(ret_ExtGT_with_direction, ret_ExtROI)
+    print('\n\n',ret_ExtGT_with_direction)
+    check_match_roi(ret_ExtGT_with_direction, ret_ExtROI)
 
     print(1/0)
 
