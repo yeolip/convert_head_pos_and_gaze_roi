@@ -24,8 +24,8 @@
  1. 기존 제품 차량좌표계, 디스플레이 좌표계, 카메라 좌표계의 차이 파악 및 변환식 검토(~1 weeks) - 완료
  2. 타사 제품 카메라 좌표계 파악 및 차이점 분석/Eyeclosure 정의 및 iris관련 변환 파악(~1 weeks) - 완료
  3. 변환 코드 구현 (~1 weeks) - 완료
- 4. 기존 제품 GT데이터를 이용한 Gaze 검증(~1.5 weeks) - **진행중**
- 5. 기존 제품 GT데이터를 이용한 ROI 검증(~0.5 weeks)
+ 4. 선분과 평명의 충돌여부 판별 유무 검토(ROI 매칭)(~0.5 weeks) - 완료
+ 5. 기존 제품 GT데이터를 이용한 Gaze 검증(~1.5 weeks) - **진행중**
  6. 타사 제품 데이터를 이용한 Gaze검증(~1 weeks)
  7. Validataion (~1 weeks)
 
@@ -37,7 +37,7 @@
 | cvt_coord_to_mra2_05.py |**(예정)**GT데이터의 최종 Eye gaze vector를 도출하여, 3D target ROI와 매칭되는지 여부 구현| --|
 | check_gaze.py |기존 제품 GT데이터의 Head pos,rot, Eye gaze, 3D target ROI 계산| --|
 | check_gaze2.py |**(예정)**기존 제품 GT데이터와 3D target ROI정보 매칭작업| --|
-| -- |--| --|
+| testcode_intersection.py |선과 평면의 교차점 검증 작업(3D target ROI 매칭)| --|
 | -- |--| --|
 |   |   |   |
  
