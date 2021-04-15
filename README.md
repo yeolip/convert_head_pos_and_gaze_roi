@@ -43,7 +43,7 @@
  
  
 # 참고문헌
-https://stackoverflow.com/questions/5666222/3d-line-plane-intersection <BR> 선분과 평면의 교차점 판별 방법1
-https://gist.github.com/TimSC/8c25ca941d614bf48ebba6b473747d72 <BR> 선분과 평면의 교차점 판별 방법2
-https://soooprmx.com/archives/10607 <BR> 영역안에 점이 존재유무 판별
-and so on
+https://stackoverflow.com/questions/5666222/3d-line-plane-intersection 선분과 평면의 교차점 판별 방법1 <BR>
+https://gist.github.com/TimSC/8c25ca941d614bf48ebba6b473747d72 선분과 평면의 교차점 판별 방법2 <BR>
+https://soooprmx.com/archives/10607 영역안에 점이 존재유무 판별 <BR>
+#### and so on
