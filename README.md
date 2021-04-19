@@ -17,8 +17,8 @@
 # 3D target ROI 영역
 <img  src = "./desc/3d_target_roi3.png"  width="1058px" > 
 
-# Final gaze 조합
-<img  src = "./desc/gaze_method.png"  width="619px" >
+# Head and Eye gaze 합성
+<img  src = "./desc/gaze_method2.png"  width="619px" >
 
 # Gaze ROI 성능 검증 작업 예상일정
  1. 기존 제품 차량좌표계, 디스플레이 좌표계, 카메라 좌표계의 차이 파악 및 변환식 검토(~1 weeks) - 완료
@@ -34,10 +34,12 @@
 | --       | --          | --     |
 | cvt_coord_to_mra2_02.py|1.카메라 좌표계 Head pos를 차량 및 디스플레이 좌표계로 변환, Head rot는 동일하다는 가정, <BR>2.Eyeclosure의 iris height pixel추가| --|
 | cvt_coord_to_mra2_04.py |1.카메라 좌표계 Head pos,rot를 차량 및 디스플레이 좌표계로 변환, Head rot가 좌표계별로 다르다는 가정(계산수식 추가),<BR> 2.Eyeclosure의 iris height pixel추가| --|
-| cvt_coord_to_mra2_05.py |**(예정)**GT데이터의 최종 Eye gaze vector를 도출하여, 3D target ROI와 매칭되는지 여부 구현| --|
-| check_gaze.py |기존 제품 GT데이터의 Head pos,rot, Eye gaze, 3D target ROI 계산| --|
-| check_gaze2.py |**(예정)**기존 제품 GT데이터와 3D target ROI정보 매칭작업| --|
+| check_gaze.py |기존 제품 GT데이터의 단일 Head pos,rot, Eye gaze, 3D target ROI 계산| --|
 | testcode_intersection.py |선과 평면의 교차점 검증 작업(3D target ROI 매칭)| --|
+| check_gaze2.py |**(진행중)** 기존 제품 GT데이터와 3D target ROI정보를 연결 인터페이스 작업| --|
+| check_gaze3.py |**(예정)** 기존 제품 GT데이터를 이용하여,3D target ROI 매칭 여부 구현| --|
+| cvt_coord_to_mra2_05.py |**(예정)** 타사 알고리즘의 결과데이터의 최종 Eye gaze vector 계산 작업| --|
+| cvt_coord_to_mra2_06.py |**(예정)** 타사 알고리즘의 결과데이터의 최종 Eye gaze vector와 3D target ROI 매칭 작업| --|
 | -- |--| --|
 |   |   |   |
  
@@ -46,4 +48,11 @@
 https://stackoverflow.com/questions/5666222/3d-line-plane-intersection 선분과 평면의 교차점 판별 방법1 <BR>
 https://gist.github.com/TimSC/8c25ca941d614bf48ebba6b473747d72 선분과 평면의 교차점 판별 방법2 <BR>
 https://soooprmx.com/archives/10607 영역안에 점이 존재유무 판별 <BR>
+http://geomalgorithms.com/a05-_intersect-1.html 선분과 평면의 교차점 공식 <BR>
+https://gaussian37.github.io/ml-concept-ml-evaluation/ Accuracy, Precision, Recall, F1 Score <BR>
+
 #### and so on
+**반드시** 얼굴과 눈의 조합으로 Final Gaze를 합성해야함 
+(얼굴을 고정하고, 눈의 차이를 보여주는 영상 모음)
+<img  src = "./desc/out006.png"  width="400px" ><img  src = "./desc/out007.png"  width="400px" > 
+<img  src = "./desc/out027.png"  width="400px" ><img  src = "./desc/out028.png"  width="400px" > 

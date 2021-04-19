@@ -6,6 +6,38 @@
 #Based on http://geomalgorithms.com/a05-_intersect-1.html
 from __future__ import print_function
 import numpy as np
+import math
+
+deg2Rad = math.pi/180
+rad2Deg = 180/math.pi
+
+def eulerAnglesToRotationMatrix(theta):
+    R_x = np.array([[1, 0, 0],
+        [0, math.cos(theta[0]), -math.sin(theta[0])],
+        [0, math.sin(theta[0]), math.cos(theta[0])]])
+    R_y = np.array([[math.cos(theta[1]), 0, math.sin(theta[1])],
+        [0, 1, 0],
+        [-math.sin(theta[1]), 0, math.cos(theta[1])]])
+    R_z = np.array([[math.cos(theta[2]), -math.sin(theta[2]), 0],
+        [math.sin(theta[2]), math.cos(theta[2]), 0],
+        [0, 0, 1]])
+    R = np.dot(R_z, np.dot(R_y, R_x))
+    return R
+
+def rotationMatrixToEulerAngles(R):
+    sy = math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
+    singular = sy < 1e-6
+    if not singular:
+        x = math.atan2(R[2, 1], R[2, 2])
+        y = math.atan2(-R[2, 0], sy)
+        z = math.atan2(R[1, 0], R[0, 0])
+    else:
+        x = math.atan2(-R[1, 2], R[1, 1])
+        y = math.atan2(-R[2, 0], sy)
+        z = 0
+
+    return np.array([x, y, z])
+
 
 def line_plane_collision(planeNormal, planePoint, rayDirection, rayPoint, epsilon=1e-6):
 
@@ -142,6 +174,7 @@ if __name__=="__main__":
 	# 469.99584065]
 
 	#Define ray
+	# rayDirection = np.array([0.94451975, 0.02913004, 0.32716034])
 	rayDirection = np.array([0.94451975, 0.02913004, 0.32716034])
 	rayPoint = np.array([1501,	-422,	857]) #Any point along the ray
 
@@ -241,4 +274,38 @@ if __name__=="__main__":
 	check_available_point_on_plane(p0, p1, p3, p2, tpnt4)
 	check_available_point_on_plane(p0, p1, p3, p2, tpnt5)
 
+	theta = 180 * deg2Rad
+	print(theta)
+	R_y = np.array([[math.cos(theta), 0, math.sin(theta)],
+					[0, 1, 0],
+					[-math.sin(theta), 0, math.cos(theta)]])
+	R_z = np.array([[math.cos(theta), -math.sin(theta), 0],
+					[math.sin(theta), math.cos(theta), 0],
+					[0, 0, 1]])
+	vvv = np.array([1,1,1])
+	R = np.dot(R_y, vvv)
+	R2 = np.dot(R_z, vvv)
 
+	print('R',R)
+	print('R2',R2)
+
+	aaaaa = line_plane_collision(planeNormal, planePoint, np.array([0.94464068, 0.02371891, 0.32724823]), rayPoint)
+	bbbbb = line_plane_collision(planeNormal, planePoint, np.array([0.99979601, -0.01828377,  0.00858109]), rayPoint)
+	ccccc = line_plane_collision(planeNormal, planePoint, np.array([0.99938273, 0.03406657, 0.008581099]), rayPoint)
+	ddddd = line_plane_collision(planeNormal, planePoint, np.array([-0.32626789, -0.0315359,   0.94475116]), rayPoint)
+
+	print ("intersection at", aaaaa)
+	print ("intersection at", bbbbb)
+	print ("intersection at", ccccc)
+	print ("intersection at", ddddd)
+
+	# check_available_point_on_plane(p0, p1, p3, p2, aaaaa)
+	# check_available_point_on_plane(p0, p1, p3, p2, bbbbb)
+	check_available_point_on_plane(p0, p1, p3, p2, ccccc)
+	# check_available_point_on_plane(p0, p1, p3, p2, ddddd)
+	# print(1/0)
+
+	# headOri_deg[1.5, - 9.3,1.5]
+	# lpupil_deg[0., - 9.8 , 0.2]
+	# print())
+	print(np.dot(eulerAnglesToRotationMatrix(np.array([0,0,math.pi])), np.array([1,1,1])).round(5))

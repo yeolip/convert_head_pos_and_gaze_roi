@@ -562,11 +562,13 @@ if __name__ == '__main__':
     # lpupil_roll_pitch_yaw = np.array([0, -9.8, 0.2])
     rpupil_roll_pitch_yaw = np.array([0, -9.8, 0.2])
 
-    rt = eulerAnglesToRotationMatrix(headOri_radian)
+    rt_2 = np.dot(eulerAnglesToRotationMatrix(np.array([0, 0, math.pi])), np.array([1, 1, 1])).round(5)
+    rt = eulerAnglesToRotationMatrix(headOri_radian * rt_2)
     rot2 = eulerAnglesToRotationMatrix(lpupil_roll_pitch_yaw_rad)
 
     print('rot2',rot2)
-    headDir = np.dot(rot2, np.dot(rt, [1, 0, 0]))
+    # headDir = np.dot(rot2, np.dot(rt, [1, 0, 0]))
+    headDir = np.dot(rt, np.dot(rot2, [1, 0, 0]))
     # headDir = np.array([0.5030, -0.8384, -0.20961])/np.linalg.norm([0.5030, -0.8384, -0.20961])
     # headDir = np.array([0.94451975, 0.32716034, 0.02913004 ])
     print('headPos3D_meter',headPos3D_meter)
