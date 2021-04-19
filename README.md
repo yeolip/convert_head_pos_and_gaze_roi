@@ -18,7 +18,7 @@
 <img  src = "./desc/3d_target_roi3.png"  width="1058px" > 
 
 # Head and Eye gaze 합성
-<img  src = "./desc/gaze_method2.png"  width="619px" >
+<img  src = "./desc/gaze_method2.png"  width="1107px" >
 
 # Gaze ROI 성능 검증 작업 예상일정
  1. 기존 제품 차량좌표계, 디스플레이 좌표계, 카메라 좌표계의 차이 파악 및 변환식 검토(~1 weeks) - 완료
