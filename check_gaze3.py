@@ -406,6 +406,15 @@ def retcalcuate_head_eye_direction(extData):
     extData['headDir_X_mid'] = 0
     extData['headDir_Y_mid'] = 0
     extData['headDir_Z_mid'] = 0
+    extData['Rot_headDir_X_L'] =  0
+    extData['Rot_headDir_Y_L'] =  0
+    extData['Rot_headDir_Z_L'] =  0
+    extData['Rot_headDir_X_R'] = 0
+    extData['Rot_headDir_Y_R'] = 0
+    extData['Rot_headDir_Z_R'] = 0
+    extData['Rot_headDir_X_mid'] = 0
+    extData['Rot_headDir_Y_mid'] = 0
+    extData['Rot_headDir_Z_mid'] = 0
 
     # 'CAN_S_Gaze_ROI', 'CAN_S_Gaze_ROI_X', 'CAN_S_Gaze_ROI_Y',
     # 'MS_S_Head_rot_X', 'MS_S_Head_rot_Y', 'MS_S_Head_rot_Z',
@@ -481,12 +490,23 @@ def retcalcuate_head_eye_direction(extData):
         rot2_mid = eulerAnglesToRotationMatrix(mideye_roll_pitch_yaw_rad)
 
         print('rot2_l',rot2_l)
+        # headDir_r = np.dot(rot2_mid,[1,0,0]) * np.dot(rt, [1, 0, 0])
         headDir_l = np.dot(rot2_l, np.dot(rt, [1, 0, 0]))
         # headDir_l = np.dot(rt, np.dot(rot2_l, [1, 0, 0]))
         headDir_r = np.dot(rot2_r, np.dot(rt, [1, 0, 0]))
+        # headDir_r = np.dot(rt, np.dot(rot2_r, [1, 0, 0]))
         headDir_mid = np.dot(rot2_mid, np.dot(rt, [1, 0, 0]))
+        # headDir_mid = np.dot(rt, np.dot(rot2_mid, [1, 0, 0]))
 
+        headDir_l = np.dot(np.dot(rot2_l , rt), [1,0,0])
+        headDir_r = np.dot(np.dot(rot2_r , rt), [1,0,0])
+        headDir_mid = np.dot(np.dot(rot2_mid , rt), [1,0,0])
+        # print(headDir_mid)
+        # print(rotationMatrixToEulerAngles(headDir_mid))
+        # print(rotationMatrixToEulerAngles(headDir_mid)*rad2Deg)
+        # np.dot(rot2_mid, np.dot(rt, [1, 0, 0]))
         print('headDir_l',headDir_l)
+        # print(1/0)
         extData.loc[tindex, 'headDir_X_L'] = headDir_l[0]
         extData.loc[tindex, 'headDir_Y_L'] = headDir_l[1]
         extData.loc[tindex, 'headDir_Z_L'] = headDir_l[2]
@@ -496,6 +516,22 @@ def retcalcuate_head_eye_direction(extData):
         extData.loc[tindex, 'headDir_X_mid'] = headDir_mid[0]
         extData.loc[tindex, 'headDir_Y_mid'] = headDir_mid[1]
         extData.loc[tindex, 'headDir_Z_mid'] = headDir_mid[2]
+        aaa = changeRotation_unitvec2radian_check2('RPY', headDir_l, 'RPY') * rad2Deg
+        bbb = changeRotation_unitvec2radian_check2('RPY', headDir_r, 'RPY') * rad2Deg
+        ccc = changeRotation_unitvec2radian_check2('RPY', headDir_mid, 'RPY') * rad2Deg
+        print('aaa',aaa)
+        print('bbb',bbb)
+        print('ccc',ccc)
+        extData.loc[tindex,'Rot_headDir_X_L'] = aaa[0]
+        extData.loc[tindex,'Rot_headDir_Y_L'] = aaa[1]
+        extData.loc[tindex,'Rot_headDir_Z_L'] = aaa[2]
+        extData.loc[tindex,'Rot_headDir_X_R'] = bbb[0]
+        extData.loc[tindex,'Rot_headDir_Y_R'] = bbb[1]
+        extData.loc[tindex,'Rot_headDir_Z_R'] = bbb[2]
+        extData.loc[tindex,'Rot_headDir_X_mid'] = ccc[0]
+        extData.loc[tindex,'Rot_headDir_Y_mid'] = ccc[1]
+        extData.loc[tindex,'Rot_headDir_Z_mid'] = ccc[2]
+
     return extData
 
 def calc_match_roi(p0, p1, p3, p2, camPlaneOrthVector, pointOnPlan, headDir, headPos):
@@ -510,7 +546,7 @@ def calc_match_roi(p0, p1, p3, p2, camPlaneOrthVector, pointOnPlan, headDir, hea
     head_vector = np.dot(eulerAnglesToRotationMatrix(np.array([0, 0, math.pi])), headDir).round(5)
     ret_sameDirect = bcheck_match.is_same_direction(tview_point2, head_vector, headPos)
     print("ret_match", ret_match, 'ret_sameDirect', ret_sameDirect)
-    print('각도', changeRotation_unitvec2radian_check2('RPY', headDir, 'RPY') * rad2Deg)
+    # print('각도', changeRotation_unitvec2radian_check2('RPY', headDir, 'RPY') * rad2Deg)
     if (ret_match == True and ret_sameDirect == True):
         return True, tview_point2
     return False, np.array([0,0,0])
@@ -546,6 +582,9 @@ def check_match_roi(extData, ret_ExtROI):
         headPos_RE = np.array((extData.loc[tindex, 'MS_S_Gaze_RE_Center_X'],
                             extData.loc[tindex, 'MS_S_Gaze_RE_Center_Y'],
                             extData.loc[tindex, 'MS_S_Gaze_RE_Center_Z']))
+        # headPos = headPos - np.array([0,0,80])
+        # headPos_LE = headPos_LE - np.array([0,0,80])
+        # headPos_RE = headPos_RE - np.array([0,0,80])
 
         # headRot = np.array((extData.loc[tindex, 'MS_S_Head_rot_X'], extData.loc[tindex, 'MS_S_Head_rot_Y'], extData.loc[tindex, 'MS_S_Head_rot_Z']))
         # rt_2 = np.dot(eulerAnglesToRotationMatrix(np.array([0, 0, math.pi])), np.array([1, 1, 1])).round(5)
@@ -592,13 +631,13 @@ def check_match_roi(extData, ret_ExtROI):
                 extData.loc[tindex, 'intersect_x_le'] = point_mapping_l[0]
                 extData.loc[tindex, 'intersect_y_le'] = point_mapping_l[1]
                 extData.loc[tindex, 'intersect_z_le'] = point_mapping_l[2]
-            # ret_check_r, point_mapping_r = calc_match_roi(p0, p1, p3, p2, camPlaneOrthVector, pointOnPlan, headDir_r, headPos_RE)
-            # if(ret_check_r == True):
-            #     extData.loc[tindex, 'roi_idx_re'] = extData.loc[tindex, 'roi_idx_re'] +'*'+ str(troi_id)
-            #     extData.loc[tindex, 'roi_name_re'] = extData.loc[tindex, 'roi_name_re'] +'*'+ troi_name
-            #     extData.loc[tindex, 'intersect_x_re'] = point_mapping_r[0]
-            #     extData.loc[tindex, 'intersect_y_re'] = point_mapping_r[1]
-            #     extData.loc[tindex, 'intersect_z_re'] = point_mapping_r[2]
+            ret_check_r, point_mapping_r = calc_match_roi(p0, p1, p3, p2, camPlaneOrthVector, pointOnPlan, headDir_r, headPos_RE)
+            if(ret_check_r == True):
+                extData.loc[tindex, 'roi_idx_re'] = extData.loc[tindex, 'roi_idx_re'] +'*'+ str(troi_id)
+                extData.loc[tindex, 'roi_name_re'] = extData.loc[tindex, 'roi_name_re'] +'*'+ troi_name
+                extData.loc[tindex, 'intersect_x_re'] = point_mapping_r[0]
+                extData.loc[tindex, 'intersect_y_re'] = point_mapping_r[1]
+                extData.loc[tindex, 'intersect_z_re'] = point_mapping_r[2]
             # tview_point = intersectionWithPlan(headPos, headDir_l, camPlaneOrthVector, pointOnPlan)
             # print(' ','tview_point', tview_point)
             #
@@ -635,8 +674,8 @@ def rendering_roi_with_head_gaze(pROI, extData):
     ax3 = fig.add_subplot(111, projection='3d')
 
     plt.title('3D Target ROI')
-    for i in pROI:
-        print(i)
+    # for i in pROI:
+    #     print(i)
 
     for i in pROI.index:
         # print(pROI.tID[i])
@@ -694,13 +733,31 @@ def rendering_roi_with_head_gaze(pROI, extData):
     plt.show()
     pass
 
+def save_csvfile(tdatas, filename):
+    print("//////////", funcname(), "//////////")
+    if (tdatas.empty is True):
+        print("저장할 데이터가 없습니다.")
+        return
+    tdata = tdatas.copy()
+    tfile = os.path.splitext(filename)
+
+    for num in range(100):
+        tfilename = '%s' % (tfile[len(tfile) - 2]) + '%03d' % (num) + tfile[len(tfile) - 1]
+        if not os.path.exists(tfilename):
+             break
+    print("파일을 저장합니다.", tfilename)
+    tdata.to_csv(tfilename, mode='w', index=False, header=True, sep=',', quotechar=" ", float_format='%.4f')
+    pass
+
 if __name__ == '__main__':
     print("\n\n\n test/////////////////////")
     if(1):
         sys.stdout = open('DebugLog.txt', 'w')
     if(1):
-        inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
+        # inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
         # inputPath_GT = "./refer/GT_3531_96_670222_0001_small.csv"
+        inputPath_GT = "./refer/GT/3810_10_811709_0001_all.csv"
+
 
         inputPath_ROI = "./refer/roi_config.json"
         # roi_config.json
@@ -715,8 +772,9 @@ if __name__ == '__main__':
 
         print('\n\n',ret_ExtGT_with_direction)
         ret_match = check_match_roi(ret_ExtGT_with_direction, ret_ExtROI)
-        ret_match.to_csv("filename.csv", mode='w', index=False, header=False, sep=',', quotechar=" ",
-                         float_format='%.4f')
+        save_csvfile(ret_match, "./filename.csv")
+        # ret_match.to_csv("filename.csv", mode='w', index=False, header=False, sep=',', quotechar=" ",
+        #                  float_format='%.4f')
 
         rendering_roi_with_head_gaze(ret_ExtROI, ret_match)
         # ret_match.to_csv("filename.csv", mode='w', index=False, header=False, sep=',', quotechar=" ", float_format='%.4f')
