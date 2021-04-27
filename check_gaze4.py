@@ -383,7 +383,7 @@ def extract_availData_from_3D_target_ROI(pROI):
 def extract_availData_from_GT(inputPath_GT):
     print("//////////", funcname(), "//////////")
     extGT = pd.read_csv(inputPath_GT)
-    df_extGT = extGT[['f_frame_counter_left_camera', 'CAN_S_Gaze_ROI', 'CAN_S_Gaze_ROI_X', 'CAN_S_Gaze_ROI_Y',
+    df_extGT = extGT[['f_frame_counter_left_camera', 'CAN_S_Gaze_ROI', 'MS_S_Gaze_ROI_X_Raw', 'MS_S_Gaze_ROI_Y_Raw',
                           'MS_S_Head_rot_X', 'MS_S_Head_rot_Y', 'MS_S_Head_rot_Z',
                           'HSVL_MS_S_Head_Pos_Veh_X', 'HSVL_MS_S_Head_Pos_Veh_Y', 'HSVL_MS_S_Head_Pos_Veh_Z',
                           'MS_S_Gaze_LE_Center_X', 'MS_S_Gaze_LE_Center_Y', 'MS_S_Gaze_LE_Center_Z',
@@ -431,8 +431,8 @@ def retcalcuate_head_eye_direction(extData):
         print(tindex)
         tframecnt = extData.loc[tindex, 'f_frame_counter_left_camera']
         troi_result = extData.loc[tindex, 'CAN_S_Gaze_ROI']
-        troi_x = extData.loc[tindex, 'CAN_S_Gaze_ROI_X']
-        troi_y = extData.loc[tindex, 'CAN_S_Gaze_ROI_Y']
+        troi_x = extData.loc[tindex, 'MS_S_Gaze_ROI_X_Raw']
+        troi_y = extData.loc[tindex, 'MS_S_Gaze_ROI_Y_Raw']
         thead_pos = np.array((extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_X'], extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Y'], extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Z']))
         thead_rot = np.array((extData.loc[tindex, 'MS_S_Head_rot_X'], extData.loc[tindex, 'MS_S_Head_rot_Y'], extData.loc[tindex, 'MS_S_Head_rot_Z']))
         tgaze_pos_l = np.array((extData.loc[tindex, 'MS_S_Gaze_LE_Center_X'], extData.loc[tindex, 'MS_S_Gaze_LE_Center_Y'], extData.loc[tindex, 'MS_S_Gaze_LE_Center_Z']))
@@ -585,7 +585,7 @@ def check_match_roi(extData, ret_ExtROI, errDist = 0):
         headPos_RE = np.array((extData.loc[tindex, 'MS_S_Gaze_RE_Center_X'],
                             extData.loc[tindex, 'MS_S_Gaze_RE_Center_Y'],
                             extData.loc[tindex, 'MS_S_Gaze_RE_Center_Z']))
-        # headPos = headPos + np.array([ -0, 80 , 0]) #lip
+        # headPos = headPos + np.array([ 0, -140 , -140]) #lip
         # headPos_LE = headPos_LE + np.array([ 0, 0, 0])
         # headPos_RE = headPos_RE + np.array([ 0, 0, 0])
 
@@ -596,15 +596,20 @@ def check_match_roi(extData, ret_ExtROI, errDist = 0):
         # headrot_unitvec = np.dot(rt, [1, 0, 0])
 
         for tidx in ret_ExtROI.index.values:
+            # offset = 0
             # print(tidx)
             # print(ret_ExtROI['tID'], ret_ExtROI['tTargetName'], ret_ExtROI['ttop_left'], ret_ExtROI['ttop_right'], ret_ExtROI['tbottom_left'], ret_ExtROI['tbottom_right'])
             print(' ',tidx, ret_ExtROI['tID'][tidx], ret_ExtROI['tTargetName'][tidx])
             troi_id = ret_ExtROI["tID"][tidx]
             troi_name = ret_ExtROI["tTargetName"][tidx]
-            p0 = np.array(ret_ExtROI["ttop_left"][tidx]) * 1000  + np.array([0,-errDist,errDist])
-            p1 = np.array(ret_ExtROI["ttop_right"][tidx]) * 1000 + np.array([0,errDist,errDist])
-            p2 = np.array(ret_ExtROI["tbottom_left"][tidx]) * 1000 + np.array([0,-errDist,-errDist])
-            p3 = np.array(ret_ExtROI["tbottom_right"][tidx]) * 1000 + np.array([0,errDist,-errDist])
+            if(troi_id == 5 or troi_id == 7 or troi_id == 8):
+                offset = errDist
+            else:
+                offset = 0
+            p0 = np.array(ret_ExtROI["ttop_left"][tidx]) * 1000  + np.array([0,-offset,offset])
+            p1 = np.array(ret_ExtROI["ttop_right"][tidx]) * 1000 + np.array([0,offset,offset])
+            p2 = np.array(ret_ExtROI["tbottom_left"][tidx]) * 1000 + np.array([0,-offset,-offset])
+            p3 = np.array(ret_ExtROI["tbottom_right"][tidx]) * 1000 + np.array([0,offset,-offset])
 
             camPlaneOrthVector = np.cross((p3 - p1), (p2 - p3))/np.linalg.norm(np.cross((p3 - p1), (p2 - p3)))
             pointOnPlan = (p0+p1+p2+p3)/4
@@ -685,7 +690,7 @@ def rendering_roi_with_head_gaze(pROI, extData):
     # for i in pROI:
     #     print(i)
 
-    for i in pROI.index:
+    for i in pROI.index[0:4]:
         # print(pROI.tID[i])
         # print(pROI.tTargetName[i])
         # print(pROI.ttop_left[i][0],pROI.ttop_left[i][1],pROI.ttop_left[i][2])
@@ -763,9 +768,9 @@ if __name__ == '__main__':
         sys.stdout = open('DebugLog.txt', 'w')
     if(1):
         # inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
-        inputPath_GT = "./refer/GT_3531_96_670222_0001_small.csv"
+        # inputPath_GT = "./refer/GT_3531_96_670222_0001_small.csv"
         # inputPath_GT = "./refer/GT_3531_96_670222_0001_mix.csv"
-        # inputPath_GT = "./refer/GT/3810_10_811709_0001_all.csv"
+        inputPath_GT = "./refer/GT/3810_10_811709_0001_all.csv"
         # inputPath_GT = "./refer/GT/3810_20_811728_0001_all.csv"
         # inputPath_GT = "./refer/GT/3810_30_811746_0001_all.csv"
         # inputPath_GT = "./refer/GT/3810_40_811766_0001_all.csv"
@@ -790,7 +795,7 @@ if __name__ == '__main__':
         ret_ExtGT_with_direction = retcalcuate_head_eye_direction(ret_ExtGT)
 
         print('\n\n',ret_ExtGT_with_direction)
-        ret_match = check_match_roi(ret_ExtGT_with_direction, ret_ExtROI, 0)
+        ret_match = check_match_roi(ret_ExtGT_with_direction, ret_ExtROI, 150)
         save_csvfile(ret_match, "./filename.csv")
         # ret_match.to_csv("filename.csv", mode='w', index=False, header=False, sep=',', quotechar=" ",
         #                  float_format='%.4f')
@@ -800,292 +805,3 @@ if __name__ == '__main__':
 
 
     print(1/0)
-
-    # 1번 샘플 - count frame 45282
-    # roi ID, roi x, roi y
-    # 3 10 80
-    # "_comment": "모름",
-    # "id": 3,
-    # "obj_params":
-    # {
-    # "top_left": [1.316, -0.127, 0.985],     1224.3,    -800,    975.076
-    # "top_right": [1.316, 0.127, 0.985],    1224.3,    100,    975.076
-    # "bottom_left": [1.316, -0.127, 0.905]    650,    -800,    630
-
-    #Headrot_veh x, y, z (1.5 -9.3 1.5)  /
-    #Headpos_veh 1501 -422 857         /
-
-    #lpupil 1501 -453 859 / 0 -9.8 0.2
-    #rpupil 1498 -392 861 / 0 -9.8 0.2
-
-    p0 = top_left = np.array([1224.3,    -800,    975.076])
-    p1 = top_right = np.array([1224.3,    100,    975.076])
-    p2 = bottom_left = np.array([650,    -800,    630])
-    # p0 = top_left = np.array([1316, -127, 985])
-    # p1 = top_right = np.array([1316, 127, 985])
-    # p2 = bottom_left = np.array([1316, -127, 905])
-    p3 = bottom_right = bottom_left + top_right - top_left
-
-    print("top_left",top_left)
-    print("top_right",top_right)
-    print("bottom_left",bottom_left)
-    print("bottom_right",bottom_right,'\n')
-    lpupil_3d = np.array([1501, -453, 859])
-    rpupil_3d = np.array([1498, -392, 861])
-
-    # print('test', (top_left - lpupil_3d)/zAxis)
-    # translationVect = zAxis*251 + (top_left - lpupil_3d)
-    # print('translationVect', translationVect)
-    # translationVect2 = zAxis*-251 + lpupil_3d
-    # print('translationVect2', translationVect2)
-
-    print("1", top_left - lpupil_3d)
-    print("2", top_right - lpupil_3d)
-    print("3", bottom_left - lpupil_3d)
-    print("4", bottom_right - lpupil_3d)
-
-    headPos3D_meter = np.array([1501, -422, 857])
-    headOri_radian = np.array([1.5, -9.3, 1.5]) * deg2Rad
-    print("headOri", headOri_radian)
-    # headPos3D_meter = np.array([1499.255194,	-427.7108402,	858.7503376])
-    # headOri_radian = np.array([2.844070379,	-9.817217123,	3.68428392]) * deg2Rad
-    # origin = rpupil_3d
-    origin = (headPos3D_meter)
-
-    lpupil_roll_pitch_yaw = np.array([0, -9.8, 0.2])
-    lpupil_roll_pitch_yaw_rad = lpupil_roll_pitch_yaw * deg2Rad
-    # lpupil_roll_pitch_yaw = np.array([0, -9.8, 0.2])
-    rpupil_roll_pitch_yaw = np.array([0, -9.8, 0.2])
-
-    rt_2 = np.dot(eulerAnglesToRotationMatrix(np.array([0, 0, math.pi])), np.array([1, 1, 1])).round(5)
-    rt = eulerAnglesToRotationMatrix(headOri_radian * rt_2)
-    rot2 = eulerAnglesToRotationMatrix(lpupil_roll_pitch_yaw_rad)
-
-    print('rot2',rot2)
-    # headDir = np.dot(rot2, np.dot(rt, [1, 0, 0]))
-    headDir = np.dot(rt, np.dot(rot2, [1, 0, 0]))
-    # headDir = np.array([0.5030, -0.8384, -0.20961])/np.linalg.norm([0.5030, -0.8384, -0.20961])
-    # headDir = np.array([0.94451975, 0.32716034, 0.02913004 ])
-    print('headPos3D_meter',headPos3D_meter)
-    print('headDir',headDir)
-    print('headOri_deg',headOri_radian*rad2Deg)
-    print('lpupil_deg',lpupil_roll_pitch_yaw)
-    # headDir = np.dot(rt, [0, 0, 1])
-    camPlaneOrthVector = np.cross((p3 - p1), (p2 - p3))/np.linalg.norm(np.cross((p3 - p1), (p2 - p3)))
-    pointOnPlan = (p0+p1+p2+p3)/4
-
-    gazeVector_RPY = changeRotation_pitchyaw2unitvec('RPY', lpupil_roll_pitch_yaw_rad, 'RPY')
-
-    #최단거리
-    d = np.dot(camPlaneOrthVector, p0)
-    t = -(np.dot(origin,camPlaneOrthVector)+d)/ np.dot(gazeVector_RPY,camPlaneOrthVector)
-    pResult = origin - np.dot(t,gazeVector_RPY)
-
-
-
-    print('d',d)
-    print('t',t)
-    print('pResult',pResult)
-    print('camPlaneOrthVector',camPlaneOrthVector)
-
-    print('pointOnPlan',pointOnPlan)
-
-    tview_point = intersectionWithPlan(origin, headDir, camPlaneOrthVector, pointOnPlan)
-    print('tview_point', tview_point)
-
-    zAxis = np.array([gazeVector_RPY[0], gazeVector_RPY[1], gazeVector_RPY[2]])
-    print('zAxis', zAxis)
-
-    print('fffffffffffffinal',changeRotation_unitvec2radian_check2('RPY', headDir, 'RPY')*rad2Deg)
-
-    #최단거리
-    dorigin = np.dot(camPlaneOrthVector, origin)
-    print('**origin*distance=', dorigin)
-    d0 = distance_xyz(origin, p0)
-    d1 = distance_xyz(origin, p1)
-    d2 = distance_xyz(origin, p2)
-    d3 = distance_xyz(origin, p3)
-    print('******distance=', d0, d1, d2 ,d3)
-    df = distance_xyz(origin, -tview_point)
-    print('*final**distance=', df)
-    #
-    # print(rotationMatrixToEulerAngles(rt)*rad2Deg)
-    # test = np.eye(3)
-    # test[0:3,0] = [9.85401895e-01,  3.43971548e-03,  1.70209499e-01]
-    # print('test',test)
-    # print(rotationMatrixToEulerAngles(test)*rad2Deg)
-    #
-    pOrigin = origin
-    vDir = zAxis
-
-    pp = pOrigin -  headDir * 461.12
-    print('pp',pp)
-    # np.dot(plain_n, pp-
-
-
-    tempVec = np.array([0.9 , -2.0 , -0.5])
-    tempVecNorm = tempVec / np.linalg.norm(tempVec)
-    print("\n\ntempVecNorm",tempVecNorm)
-    pp2 = pOrigin -  tempVecNorm * 460.8
-    print("pp2",pp2)
-
-    print('user input unitvec2radian',changeRotation_unitvec2radian_check2('RPY',np.array([0.5030, -0.8384, -0.20961]) ,'RPY')*rad2Deg)
-
-    print(1/0)
-
-    beta_tilt = lpupil_roll_pitch_yaw[1] * deg2Rad
-    alpha_yaw = lpupil_roll_pitch_yaw[2] * deg2Rad
-    gazeVector = [math.sin(alpha_yaw) * math.cos(beta_tilt), math.sin(beta_tilt),
-                       math.cos(alpha_yaw) * math.cos(beta_tilt)]
-    # gazeVector = lpupil_roll_pitch_yaw * deg2Rad
-    print('gazeVector_pitch_yaw_roll', gazeVector)
-
-
-    origin = rpupil_3d
-    # origin = (headPos3D_meter)
-
-    pitch_yaw_roll = changeRotation_unitvec2radian_check('PYR',gazeVector,'PYR')
-    _, roll_pitch_yaw = changeAxis_opencv2daimler(np.array([0, 0, 0]), pitch_yaw_roll)
-    print('roll_pitch_yaw', roll_pitch_yaw.T)
-
-    print('pitch_yaw_roll', pitch_yaw_roll * rad2Deg)
-    print('roll_pitch_yaw', roll_pitch_yaw * rad2Deg,'\n')
-    # roll_pitch_yaw = lpupil_roll_pitch_yaw * deg2Rad
-
-    rt = eulerAnglesToRotationMatrix(headOri_radian)
-    # rt1 = eulerAnglesToRotationMatrix(np.array([0, 0, 0]))
-    # rt = rt1
-    # rot2 = np.eye(3)
-    rot2 = eulerAnglesToRotationMatrix(roll_pitch_yaw)
-    print('rot2',rot2)
-    headDir = np.dot(rot2, np.dot(rt, [1, 0, 0]))
-    print('headDir',headDir)
-    # headDir = np.dot(rt, [0, 0, 1])
-    camPlaneOrthVector = np.cross((p3 - p1), (p2 - p3))/np.linalg.norm(np.cross((p3 - p1), (p2 - p3)))
-    pointOnPlan = (p0+p1+p2+p3)/4
-
-    #최단거리
-    d = np.dot(camPlaneOrthVector, p0)
-    t = -(np.dot(origin,camPlaneOrthVector)+d)/ np.dot(gazeVector,camPlaneOrthVector)
-    pResult = origin + np.dot(t,gazeVector)
-    print('d',d)
-    print('t',t)
-    print('pResult',pResult)
-    print('camPlaneOrthVector',camPlaneOrthVector)
-
-    print('pointOnPlan',pointOnPlan)
-
-    tview_point = intersectionWithPlan(origin, headDir, camPlaneOrthVector, pointOnPlan)
-    print('tview_point', tview_point)
-
-    zAxis = np.array([gazeVector[0], gazeVector[1], gazeVector[2]])
-    print('zAxis', zAxis)
-
-
-
-    # print("gaze_scale", zAxis * 1000)
-
-    n = np.cross((p2 - p0) , (p1 - p0))
-    n2 = np.cross((p2 - p1) , (p1 - p0))
-    plane_n = np.cross((p2 - p1), (p3 - p0))
-
-    n2 = (p2 - p0)
-    n3 = (p1 - p2)
-    test = n2 * n3 / np.linalg.norm(n2 * n3)
-
-    # np.linalg.norm
-    print('n', n)
-    print('n2', n2, n3)
-    print('plain',plane_n)
-    print('test',test)
-    print(np.cross((1,0,1), (-2,2,1)), np.dot((1,0,1), (-2,2,1)))
-
-    pOrigin = lpupil_3d
-    vDir = zAxis
-
-    pp = pOrigin -  headDir * 195.8
-    print('pp',pp)
-    # np.dot(plain_n, pp-
-
-
-    tempVec = np.array([0.9 , -2.0 , -0.5])
-    tempVecNorm = tempVec / np.linalg.norm(tempVec)
-    print("\n\ntempVecNorm",tempVecNorm)
-    pp2 = pOrigin -  tempVecNorm * 460.8
-    print("pp2",pp2)
-
-    # v_result = plane_p0 - line_origin
-    # f_result = np.dot(v_result, plane_n)
-    # f_t = f_result / np.dot(line_vDir, plane_n)
-    # f_s = line_origin + line_vDir_scale(f_t)
-
-    # origin = lpupil_3d
-    # # origin = (headPos3D_meter)
-    #
-    # print('\n\n')
-    # alpha_yaw = math.atan(nR_unitvec[0] / nR_unitvec[2])
-    # beta_tilt = math.asin(nR_unitvec[1])
-    # print('yaw',math.atan(nR_unitvec[0] / nR_unitvec[2]), alpha_yaw*rad2Deg)
-    # print('tilt',math.asin(nR_unitvec[1]), beta_tilt*rad2Deg)
-    # print('r3', [math.sin(alpha_yaw)*math.cos(beta_tilt), math.sin(beta_tilt), math.cos(alpha_yaw)*math.cos(beta_tilt) ])
-
-
-
-    _,pitch_yaw_roll_vector = changeAxis_daimler2opencv(np.array([0,0,0]),-tempVecNorm)
-
-
-    # roll_pitch_yaw_vector = tempVecNorm
-    # pitch_yaw_roll_vector = np.array([roll_pitch_yaw_vector[1], roll_pitch_yaw_vector[2], roll_pitch_yaw_vector[0]])
-    print('pitch_yaw_roll_vector',pitch_yaw_roll_vector.T)
-    pitch_yaw_roll = changeRotation_unitvec2radian_check('PYR', pitch_yaw_roll_vector,'PYR')
-    print('pitch_yaw_roll', pitch_yaw_roll * rad2Deg)
-    test2= changeRotation_unitvec2radian_check2('PYR', pitch_yaw_roll_vector,'PYR')
-    print('test2', test2 * rad2Deg)
-
-    _, roll_pitch_yaw = changeAxis_opencv2daimler(np.array([0,0,0]), pitch_yaw_roll)
-    # roll_pitch_yaw = np.array([pitch_yaw_roll[2], -pitch_yaw_roll[0], pitch_yaw_roll[1]])
-    print('roll_pitch_yaw_rad', roll_pitch_yaw ,'\n')
-    print('roll_pitch_yaw_deg', roll_pitch_yaw * rad2Deg,'\n')
-    # # roll_pitch_yaw = lpupil_roll_pitch_yaw * deg2Rad
-    #
-    # rt = eulerAnglesToRotationMatrix(headOri_radian)
-    rt1 = eulerAnglesToRotationMatrix(np.array([0, 0, 0]))
-    rt = rt1
-    # rot2 = np.eye(3)
-    rot2 = eulerAnglesToRotationMatrix(roll_pitch_yaw)
-    # rot2 = eulerAnglesToRotationMatrix(np.array([-roll_pitch_yaw[0],-roll_pitch_yaw[1],roll_pitch_yaw[2]]))
-    print('rot2',rot2)
-    headDir = np.dot(rot2, np.dot(rt, [1, 0, 0]))
-    print('headDir',headDir)
-
-
-    tview_point5 = intersectionWithPlan(origin, headDir, camPlaneOrthVector, pointOnPlan)
-    print('tview_point5', tview_point5)
-
-
-    # roll_pitch_yaw_vector = tempVecNorm
-    # pitch_yaw_roll_vector = np.array([roll_pitch_yaw_vector[1], roll_pitch_yaw_vector[2], roll_pitch_yaw_vector[0]])
-    # print('pitch_yaw_roll_vector',pitch_yaw_roll_vector* rad2Deg)
-    # pitch_yaw_roll = changeRotation_unitvec2radian_check(pitch_yaw_roll_vector)
-    # roll_pitch_yaw = np.array([pitch_yaw_roll[2], -pitch_yaw_roll[0], pitch_yaw_roll[1]])
-    # print('pitch_yaw_roll', pitch_yaw_roll * rad2Deg)
-    # print('roll_pitch_yaw_rad', roll_pitch_yaw ,'\n')
-    # print('roll_pitch_yaw_deg', roll_pitch_yaw * rad2Deg,'\n')
-    # # # roll_pitch_yaw = lpupil_roll_pitch_yaw * deg2Rad
-    # #
-    # # rt = eulerAnglesToRotationMatrix(headOri_radian)
-    # rt1 = eulerAnglesToRotationMatrix(np.array([0, 0, 0]))
-    # rt = rt1
-    # # rot2 = np.eye(3)
-    # rot2 = eulerAnglesToRotationMatrix(roll_pitch_yaw)
-    # print('rot2',rot2)
-    # headDir = np.dot(rot2, np.dot(rt, [1, 0, 0]))
-    # print('headDir',headDir)
-
-    print('start',np.array([-1,2,-3]))
-    _,zzz = changeAxis_daimler2opencv(np.array([0,0,0]),np.array([-1,2,-3]))
-    print('zzz',zzz.T)
-    _, zzz2 = changeAxis_opencv2daimler(np.array([0, 0, 0]), zzz)
-    print('zzz2', zzz2.T)
-    _, zzz3 = changeAxis_daimler2opencv(np.array([0, 0, 0]), zzz2)
-    print('zzz3', zzz3.T)

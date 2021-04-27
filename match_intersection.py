@@ -5,44 +5,14 @@ import numpy as np
 import math
 import sys
 
+# import util_calc as ut
+from util_calc import *
+
+
 C_PRINT_ENABLE = 1
 
-deg2Rad = math.pi/180
-rad2Deg = 180/math.pi
-
-
-def funcname():
-    return sys._getframe(1).f_code.co_name + "()"
-
-def callername():
-    return sys._getframe(2).f_code.co_name + "()"
-
-def eulerAnglesToRotationMatrix(theta):
-    R_x = np.array([[1, 0, 0],
-        [0, math.cos(theta[0]), -math.sin(theta[0])],
-        [0, math.sin(theta[0]), math.cos(theta[0])]])
-    R_y = np.array([[math.cos(theta[1]), 0, math.sin(theta[1])],
-        [0, 1, 0],
-        [-math.sin(theta[1]), 0, math.cos(theta[1])]])
-    R_z = np.array([[math.cos(theta[2]), -math.sin(theta[2]), 0],
-        [math.sin(theta[2]), math.cos(theta[2]), 0],
-        [0, 0, 1]])
-    R = np.dot(R_z, np.dot(R_y, R_x))
-    return R
-
-def rotationMatrixToEulerAngles(R):
-    sy = math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
-    singular = sy < 1e-6
-    if not singular:
-        x = math.atan2(R[2, 1], R[2, 2])
-        y = math.atan2(-R[2, 0], sy)
-        z = math.atan2(R[1, 0], R[0, 0])
-    else:
-        x = math.atan2(-R[1, 2], R[1, 1])
-        y = math.atan2(-R[2, 0], sy)
-        z = 0
-
-    return np.array([x, y, z])
+# deg2Rad = math.pi/180
+# rad2Deg = 180/math.pi
 
 class match_intersection_roi(object):
 	def __del__(self):
@@ -71,15 +41,12 @@ class match_intersection_roi(object):
 		return ret >= 0
 
 	def is_sameside_on_line(self, a, b, p, q):
-		print('\na',a, 'b',b,'p',p,'q',q)
-		# x = (b - a) * (p - a)
-		# y = (b - a) * (q - a)
-		# print('x',x,'y',y, 'x @ y >= 0',x @ y, x @ y >= 0)
+		# print('\na',a, 'b',b,'p',p,'q',q)
 
 		c1 = np.cross(b - a, p - a)
 		c2 = np.cross(b - a, q - a)
-		print('c1',c1,'c2',c2, 'c1*c2 >= 0',c1 * c2 , np.dot(c1,c2), np.dot(c1,c2) >= 0)
-		print('')
+		# print('c1',c1,'c2',c2, 'c1*c2 >= 0',c1 * c2 , np.dot(c1,c2), np.dot(c1,c2) >= 0)
+		# print('')
 		return np.dot(c1, c2) >= 0
 
 	def normal_vector_from_plane(self, p0, p1, p2):
@@ -117,10 +84,8 @@ class match_intersection_roi(object):
 	def is_same_on_plane(self, p0, p1, p2, pnt, epsilon=3):
 		tnormal_basic_plane =  self.normal_vector_from_plane(p0,p1,p2)
 		tnormal_test_plane = self.normal_vector_from_plane(p0,p1,pnt)
-		print("  tnormal_basic_plane",tnormal_basic_plane,"\n  tnormal_test_plane",tnormal_test_plane)
+		# print("  tnormal_basic_plane",tnormal_basic_plane,"\n  tnormal_test_plane",tnormal_test_plane)
 		print(" ",np.round(tnormal_basic_plane,epsilon) == np.round(tnormal_test_plane,epsilon))
-		# print(" ",all(np.round(tnormal_basic_plane,epsilon) == np.round(tnormal_test_plane,epsilon)))
-		# print(np.dot(tnormal_basic_plane,tnormal_test_plane))
 		print(" ",np.round(np.dot(tnormal_basic_plane, tnormal_test_plane),epsilon))
 
 		# print('N of plane',normal_vector_from_plane(p0,p1,p2))
@@ -134,6 +99,22 @@ class match_intersection_roi(object):
 		print(" ret inside=",ret_inside,", ret_on_plane", ret_on_plane)
 		print("final",all([ret_inside, ret_on_plane]))
 		return all([ret_inside, ret_on_plane])
+
+	def line_point_min_dist(self, p, a, b):
+		# normalized tangent vector
+		d = np.divide(b - a, np.linalg.norm(b - a))
+
+		# signed parallel distance components
+		s = np.dot(a - p, d)
+		t = np.dot(p - b, d)
+
+		# clamped parallel distance
+		h = np.maximum.reduce([s, t, 0])
+
+		# perpendicular distance component
+		c = np.cross(p - a, d)
+
+		return np.hypot(h, np.linalg.norm(c))
 
 if __name__=="__main__":
 	# #Define plane
