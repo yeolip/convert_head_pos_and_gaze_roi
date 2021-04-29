@@ -119,6 +119,15 @@ class make_gaze_and_roi(object):
         print(available_df)
         return available_df
 
+    def extract_resultRoi_from_GT(self, inputPath_GT):
+        print("//////////", funcname(), "//////////")
+        extGT = pd.read_csv(inputPath_GT)
+        df_extGT = extGT[['f_frame_counter_left_camera', 'CAN_S_Gaze_ROI', 'MS_S_Gaze_ROI_X_Raw', 'MS_S_Gaze_ROI_Y_Raw']]
+        df_extGT = df_extGT.dropna()
+        # print('ret_ExtGT\n\n',ret_ExtGT)
+        print('df_extGT\n\n', df_extGT)
+        return df_extGT
+
     def extract_availData_from_GT(self, inputPath_GT):
         print("//////////", funcname(), "//////////")
         extGT = pd.read_csv(inputPath_GT)
@@ -139,14 +148,17 @@ class make_gaze_and_roi(object):
         print("//////////", funcname(), "//////////")
         # extGT = pd.read_csv(inputPath_GT)
         df_extPd = extPd[['f_frame_counter_left_camera', 'CAN_S_Gaze_ROI', 'MS_S_Gaze_ROI_X_Raw', 'MS_S_Gaze_ROI_Y_Raw',
+                              'HSVL_MS_CAN_S_Head_tracking_status',
                               'MS_S_Head_rot_X', 'MS_S_Head_rot_Y', 'MS_S_Head_rot_Z',
                               'HSVL_MS_S_Head_Pos_Veh_X', 'HSVL_MS_S_Head_Pos_Veh_Y', 'HSVL_MS_S_Head_Pos_Veh_Z',
+                              'f_gaze_le_result_valid',
                               'MS_S_Gaze_LE_Center_X', 'MS_S_Gaze_LE_Center_Y', 'MS_S_Gaze_LE_Center_Z',
                               'MS_S_Gaze_LE_VA_rot_X', 'MS_S_Gaze_LE_VA_rot_Y', 'MS_S_Gaze_LE_VA_rot_Z',
+                              'f_gaze_re_result_valid',
                               'MS_S_Gaze_RE_Center_X', 'MS_S_Gaze_RE_Center_Y', 'MS_S_Gaze_RE_Center_Z',
                               'MS_S_Gaze_RE_VA_rot_X', 'MS_S_Gaze_RE_VA_rot_Y', 'MS_S_Gaze_RE_VA_rot_Z',
                               'MS_S_Gaze_rot_X',       'MS_S_Gaze_rot_Y',     'MS_S_Gaze_rot_Z']]
-        df_extPd = df_extPd.dropna()
+        # df_extPd = df_extPd.dropna()
         # print('ret_ExtGT\n\n',ret_ExtGT)
         print('df_extPd\n\n', df_extPd)
         return df_extPd
@@ -176,14 +188,23 @@ class make_gaze_and_roi(object):
         for tindex in extData.index.values:
             # print(extData.irisHeight.loc[tindex])
             print(tindex)
+            f_detect_face = extData.loc[tindex,'HSVL_MS_CAN_S_Head_tracking_status']
+            f_detect_left_eye = extData.loc[tindex,'f_gaze_le_result_valid']
+            f_detect_right_eye = extData.loc[tindex,'f_gaze_re_result_valid']
+            if(f_detect_face == 0):
+                continue
+            if(f_detect_left_eye == 0 or f_detect_right_eye==0):
+                continue
             tframecnt = extData.loc[tindex, 'f_frame_counter_left_camera']
             troi_result = extData.loc[tindex, 'CAN_S_Gaze_ROI']
             troi_x = extData.loc[tindex, 'MS_S_Gaze_ROI_X_Raw']
             troi_y = extData.loc[tindex, 'MS_S_Gaze_ROI_Y_Raw']
             thead_pos = np.array((extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_X'], extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Y'], extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Z']))
             thead_rot = np.array((extData.loc[tindex, 'MS_S_Head_rot_X'], extData.loc[tindex, 'MS_S_Head_rot_Y'], extData.loc[tindex, 'MS_S_Head_rot_Z']))
+
             tgaze_pos_l = np.array((extData.loc[tindex, 'MS_S_Gaze_LE_Center_X'], extData.loc[tindex, 'MS_S_Gaze_LE_Center_Y'], extData.loc[tindex, 'MS_S_Gaze_LE_Center_Z']))
             tgaze_vec_l = np.array((extData.loc[tindex, 'MS_S_Gaze_LE_VA_rot_X'], extData.loc[tindex, 'MS_S_Gaze_LE_VA_rot_Y'], extData.loc[tindex, 'MS_S_Gaze_LE_VA_rot_Z']))
+
             tgaze_pos_r = np.array((extData.loc[tindex, 'MS_S_Gaze_RE_Center_X'], extData.loc[tindex, 'MS_S_Gaze_RE_Center_Y'], extData.loc[tindex, 'MS_S_Gaze_RE_Center_Z']))
             tgaze_vec_r = np.array((extData.loc[tindex, 'MS_S_Gaze_RE_VA_rot_X'], extData.loc[tindex, 'MS_S_Gaze_RE_VA_rot_Y'], extData.loc[tindex, 'MS_S_Gaze_RE_VA_rot_Z']))
             tgaze_vec_mid = np.array((extData.loc[tindex, 'MS_S_Gaze_rot_X'], extData.loc[tindex, 'MS_S_Gaze_rot_Y'], extData.loc[tindex, 'MS_S_Gaze_rot_Z']))

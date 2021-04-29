@@ -791,6 +791,22 @@ def modify_EyeGaze_craft_to_daimler(extData, tpd):
 
     return tpd
 
+def merge_gazeroi_with_mra2roi(extData, tpd):
+    extData['CAN_S_Gaze_ROI']= 0
+    extData['MS_S_Gaze_ROI_X_Raw']= 0
+    extData['MS_S_Gaze_ROI_Y_Raw']= 0
+    for tindex in extData.index.values:
+        print(tindex)
+        print(tpd.loc[tindex, 'f_frame_counter_left_camera'])
+        extData.loc[tindex, 'CAN_S_Gaze_ROI'] = tpd.loc[tindex, 'CAN_S_Gaze_ROI']
+        extData.loc[tindex, 'MS_S_Gaze_ROI_X_Raw'] = tpd.loc[tindex, 'MS_S_Gaze_ROI_X_Raw']
+        extData.loc[tindex, 'MS_S_Gaze_ROI_Y_Raw'] = tpd.loc[tindex, 'MS_S_Gaze_ROI_Y_Raw']
+
+        # = tindex - extData.index.values[0] + 1
+    print("\n\n")
+    print(tpd.f_frame_counter_left_camera)
+    return tpd
+
 # def changeRotation_unitvec2radian_check(nR_unitvec):
 #     print("//////////", funcname(), "//////////")
 #
@@ -819,99 +835,102 @@ def modify_EyeGaze_craft_to_daimler(extData, tpd):
 if __name__ == '__main__':
     if (0):
         sys.stdout = open('DebugLog.txt', 'w')
-    intrinsic_matrix = np.array([[-1479.36, 0., 640.91], [0., -1479.39, 488.959], [0., 0., -1.]])
-    distortion = np.array([-0.0897939, -0.405596, 0, 0, 0, 0, 0, 0])
+    # intrinsic_matrix = np.array([[-1479.36, 0., 640.91], [0., -1479.39, 488.959], [0., 0., -1.]])
+    # distortion = np.array([-0.0897939, -0.405596, 0, 0, 0, 0, 0, 0])
+    #
+    # # "f_version","f_frame_counter_left_camera","f_frame_counter_right_camera","f_frame_counter_virtual","f_master_counter_in","f_eye_model_generation","eye_left_partial_blockage","eye_left_blockage","MS_EyeLeftCameraLeft_old","MS_EyeLeftCameraRight_old","eye_right_partial_blockage","eye_right_blockage","MS_EyeRightCameraLeft_old","MS_EyeRightCameraRight_old","mouth_nose_partial_blockage","mouth_nose_blockage","MS_MouthNoseCameraLeft","MS_MouthNoseCameraRight","CAN_S_glasses_detected_old","CAN_S_face_detection","MS_EyeDetection","MS_S_Head_rot_X","MS_S_Head_rot_Y","MS_S_Head_rot_Z","HSVL_MS_CAN_S_Head_tracking_status","HSVL_MS_CAN_S_Head_tracking_mode","f_primary_face_landmark_camera","f_left_position_valid0","f_left_positionX0","f_left_positionY0","f_left_position_valid1","f_left_positionX1","f_left_positionY1","f_left_position_valid2","f_left_positionX2","f_left_positionY2","f_left_position_valid3","f_left_positionX3","f_left_positionY3","f_left_position_valid4","f_left_positionX4","f_left_positionY4","f_left_position_valid5","f_left_positionX5","f_left_positionY5","f_left_position_valid6","f_left_positionX6","f_left_positionY6","f_right_position_valid0","f_right_positionX0","f_right_positionY0","f_right_position_valid1","f_right_positionX1","f_right_positionY1","f_right_position_valid2","f_right_positionX2","f_right_positionY2","f_right_position_valid3","f_right_positionX3","f_right_positionY3","f_right_position_valid4","f_right_positionX4","f_right_positionY4","f_right_position_valid5","f_right_positionX5","f_right_positionY5","f_right_position_valid6","f_right_positionX6","f_right_positionY6","CAN_glint_detected","f_gaze_le_result_valid","MS_S_Gaze_LE_VA_rot_X","MS_S_Gaze_LE_VA_rot_Y","MS_S_Gaze_LE_VA_rot_Z","MS_S_Gaze_LE_Center_X","MS_S_Gaze_LE_Center_Y","MS_S_Gaze_LE_Center_Z","f_gaze_re_result_valid","MS_S_Gaze_RE_VA_rot_X","MS_S_Gaze_RE_VA_rot_Y","MS_S_Gaze_RE_VA_rot_Z","MS_S_Gaze_RE_Center_X","MS_S_Gaze_RE_Center_Y","MS_S_Gaze_RE_Center_Z","CAN_eye_closure_left","CAN_eye_closure_left_conf","CAN_eye_closure_right","CAN_eye_closure_right_conf","CAN_eye_closure","MS_eye_closed","CAN_long_eyeclosure","f_long_eyeclosure_counter","MS_eye_closed_AAS","MS_PERCLOS_AAS","MS_PERCLOS_AAS_conf","MS_PERCLOS_strict","MS_eye_closed_strict","CAN_eye_blink_conf","MS_Eye_blink_freq_conf","MS_Eye_blink_freq","CAN_eye_blink_t_closing","CAN_eye_blink_t_opening","CAN_eye_blink_duration","CAN_eye_blink_A_closing","CAN_eye_blink_A_opening","CAN_eye_blink_counter","CAN_S_Gaze_ROI","CAN_S_Gaze_ROI_X","CAN_S_Gaze_ROI_Y","f_roi_id","MS_S_Gaze_ROI_X_Raw","MS_S_Gaze_ROI_Y_Raw","HSVL_MS_S_Head_Pos_Veh_X","HSVL_MS_S_Head_Pos_Veh_Y","HSVL_MS_S_Head_Pos_Veh_Z","MS_S_Gaze_rot_X","MS_S_Gaze_rot_Y","MS_S_Gaze_rot_Z","HSVL_MS_CAN_S_Eye_dist","f_camera_left_measured_brightness","f_camera_left_target_brightness","f_camera_left_shutter_us","f_camera_left_column_gain","f_camera_left_digital_gain","f_camera_right_measured_brightness","f_camera_right_target_brightness","f_camera_right_shutter_us","f_camera_right_column_gain","f_camera_right_digital_gain","f_raw_result_age","HSVL_S_Head_dir_h","HSVL_S_Head_dir_v","HSVL_MS_S_Head_Pos_Disp_X","HSVL_MS_S_Head_Pos_Disp_Y","HSVL_MS_S_Head_Pos_Disp_Z","LGE_BD_frame_count","CAN_S_camera_close_blocked","CAN_S_glasses_detected","MS_camera_blockage_detection","MS_EyeLeftCameraLeft","MS_EyeLeftCameraRight","MS_EyeRightCameraLeft","MS_EyeRightCameraRight","MouthNoseCameraLeft","MouthNoseCameraRight","disp_left_cam_blocked_0","disp_left_cam_blocked_1","disp_left_cam_blocked_2","disp_left_cam_blocked_3","disp_right_cam_blocked_0","disp_right_cam_blocked_1","disp_right_cam_blocked_2","disp_right_cam_blocked_3","LGE_OOF_frame_count","bOutOfFocus","CAN_S_drcam_status","LGE_SWBA_frame_count","CAN_S_StWhl_adjust_occlusion","MS_HeadOcclusion","Absorber_Left_Center_nX","Absorber_Left_Center_nY","Absorber_Right_Center_nX","Absorber_Right_Center_nY","nAbsorber_Radius","Wheel_Left_Center_nX","Wheel_Left_Center_nY","Wheel_Right_Center_nX","Wheel_Right_Center_nY","nWheel_Radius","LGE_DB_frame_count","bIsHeadMoving","MS_Intended_head_movement","CAN_Driver_is_responsive","MS_nod_head_gesture","MS_shake_head_gesture","bIsHeadGestureResult","LGE_DI_frame_count","CAN_S_Driver_ID_Top_1","CAN_S_Driver_ID_Top_2","CAN_S_Driver_ID_Top_3","CAN_S_Driver_ID_Confidence_1","CAN_S_Driver_ID_Confidence_2","CAN_S_Driver_ID_Confidence_3","arrDrviers_01","arrDrviers_02","arrDrviers_03","arrDrviers_04","arrDrviers_05","arrDrviers_06","arrDrviers_07","arrDrviers_08","arrDrviers_09","arrDrviers_10","arrDrviers_11","arrDrviers_12","arrDrviers_13","status","numOfDriver","LGE_DOT_frame_count","CAN_S_Head_Pos_X","CAN_S_Head_Pos_Y","CAN_S_Head_Pos_Z","CAN_S_Head_Pos_type","bLeftIRLight","LGE_SP_frame_count","MS_spoofing_detected","CurrentStatus","OutConfidenceSpoof","OutConfidenceGenuine","f_raw_result_age","S_Head_dir_h","S_Head_dir_v","S_Head_Pos_Disp_x","S_Head_Pos_Disp_y","S_Head_Pos_Disp_z","f_left_position_valid7","f_left_positionX7","f_left_positionY7","f_right_position_valid7","f_right_positionX7","f_right_positionY7","FrameHistory","FrameDiff","FrameTimeStamp","f_head_pose_confidence","f_early_head_pose_confidence","LGE_DI_Ext_frame_count","CAN_S_EnrollAndDeleteStatus","CAN_S_HasStoredIDs","CAN_S_driverID_MsgCnt","ResultDataType","timeEnrollment","bFilteringFlag","f_le_iris_diameter","f_re_iris_diameter","HetAlgoGlintPosition.MS_S_Gaze_LE_Cornea_Center_X","HetAlgoGlintPosition.MS_S_Gaze_LE_Cornea_Center_Y","HetAlgoGlintPosition.MS_S_Gaze_LE_Cornea_Center_Z","HetAlgoGlintPosition.f_le_glint_position_idx_0_X","HetAlgoGlintPosition.f_le_glint_position_idx_0_Y","HetAlgoGlintPosition.f_le_glint_position_idx_1_X","HetAlgoGlintPosition.f_le_glint_position_idx_1_Y","HetAlgoGlintPosition.MS_S_Gaze_RE_Cornea_Center_X","HetAlgoGlintPosition.MS_S_Gaze_RE_Cornea_Center_Y","HetAlgoGlintPosition.MS_S_Gaze_RE_Cornea_Center_Z","HetAlgoGlintPosition.f_re_glint_position_idx_0_X","HetAlgoGlintPosition.f_re_glint_position_idx_0_Y","HetAlgoGlintPosition.f_re_glint_position_idx_1_X","HetAlgoGlintPosition.f_re_glint_position_idx_1_Y","HetAlgoEyelidPosition.f_le_lc_position_valid0","HetAlgoEyelidPosition.f_le_lc_positionX0","HetAlgoEyelidPosition.f_le_lc_positionY0","HetAlgoEyelidPosition.f_le_lc_position_valid1","HetAlgoEyelidPosition.f_le_lc_positionX1","HetAlgoEyelidPosition.f_le_lc_positionY1","HetAlgoEyelidPosition.f_le_lc_position_valid2","HetAlgoEyelidPosition.f_le_lc_positionX2","HetAlgoEyelidPosition.f_le_lc_positionY2","HetAlgoEyelidPosition.f_le_lc_position_valid3","HetAlgoEyelidPosition.f_le_lc_positionX3","HetAlgoEyelidPosition.f_le_lc_positionY3","HetAlgoEyelidPosition.f_le_lc_position_valid4","HetAlgoEyelidPosition.f_le_lc_positionX4","HetAlgoEyelidPosition.f_le_lc_positionY4","HetAlgoEyelidPosition.f_le_lc_position_valid5","HetAlgoEyelidPosition.f_le_lc_positionX5","HetAlgoEyelidPosition.f_le_lc_positionY5","HetAlgoEyelidPosition.f_le_lc_position_valid6","HetAlgoEyelidPosition.f_le_lc_positionX6","HetAlgoEyelidPosition.f_le_lc_positionY6","HetAlgoEyelidPosition.f_le_rc_position_valid0","HetAlgoEyelidPosition.f_le_rc_positionX0","HetAlgoEyelidPosition.f_le_rc_positionY0","HetAlgoEyelidPosition.f_le_rc_position_valid1","HetAlgoEyelidPosition.f_le_rc_positionX1","HetAlgoEyelidPosition.f_le_rc_positionY1","HetAlgoEyelidPosition.f_le_rc_position_valid2","HetAlgoEyelidPosition.f_le_rc_positionX2","HetAlgoEyelidPosition.f_le_rc_positionY2","HetAlgoEyelidPosition.f_le_rc_position_valid3","HetAlgoEyelidPosition.f_le_rc_positionX3","HetAlgoEyelidPosition.f_le_rc_positionY3","HetAlgoEyelidPosition.f_le_rc_position_valid4","HetAlgoEyelidPosition.f_le_rc_positionX4","HetAlgoEyelidPosition.f_le_rc_positionY4","HetAlgoEyelidPosition.f_le_rc_position_valid5","HetAlgoEyelidPosition.f_le_rc_positionX5","HetAlgoEyelidPosition.f_le_rc_positionY5","HetAlgoEyelidPosition.f_le_rc_position_valid6","HetAlgoEyelidPosition.f_le_rc_positionX6","HetAlgoEyelidPosition.f_le_rc_positionY6","HetAlgoEyelidPosition.f_re_lc_position_valid0","HetAlgoEyelidPosition.f_re_lc_positionX0","HetAlgoEyelidPosition.f_re_lc_positionY0","HetAlgoEyelidPosition.f_re_lc_position_valid1","HetAlgoEyelidPosition.f_re_lc_positionX1","HetAlgoEyelidPosition.f_re_lc_positionY1","HetAlgoEyelidPosition.f_re_lc_position_valid2","HetAlgoEyelidPosition.f_re_lc_positionX2","HetAlgoEyelidPosition.f_re_lc_positionY2","HetAlgoEyelidPosition.f_re_lc_position_valid3","HetAlgoEyelidPosition.f_re_lc_positionX3","HetAlgoEyelidPosition.f_re_lc_positionY3","HetAlgoEyelidPosition.f_re_lc_position_valid4","HetAlgoEyelidPosition.f_re_lc_positionX4","HetAlgoEyelidPosition.f_re_lc_positionY4","HetAlgoEyelidPosition.f_re_lc_position_valid5","HetAlgoEyelidPosition.f_re_lc_positionX5","HetAlgoEyelidPosition.f_re_lc_positionY5","HetAlgoEyelidPosition.f_re_lc_position_valid6","HetAlgoEyelidPosition.f_re_lc_positionX6","HetAlgoEyelidPosition.f_re_lc_positionY6","HetAlgoEyelidPosition.f_re_rc_position_valid0","HetAlgoEyelidPosition.f_re_rc_positionX0","HetAlgoEyelidPosition.f_re_rc_positionY0","HetAlgoEyelidPosition.f_re_rc_position_valid1","HetAlgoEyelidPosition.f_re_rc_positionX1","HetAlgoEyelidPosition.f_re_rc_positionY1","HetAlgoEyelidPosition.f_re_rc_position_valid2","HetAlgoEyelidPosition.f_re_rc_positionX2","HetAlgoEyelidPosition.f_re_rc_positionY2","HetAlgoEyelidPosition.f_re_rc_position_valid3","HetAlgoEyelidPosition.f_re_rc_positionX3","HetAlgoEyelidPosition.f_re_rc_positionY3","HetAlgoEyelidPosition.f_re_rc_position_valid4","HetAlgoEyelidPosition.f_re_rc_positionX4","HetAlgoEyelidPosition.f_re_rc_positionY4","HetAlgoEyelidPosition.f_re_rc_position_valid5","HetAlgoEyelidPosition.f_re_rc_positionX5","HetAlgoEyelidPosition.f_re_rc_positionY5","HetAlgoEyelidPosition.f_re_rc_position_valid6","HetAlgoEyelidPosition.f_re_rc_positionX6","HetAlgoEyelidPosition.f_re_rc_positionY6","Het2DLandmark.f_left_position_valid0","Het2DLandmark.f_left_positionX0","Het2DLandmark.f_left_positionY0","Het2DLandmark.f_left_position_valid1","Het2DLandmark.f_left_positionX1","Het2DLandmark.f_left_positionY1","Het2DLandmark.f_left_position_valid2","Het2DLandmark.f_left_positionX2","Het2DLandmark.f_left_positionY2","Het2DLandmark.f_left_position_valid3","Het2DLandmark.f_left_positionX3","Het2DLandmark.f_left_positionY3","Het2DLandmark.f_left_position_valid4","Het2DLandmark.f_left_positionX4","Het2DLandmark.f_left_positionY4","Het2DLandmark.f_left_position_valid5","Het2DLandmark.f_left_positionX5","Het2DLandmark.f_left_positionY5","Het2DLandmark.f_left_position_valid6","Het2DLandmark.f_left_positionX6","Het2DLandmark.f_left_positionY6","Het2DLandmark.f_left_position_valid7","Het2DLandmark.f_left_positionX7","Het2DLandmark.f_left_positionY7","Het2DLandmark.f_right_position_valid0","Het2DLandmark.f_right_positionX0","Het2DLandmark.f_right_positionY0","Het2DLandmark.f_right_position_valid1","Het2DLandmark.f_right_positionX1","Het2DLandmark.f_right_positionY1","Het2DLandmark.f_right_position_valid2","Het2DLandmark.f_right_positionX2","Het2DLandmark.f_right_positionY2","Het2DLandmark.f_right_position_valid3","Het2DLandmark.f_right_positionX3","Het2DLandmark.f_right_positionY3","Het2DLandmark.f_right_position_valid4","Het2DLandmark.f_right_positionX4","Het2DLandmark.f_right_positionY4","Het2DLandmark.f_right_position_valid5","Het2DLandmark.f_right_positionX5","Het2DLandmark.f_right_positionY5","Het2DLandmark.f_right_position_valid6","Het2DLandmark.f_right_positionX6","Het2DLandmark.f_right_positionY6","Het2DLandmark.f_right_position_valid7","Het2DLandmark.f_right_positionX7","Het2DLandmark.f_right_positionY7","Het2DLandmark.f_stereo_face_plane_nose_residual_mm","f_headpose_tracking_mode","S_Head_tracking_status_from_early","Number_of_eye_blinks_haf","timestamp_result_receive","eyeclose_height_left","eyeclose_height_right"
+    #
+    # # inputPath_HET = "D:/Project/CVT/demo/1_DRCAM_KOR40BU4578_20190219_114431_0002/HetData_1614867983883741729.json"
+    # # inputPath_HET = "D:/Project/CVT/demo/result101/HetData_01.json"
+    # # inputPath_HET = "D:/Project/CVT/성능비교/HetData_test.json"
+    # inputPath_HET = "./input/HetData_small.json"
+    #
+    #
+    #
+    # inputPath_C2V = "D:/Project/CVT/demo/Standalone_Player/1_DRCAM_KOR40BU4578_20190219_114431/pose_config.json"
+    # # inputPath_C2V = "D:/Project/CVT/성능비교/DRCAM_KOR40BU4578_20190214_113824_0021_2/Result0001_20210205/pose_config.json"
+    # # pose_config.json
+    #
+    # inputPath_D2V = "D:/Project/CVT/demo/Standalone_Player/1_DRCAM_KOR40BU4578_20190219_114431/display_config.json"
+    # # inputPath_D2V = "D:/Project/CVT/성능비교/DRCAM_KOR40BU4578_20190214_113824_0021_2/Result0001_20210205/display_config.json"
+    # # display_config.json
+    #
+    # inputPath_D2C = ""
+    # # "D:/Project/CVT/성능비교/DRCAM_KOR40BU4578_20190214_113824_0021_2/Result0001_20210205/CamToDisplay_config.json"
+    # # CamToDisplay_config.json
+    #
+    # inputPath_ROI = "D:/Project/CVT/demo/Standalone_Player/1_DRCAM_KOR40BU4578_20190219_114431/roi_config.json"
+    # # roi_config.json
+    #
+    # # ret = load_jsonfile_preValue(inputPath_C2V, inputPath_D2V, inputPath_D2C)
+    # ret = load_jsonfile_preValue_extend(inputPath_C2V, inputPath_D2V)
+    #
+    # ret_json = load_jsonfile_HET(inputPath_HET)
+    # ret_ExtData = extract_availData_from_craft_algo(ret_json)
+    #
+    # print(ret_ExtData.index.values)
+    # tout = make_prototype_on_pandas(ret_ExtData.index.values)
+    # #todo : 데이터 업데이트 추가 필요
+    #
+    # tout = modify_frameId_craft_to_daimler(ret_ExtData, tout)
+    # tout = modify_HeadObject_from_craft_to_daimler(ret_ExtData, tout)
+    #
+    # tout = modify_EyeClosureHeight_craft_to_daimler(ret_ExtData, tout)
+    # tout = modify_frameCounterVirtual_craft_to_daimler(ret_ExtData, tout)
+    # tout = modify_HeadDetect_craft_to_daimler(ret_ExtData, tout)
+    #
+    # tout = modify_EyeGaze_craft_to_daimler(ret_ExtData, tout)
+    #
+    # save_csvfile(tout, "./final_output.csv")
+    #
+    #
+    # inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
+    # # inputPath_GT = "./refer/GT_3531_96_670222_0001_small.csv"
+    # # inputPath_GT = "./refer/GT_3531_96_670222_0001_mix.csv"
+    # # inputPath_GT = "./refer/GT/3810_10_811709_0001_all.csv"
+    # # inputPath_GT = "./refer/GT/3810_20_811728_0001_all.csv"
+    # # inputPath_GT = "./refer/GT/3810_30_811746_0001_all.csv"
+    # # inputPath_GT = "./refer/GT/3810_40_811766_0001_all.csv"
+    # # inputPath_GT = "./refer/GT/3810_50_811786_0001_all.csv"
+    # # inputPath_GT = "./refer/GT/3810_70_811824_0001_all.csv"
+    # # inputPath_GT = "./refer/GT/3810_60_811805_0001_all.csv"
+    # # inputPath_GT = "./refer/GT/3810_80_811843_0001_all.csv"
+    # # inputPath_GT = "./refer/GT/3810_80_811843_0001_all.csv"
+    # # inputPath_GT = "./refer/GT/3810_80_811843_0001_all.csv"
+    # # inputPath_GT = "./refer/GT/3810_90_811862_0001_all.csv"
+    # # inputPath_GT = "./refer/GT/3810_100_811882_0001_all.csv"
+    #
+    # inputPath_ROI = "./refer/roi_config.json"
+    # # roi_config.json
+    # # obj = make_gaze_and_roi()
+    objgaze = mg.make_gaze_and_roi()
+    # ret_roi = objgaze.load_jsonfile_ROI(inputPath_ROI)
+    #
+    # ret_ExtROI = objgaze.extract_availData_from_3D_target_ROI(ret_roi)
+    #
+    # ret_df_tout = objgaze.extract_availData_from_pandas(tout)
+    #
+    # ret_ExtGT_with_direction = objgaze.retcalcuate_head_eye_direction(ret_df_tout)
+    #
+    # print('\n\n', ret_ExtGT_with_direction)
+    # ret_match = objgaze.check_match_roi(ret_ExtGT_with_direction, ret_ExtROI, 150)
 
-# "f_version","f_frame_counter_left_camera","f_frame_counter_right_camera","f_frame_counter_virtual","f_master_counter_in","f_eye_model_generation","eye_left_partial_blockage","eye_left_blockage","MS_EyeLeftCameraLeft_old","MS_EyeLeftCameraRight_old","eye_right_partial_blockage","eye_right_blockage","MS_EyeRightCameraLeft_old","MS_EyeRightCameraRight_old","mouth_nose_partial_blockage","mouth_nose_blockage","MS_MouthNoseCameraLeft","MS_MouthNoseCameraRight","CAN_S_glasses_detected_old","CAN_S_face_detection","MS_EyeDetection","MS_S_Head_rot_X","MS_S_Head_rot_Y","MS_S_Head_rot_Z","HSVL_MS_CAN_S_Head_tracking_status","HSVL_MS_CAN_S_Head_tracking_mode","f_primary_face_landmark_camera","f_left_position_valid0","f_left_positionX0","f_left_positionY0","f_left_position_valid1","f_left_positionX1","f_left_positionY1","f_left_position_valid2","f_left_positionX2","f_left_positionY2","f_left_position_valid3","f_left_positionX3","f_left_positionY3","f_left_position_valid4","f_left_positionX4","f_left_positionY4","f_left_position_valid5","f_left_positionX5","f_left_positionY5","f_left_position_valid6","f_left_positionX6","f_left_positionY6","f_right_position_valid0","f_right_positionX0","f_right_positionY0","f_right_position_valid1","f_right_positionX1","f_right_positionY1","f_right_position_valid2","f_right_positionX2","f_right_positionY2","f_right_position_valid3","f_right_positionX3","f_right_positionY3","f_right_position_valid4","f_right_positionX4","f_right_positionY4","f_right_position_valid5","f_right_positionX5","f_right_positionY5","f_right_position_valid6","f_right_positionX6","f_right_positionY6","CAN_glint_detected","f_gaze_le_result_valid","MS_S_Gaze_LE_VA_rot_X","MS_S_Gaze_LE_VA_rot_Y","MS_S_Gaze_LE_VA_rot_Z","MS_S_Gaze_LE_Center_X","MS_S_Gaze_LE_Center_Y","MS_S_Gaze_LE_Center_Z","f_gaze_re_result_valid","MS_S_Gaze_RE_VA_rot_X","MS_S_Gaze_RE_VA_rot_Y","MS_S_Gaze_RE_VA_rot_Z","MS_S_Gaze_RE_Center_X","MS_S_Gaze_RE_Center_Y","MS_S_Gaze_RE_Center_Z","CAN_eye_closure_left","CAN_eye_closure_left_conf","CAN_eye_closure_right","CAN_eye_closure_right_conf","CAN_eye_closure","MS_eye_closed","CAN_long_eyeclosure","f_long_eyeclosure_counter","MS_eye_closed_AAS","MS_PERCLOS_AAS","MS_PERCLOS_AAS_conf","MS_PERCLOS_strict","MS_eye_closed_strict","CAN_eye_blink_conf","MS_Eye_blink_freq_conf","MS_Eye_blink_freq","CAN_eye_blink_t_closing","CAN_eye_blink_t_opening","CAN_eye_blink_duration","CAN_eye_blink_A_closing","CAN_eye_blink_A_opening","CAN_eye_blink_counter","CAN_S_Gaze_ROI","CAN_S_Gaze_ROI_X","CAN_S_Gaze_ROI_Y","f_roi_id","MS_S_Gaze_ROI_X_Raw","MS_S_Gaze_ROI_Y_Raw","HSVL_MS_S_Head_Pos_Veh_X","HSVL_MS_S_Head_Pos_Veh_Y","HSVL_MS_S_Head_Pos_Veh_Z","MS_S_Gaze_rot_X","MS_S_Gaze_rot_Y","MS_S_Gaze_rot_Z","HSVL_MS_CAN_S_Eye_dist","f_camera_left_measured_brightness","f_camera_left_target_brightness","f_camera_left_shutter_us","f_camera_left_column_gain","f_camera_left_digital_gain","f_camera_right_measured_brightness","f_camera_right_target_brightness","f_camera_right_shutter_us","f_camera_right_column_gain","f_camera_right_digital_gain","f_raw_result_age","HSVL_S_Head_dir_h","HSVL_S_Head_dir_v","HSVL_MS_S_Head_Pos_Disp_X","HSVL_MS_S_Head_Pos_Disp_Y","HSVL_MS_S_Head_Pos_Disp_Z","LGE_BD_frame_count","CAN_S_camera_close_blocked","CAN_S_glasses_detected","MS_camera_blockage_detection","MS_EyeLeftCameraLeft","MS_EyeLeftCameraRight","MS_EyeRightCameraLeft","MS_EyeRightCameraRight","MouthNoseCameraLeft","MouthNoseCameraRight","disp_left_cam_blocked_0","disp_left_cam_blocked_1","disp_left_cam_blocked_2","disp_left_cam_blocked_3","disp_right_cam_blocked_0","disp_right_cam_blocked_1","disp_right_cam_blocked_2","disp_right_cam_blocked_3","LGE_OOF_frame_count","bOutOfFocus","CAN_S_drcam_status","LGE_SWBA_frame_count","CAN_S_StWhl_adjust_occlusion","MS_HeadOcclusion","Absorber_Left_Center_nX","Absorber_Left_Center_nY","Absorber_Right_Center_nX","Absorber_Right_Center_nY","nAbsorber_Radius","Wheel_Left_Center_nX","Wheel_Left_Center_nY","Wheel_Right_Center_nX","Wheel_Right_Center_nY","nWheel_Radius","LGE_DB_frame_count","bIsHeadMoving","MS_Intended_head_movement","CAN_Driver_is_responsive","MS_nod_head_gesture","MS_shake_head_gesture","bIsHeadGestureResult","LGE_DI_frame_count","CAN_S_Driver_ID_Top_1","CAN_S_Driver_ID_Top_2","CAN_S_Driver_ID_Top_3","CAN_S_Driver_ID_Confidence_1","CAN_S_Driver_ID_Confidence_2","CAN_S_Driver_ID_Confidence_3","arrDrviers_01","arrDrviers_02","arrDrviers_03","arrDrviers_04","arrDrviers_05","arrDrviers_06","arrDrviers_07","arrDrviers_08","arrDrviers_09","arrDrviers_10","arrDrviers_11","arrDrviers_12","arrDrviers_13","status","numOfDriver","LGE_DOT_frame_count","CAN_S_Head_Pos_X","CAN_S_Head_Pos_Y","CAN_S_Head_Pos_Z","CAN_S_Head_Pos_type","bLeftIRLight","LGE_SP_frame_count","MS_spoofing_detected","CurrentStatus","OutConfidenceSpoof","OutConfidenceGenuine","f_raw_result_age","S_Head_dir_h","S_Head_dir_v","S_Head_Pos_Disp_x","S_Head_Pos_Disp_y","S_Head_Pos_Disp_z","f_left_position_valid7","f_left_positionX7","f_left_positionY7","f_right_position_valid7","f_right_positionX7","f_right_positionY7","FrameHistory","FrameDiff","FrameTimeStamp","f_head_pose_confidence","f_early_head_pose_confidence","LGE_DI_Ext_frame_count","CAN_S_EnrollAndDeleteStatus","CAN_S_HasStoredIDs","CAN_S_driverID_MsgCnt","ResultDataType","timeEnrollment","bFilteringFlag","f_le_iris_diameter","f_re_iris_diameter","HetAlgoGlintPosition.MS_S_Gaze_LE_Cornea_Center_X","HetAlgoGlintPosition.MS_S_Gaze_LE_Cornea_Center_Y","HetAlgoGlintPosition.MS_S_Gaze_LE_Cornea_Center_Z","HetAlgoGlintPosition.f_le_glint_position_idx_0_X","HetAlgoGlintPosition.f_le_glint_position_idx_0_Y","HetAlgoGlintPosition.f_le_glint_position_idx_1_X","HetAlgoGlintPosition.f_le_glint_position_idx_1_Y","HetAlgoGlintPosition.MS_S_Gaze_RE_Cornea_Center_X","HetAlgoGlintPosition.MS_S_Gaze_RE_Cornea_Center_Y","HetAlgoGlintPosition.MS_S_Gaze_RE_Cornea_Center_Z","HetAlgoGlintPosition.f_re_glint_position_idx_0_X","HetAlgoGlintPosition.f_re_glint_position_idx_0_Y","HetAlgoGlintPosition.f_re_glint_position_idx_1_X","HetAlgoGlintPosition.f_re_glint_position_idx_1_Y","HetAlgoEyelidPosition.f_le_lc_position_valid0","HetAlgoEyelidPosition.f_le_lc_positionX0","HetAlgoEyelidPosition.f_le_lc_positionY0","HetAlgoEyelidPosition.f_le_lc_position_valid1","HetAlgoEyelidPosition.f_le_lc_positionX1","HetAlgoEyelidPosition.f_le_lc_positionY1","HetAlgoEyelidPosition.f_le_lc_position_valid2","HetAlgoEyelidPosition.f_le_lc_positionX2","HetAlgoEyelidPosition.f_le_lc_positionY2","HetAlgoEyelidPosition.f_le_lc_position_valid3","HetAlgoEyelidPosition.f_le_lc_positionX3","HetAlgoEyelidPosition.f_le_lc_positionY3","HetAlgoEyelidPosition.f_le_lc_position_valid4","HetAlgoEyelidPosition.f_le_lc_positionX4","HetAlgoEyelidPosition.f_le_lc_positionY4","HetAlgoEyelidPosition.f_le_lc_position_valid5","HetAlgoEyelidPosition.f_le_lc_positionX5","HetAlgoEyelidPosition.f_le_lc_positionY5","HetAlgoEyelidPosition.f_le_lc_position_valid6","HetAlgoEyelidPosition.f_le_lc_positionX6","HetAlgoEyelidPosition.f_le_lc_positionY6","HetAlgoEyelidPosition.f_le_rc_position_valid0","HetAlgoEyelidPosition.f_le_rc_positionX0","HetAlgoEyelidPosition.f_le_rc_positionY0","HetAlgoEyelidPosition.f_le_rc_position_valid1","HetAlgoEyelidPosition.f_le_rc_positionX1","HetAlgoEyelidPosition.f_le_rc_positionY1","HetAlgoEyelidPosition.f_le_rc_position_valid2","HetAlgoEyelidPosition.f_le_rc_positionX2","HetAlgoEyelidPosition.f_le_rc_positionY2","HetAlgoEyelidPosition.f_le_rc_position_valid3","HetAlgoEyelidPosition.f_le_rc_positionX3","HetAlgoEyelidPosition.f_le_rc_positionY3","HetAlgoEyelidPosition.f_le_rc_position_valid4","HetAlgoEyelidPosition.f_le_rc_positionX4","HetAlgoEyelidPosition.f_le_rc_positionY4","HetAlgoEyelidPosition.f_le_rc_position_valid5","HetAlgoEyelidPosition.f_le_rc_positionX5","HetAlgoEyelidPosition.f_le_rc_positionY5","HetAlgoEyelidPosition.f_le_rc_position_valid6","HetAlgoEyelidPosition.f_le_rc_positionX6","HetAlgoEyelidPosition.f_le_rc_positionY6","HetAlgoEyelidPosition.f_re_lc_position_valid0","HetAlgoEyelidPosition.f_re_lc_positionX0","HetAlgoEyelidPosition.f_re_lc_positionY0","HetAlgoEyelidPosition.f_re_lc_position_valid1","HetAlgoEyelidPosition.f_re_lc_positionX1","HetAlgoEyelidPosition.f_re_lc_positionY1","HetAlgoEyelidPosition.f_re_lc_position_valid2","HetAlgoEyelidPosition.f_re_lc_positionX2","HetAlgoEyelidPosition.f_re_lc_positionY2","HetAlgoEyelidPosition.f_re_lc_position_valid3","HetAlgoEyelidPosition.f_re_lc_positionX3","HetAlgoEyelidPosition.f_re_lc_positionY3","HetAlgoEyelidPosition.f_re_lc_position_valid4","HetAlgoEyelidPosition.f_re_lc_positionX4","HetAlgoEyelidPosition.f_re_lc_positionY4","HetAlgoEyelidPosition.f_re_lc_position_valid5","HetAlgoEyelidPosition.f_re_lc_positionX5","HetAlgoEyelidPosition.f_re_lc_positionY5","HetAlgoEyelidPosition.f_re_lc_position_valid6","HetAlgoEyelidPosition.f_re_lc_positionX6","HetAlgoEyelidPosition.f_re_lc_positionY6","HetAlgoEyelidPosition.f_re_rc_position_valid0","HetAlgoEyelidPosition.f_re_rc_positionX0","HetAlgoEyelidPosition.f_re_rc_positionY0","HetAlgoEyelidPosition.f_re_rc_position_valid1","HetAlgoEyelidPosition.f_re_rc_positionX1","HetAlgoEyelidPosition.f_re_rc_positionY1","HetAlgoEyelidPosition.f_re_rc_position_valid2","HetAlgoEyelidPosition.f_re_rc_positionX2","HetAlgoEyelidPosition.f_re_rc_positionY2","HetAlgoEyelidPosition.f_re_rc_position_valid3","HetAlgoEyelidPosition.f_re_rc_positionX3","HetAlgoEyelidPosition.f_re_rc_positionY3","HetAlgoEyelidPosition.f_re_rc_position_valid4","HetAlgoEyelidPosition.f_re_rc_positionX4","HetAlgoEyelidPosition.f_re_rc_positionY4","HetAlgoEyelidPosition.f_re_rc_position_valid5","HetAlgoEyelidPosition.f_re_rc_positionX5","HetAlgoEyelidPosition.f_re_rc_positionY5","HetAlgoEyelidPosition.f_re_rc_position_valid6","HetAlgoEyelidPosition.f_re_rc_positionX6","HetAlgoEyelidPosition.f_re_rc_positionY6","Het2DLandmark.f_left_position_valid0","Het2DLandmark.f_left_positionX0","Het2DLandmark.f_left_positionY0","Het2DLandmark.f_left_position_valid1","Het2DLandmark.f_left_positionX1","Het2DLandmark.f_left_positionY1","Het2DLandmark.f_left_position_valid2","Het2DLandmark.f_left_positionX2","Het2DLandmark.f_left_positionY2","Het2DLandmark.f_left_position_valid3","Het2DLandmark.f_left_positionX3","Het2DLandmark.f_left_positionY3","Het2DLandmark.f_left_position_valid4","Het2DLandmark.f_left_positionX4","Het2DLandmark.f_left_positionY4","Het2DLandmark.f_left_position_valid5","Het2DLandmark.f_left_positionX5","Het2DLandmark.f_left_positionY5","Het2DLandmark.f_left_position_valid6","Het2DLandmark.f_left_positionX6","Het2DLandmark.f_left_positionY6","Het2DLandmark.f_left_position_valid7","Het2DLandmark.f_left_positionX7","Het2DLandmark.f_left_positionY7","Het2DLandmark.f_right_position_valid0","Het2DLandmark.f_right_positionX0","Het2DLandmark.f_right_positionY0","Het2DLandmark.f_right_position_valid1","Het2DLandmark.f_right_positionX1","Het2DLandmark.f_right_positionY1","Het2DLandmark.f_right_position_valid2","Het2DLandmark.f_right_positionX2","Het2DLandmark.f_right_positionY2","Het2DLandmark.f_right_position_valid3","Het2DLandmark.f_right_positionX3","Het2DLandmark.f_right_positionY3","Het2DLandmark.f_right_position_valid4","Het2DLandmark.f_right_positionX4","Het2DLandmark.f_right_positionY4","Het2DLandmark.f_right_position_valid5","Het2DLandmark.f_right_positionX5","Het2DLandmark.f_right_positionY5","Het2DLandmark.f_right_position_valid6","Het2DLandmark.f_right_positionX6","Het2DLandmark.f_right_positionY6","Het2DLandmark.f_right_position_valid7","Het2DLandmark.f_right_positionX7","Het2DLandmark.f_right_positionY7","Het2DLandmark.f_stereo_face_plane_nose_residual_mm","f_headpose_tracking_mode","S_Head_tracking_status_from_early","Number_of_eye_blinks_haf","timestamp_result_receive","eyeclose_height_left","eyeclose_height_right"
-
-    inputPath_HET = "D:/Project/CVT/demo/1_DRCAM_KOR40BU4578_20190219_114431_0002/HetData_1614867983883741729.json"
-    # inputPath_HET = "D:/Project/CVT/demo/result101/HetData_01.json"
-    # inputPath_HET = "D:/Project/CVT/성능비교/HetData_test.json"
-    # inputPath_HET = "./input/HetData_mid.json"
-
-
-
-    inputPath_C2V = "D:/Project/CVT/demo/Standalone_Player/1_DRCAM_KOR40BU4578_20190219_114431/pose_config.json"
-    # inputPath_C2V = "D:/Project/CVT/성능비교/DRCAM_KOR40BU4578_20190214_113824_0021_2/Result0001_20210205/pose_config.json"
-    # pose_config.json
-
-    inputPath_D2V = "D:/Project/CVT/demo/Standalone_Player/1_DRCAM_KOR40BU4578_20190219_114431/display_config.json"
-    # inputPath_D2V = "D:/Project/CVT/성능비교/DRCAM_KOR40BU4578_20190214_113824_0021_2/Result0001_20210205/display_config.json"
-    # display_config.json
-
-    inputPath_D2C = ""
-    # "D:/Project/CVT/성능비교/DRCAM_KOR40BU4578_20190214_113824_0021_2/Result0001_20210205/CamToDisplay_config.json"
-    # CamToDisplay_config.json
-
-    inputPath_ROI = "D:/Project/CVT/demo/Standalone_Player/1_DRCAM_KOR40BU4578_20190219_114431/roi_config.json"
-    # roi_config.json
-
-    # ret = load_jsonfile_preValue(inputPath_C2V, inputPath_D2V, inputPath_D2C)
-    ret = load_jsonfile_preValue_extend(inputPath_C2V, inputPath_D2V)
-
-    ret_json = load_jsonfile_HET(inputPath_HET)
-    ret_ExtData = extract_availData_from_craft_algo(ret_json)
-
-    print(ret_ExtData.index.values)
-    tout = make_prototype_on_pandas(ret_ExtData.index.values)
-    #todo : 데이터 업데이트 추가 필요
-
-    tout = modify_frameId_craft_to_daimler(ret_ExtData, tout)
-    tout = modify_HeadObject_from_craft_to_daimler(ret_ExtData, tout)
-
-    tout = modify_EyeClosureHeight_craft_to_daimler(ret_ExtData, tout)
-    tout = modify_frameCounterVirtual_craft_to_daimler(ret_ExtData, tout)
-    tout = modify_HeadDetect_craft_to_daimler(ret_ExtData, tout)
-
-    tout = modify_EyeGaze_craft_to_daimler(ret_ExtData, tout)
-
-    save_csvfile(tout, "./final_output.csv")
-
-    if (1):
-        # inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
-        # inputPath_GT = "./refer/GT_3531_96_670222_0001_small.csv"
-        # inputPath_GT = "./refer/GT_3531_96_670222_0001_mix.csv"
-        # inputPath_GT = "./refer/GT/3810_10_811709_0001_all.csv"
-        # inputPath_GT = "./refer/GT/3810_20_811728_0001_all.csv"
-        # inputPath_GT = "./refer/GT/3810_30_811746_0001_all.csv"
-        # inputPath_GT = "./refer/GT/3810_40_811766_0001_all.csv"
-        # inputPath_GT = "./refer/GT/3810_50_811786_0001_all.csv"
-        # inputPath_GT = "./refer/GT/3810_70_811824_0001_all.csv"
-        # inputPath_GT = "./refer/GT/3810_60_811805_0001_all.csv"
-        # inputPath_GT = "./refer/GT/3810_80_811843_0001_all.csv"
-        # inputPath_GT = "./refer/GT/3810_80_811843_0001_all.csv"
-        # inputPath_GT = "./refer/GT/3810_80_811843_0001_all.csv"
-        # inputPath_GT = "./refer/GT/3810_90_811862_0001_all.csv"
-        # inputPath_GT = "./refer/GT/3810_100_811882_0001_all.csv"
-
-        inputPath_ROI = "./refer/roi_config.json"
-        # roi_config.json
-        # obj = make_gaze_and_roi()
-        objgaze = mg.make_gaze_and_roi()
-        ret_roi = objgaze.load_jsonfile_ROI(inputPath_ROI)
-
-        ret_ExtROI = objgaze.extract_availData_from_3D_target_ROI(ret_roi)
-
-        # ret_ExtGT = objgaze.extract_availData_from_GT(inputPath_GT)
-        ret_df_tout = objgaze.extract_availData_from_pandas(tout)
-        # print('ret_df_tout\n\n', ret_df_tout)
-        # print(1/0)
-
-        ret_ExtGT_with_direction = objgaze.retcalcuate_head_eye_direction(ret_df_tout)
-
-        print('\n\n', ret_ExtGT_with_direction)
-        ret_match = objgaze.check_match_roi(ret_ExtGT_with_direction, ret_ExtROI, 150)
-        objgaze.save_csvfile(ret_match, "./roi_output.csv")
-        # ret_match.to_csv("filename.csv", mode='w', index=False, header=False, sep=',', quotechar=" ",
-        #                  float_format='%.4f')
-
-        objgaze.rendering_roi_with_head_gaze(ret_ExtROI, ret_match)
-
-
+    ret_resultGT = objgaze.extract_resultRoi_from_GT(inputPath_GT)
+    # test = pd.merge(ret_match, ret_resultGT, how='left', left_on="f_frame_counter_left_camera", right_on="f_frame_counter_left_camera")
+    # test = pd.concat([ret_match, ret_resultGT], axis=1)
     print(1/0)
 
+    merge_gazeroi_with_mra2roi(ret_match, ret_resultGT)
+    # print(test)
+    # "f_frame_counter_left_camera"
+    # ret_match.merge(ret_resultGT, on="f_frame_counter_left_camera")
+    # objgaze.save_csvfile(test, "./roi_output.csv")
+    # ret_match.to_csv("filename.csv", mode='w', index=False, header=False, sep=',', quotechar=" ",
+    #                  float_format='%.4f')
+
+    objgaze.rendering_roi_with_head_gaze(ret_ExtROI, ret_match)
 
 
-    # print(1 / 0)
+
 
 
