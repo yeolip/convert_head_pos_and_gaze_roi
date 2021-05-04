@@ -29,8 +29,8 @@
 		},
 		{
 			"_comment": "Windshield_Strict",
-			"id": 3,
-			"head_only_id": 3,
+			"id": 4,
+			"head_only_id": 4,
 			"priority": 1,
 			"obj_params":
 			{
@@ -41,8 +41,8 @@
 		},
 		{
 			"_comment": "Windshield Driver",
-			"id": 4,
-			"head_only_id": 4,
+			"id": 3,
+			"head_only_id": 3,
 			"priority": 1,
 			"obj_params":
 			{

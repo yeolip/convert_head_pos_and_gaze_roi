@@ -628,7 +628,7 @@ def check_match_roi(extData, ret_ExtROI, errDist = 0):
             print(' ','pointOnPlan',pointOnPlan)
             ret_check, point_mapping = calc_match_roi(p0, p1, p3, p2, camPlaneOrthVector, pointOnPlan, headDir_mid, headPos)
             if(ret_check == True):
-                extData.loc[tindex, 'roi_idx_h'] = extData.loc[tindex, 'roi_idx_h'] +'/'+ str(troi_id)
+                extData.loc[tindex, 'roi_idx_h'] = str(troi_id) #extData.loc[tindex, 'roi_idx_h'] +'/'+ str(troi_id)
                 extData.loc[tindex, 'roi_name_h'] = extData.loc[tindex, 'roi_name_h'] +'/'+ troi_name
                 extData.loc[tindex, 'intersect_x_h'] = point_mapping[0]
                 extData.loc[tindex, 'intersect_y_h'] = point_mapping[1]
@@ -690,7 +690,7 @@ def rendering_roi_with_head_gaze(pROI, extData):
     # for i in pROI:
     #     print(i)
 
-    for i in pROI.index[0:4]:
+    for i in pROI.index[0:-1]:
         # print(pROI.tID[i])
         # print(pROI.tTargetName[i])
         # print(pROI.ttop_left[i][0],pROI.ttop_left[i][1],pROI.ttop_left[i][2])
@@ -767,10 +767,10 @@ if __name__ == '__main__':
     if(1):
         sys.stdout = open('DebugLog.txt', 'w')
     if(1):
-        # inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
+        inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
         # inputPath_GT = "./refer/GT_3531_96_670222_0001_small.csv"
         # inputPath_GT = "./refer/GT_3531_96_670222_0001_mix.csv"
-        inputPath_GT = "./refer/GT/3810_10_811709_0001_all.csv"
+        # inputPath_GT = "./refer/GT/3810_10_811709_0001_all.csv"
         # inputPath_GT = "./refer/GT/3810_20_811728_0001_all.csv"
         # inputPath_GT = "./refer/GT/3810_30_811746_0001_all.csv"
         # inputPath_GT = "./refer/GT/3810_40_811766_0001_all.csv"
@@ -795,8 +795,8 @@ if __name__ == '__main__':
         ret_ExtGT_with_direction = retcalcuate_head_eye_direction(ret_ExtGT)
 
         print('\n\n',ret_ExtGT_with_direction)
-        ret_match = check_match_roi(ret_ExtGT_with_direction, ret_ExtROI, 150)
-        save_csvfile(ret_match, "./filename.csv")
+        ret_match = check_match_roi(ret_ExtGT_with_direction, ret_ExtROI, 0)    #150
+        save_csvfile(ret_match, "./basegaze_output.csv")
         # ret_match.to_csv("filename.csv", mode='w', index=False, header=False, sep=',', quotechar=" ",
         #                  float_format='%.4f')
 
@@ -804,4 +804,4 @@ if __name__ == '__main__':
         # ret_match.to_csv("filename.csv", mode='w', index=False, header=False, sep=',', quotechar=" ", float_format='%.4f')
 
 
-    print(1/0)
+    # print(1/0)

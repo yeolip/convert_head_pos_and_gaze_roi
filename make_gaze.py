@@ -119,14 +119,25 @@ class make_gaze_and_roi(object):
         print(available_df)
         return available_df
 
-    def extract_resultRoi_from_GT(self, inputPath_GT):
+    def extract_resultRoi_from_GT(self, inputPath_GT, text=""):
         print("//////////", funcname(), "//////////")
         extGT = pd.read_csv(inputPath_GT)
         df_extGT = extGT[['f_frame_counter_left_camera', 'CAN_S_Gaze_ROI', 'MS_S_Gaze_ROI_X_Raw', 'MS_S_Gaze_ROI_Y_Raw']]
         df_extGT = df_extGT.dropna()
+        df_extGT.columns = ['f_frame_counter_left_camera', text+'CAN_S_Gaze_ROI', text+'MS_S_Gaze_ROI_X_Raw', text+'MS_S_Gaze_ROI_Y_Raw']
+        # df_extGT = df_extGT.rename(columns={"f_frame_counter_left_camera": "f_frame_counter_left_camera","CAN_S_Gaze_ROI": "MRA2_CAN_S_Gaze_ROI","MS_S_Gaze_ROI_X_Raw": "MRA2_MS_S_Gaze_ROI_X_Raw", "MS_S_Gaze_ROI_Y_Raw": "MRA2_MS_S_Gaze_ROI_Y_Raw"}, inplace = True)
         # print('ret_ExtGT\n\n',ret_ExtGT)
         print('df_extGT\n\n', df_extGT)
         return df_extGT
+
+    def extract_resultRoi_from_output(self, inputPath_out, text=""):
+        print("//////////", funcname(), "//////////")
+        extOut = pd.read_csv(inputPath_out)
+        df_extOUT = extOut[['f_frame_counter_left_camera', 'roi_idx_h', 'roi_name_h', 'roi_X', 'roi_Y']]
+        df_extOUT = df_extOUT.dropna()
+        df_extOUT.columns = ['f_frame_counter_left_camera', text+'roi_idx_h', text+'roi_name_h', text+'roi_X', text+'roi_Y']
+        print('df_extOUT\n\n', df_extOUT)
+        return df_extOUT
 
     def extract_availData_from_GT(self, inputPath_GT):
         print("//////////", funcname(), "//////////")
@@ -365,7 +376,7 @@ class make_gaze_and_roi(object):
                 print(' ','pointOnPlan',pointOnPlan)
                 ret_check, point_mapping = self.calc_match_roi(p0, p1, p3, p2, camPlaneOrthVector, pointOnPlan, headDir_mid, headPos)
                 if(ret_check == True):
-                    extData.loc[tindex, 'roi_idx_h'] = extData.loc[tindex, 'roi_idx_h'] +'/'+ str(troi_id)
+                    extData.loc[tindex, 'roi_idx_h'] = str(troi_id) #extData.loc[tindex, 'roi_idx_h'] +'/'+ str(troi_id)
                     extData.loc[tindex, 'roi_name_h'] = extData.loc[tindex, 'roi_name_h'] +'/'+ troi_name
                     extData.loc[tindex, 'intersect_x_h'] = point_mapping[0]
                     extData.loc[tindex, 'intersect_y_h'] = point_mapping[1]
