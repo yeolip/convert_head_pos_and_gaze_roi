@@ -108,7 +108,7 @@ if __name__ == '__main__':
         sys.stdout = open('DebugLog.txt', 'w')
 
     #final target output
-    inputPath_CVT_CALC = "./roi_output000.csv"
+    inputPath_CVT_CALC = "./roi_output002.csv"
 
     inputPath_MRA2_CALC = "./basegaze_output000.csv"
 

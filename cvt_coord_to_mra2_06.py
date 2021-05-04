@@ -859,7 +859,7 @@ if __name__ == '__main__':
     # "D:/Project/CVT/성능비교/DRCAM_KOR40BU4578_20190214_113824_0021_2/Result0001_20210205/CamToDisplay_config.json"
     # CamToDisplay_config.json
 
-    inputPath_ROI = "D:/Project/CVT/demo/Standalone_Player/1_DRCAM_KOR40BU4578_20190219_114431/roi_config.json"
+    inputPath_ROI = "./refer/roi_config.json"
     # roi_config.json
 
     # ret = load_jsonfile_preValue(inputPath_C2V, inputPath_D2V, inputPath_D2C)
