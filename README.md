@@ -15,11 +15,14 @@
 <img  src = "./desc/coordinate.png"  width="800px" > 
 
 # 3D target ROI 영역
-<img  src = "./desc/3d_target_roi3.png"  width="1058px" > 
+<img  src = "./desc/3d_target_roi3.png"  width="1000px" > 
 
 # Head and Eye gaze 합성
-<img  src = "./desc/gaze_method2.png"  width="1107px" >
+<img  src = "./desc/gaze_method2.png"  width="1000px" >
 
+# 최종결과
+Eye and target roi 랜더링&애니메이션 추가
+<img  src = "./desc/3d_gaze_roi_result.gif"  width="1000px" >
 # Gaze ROI 성능 검증 작업 예상일정
  1. 기존 제품 차량좌표계, 디스플레이 좌표계, 카메라 좌표계의 차이 파악 및 변환식 검토(~1 weeks) - 완료
  2. 타사 제품 카메라 좌표계 파악 및 차이점 분석/Eyeclosure 정의 및 iris관련 변환 파악(~1 weeks) - 완료
@@ -40,7 +43,7 @@
 | check_gaze3.py |**(예정)** 기존 제품 GT데이터를 이용하여,3D target ROI 매칭 여부 구현| --|
 | cvt_coord_to_mra2_05.py |**(예정)** 타사 알고리즘의 결과데이터의 최종 Eye gaze vector 계산 작업| --|
 | cvt_coord_to_mra2_06.py |**(예정)** 타사 알고리즘의 결과데이터의 최종 Eye gaze vector와 3D target ROI 매칭 작업| --|
-| -- |--| --|
+| render_animation.py |From eye gaze to target roi 랜더링&애니메이션 작업| --|
 |   |   |   |
  
  
