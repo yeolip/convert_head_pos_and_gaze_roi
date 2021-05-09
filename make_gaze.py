@@ -401,7 +401,7 @@ class make_gaze_and_roi(object):
                 print('\n')
         return extData
 
-    def rendering_roi_with_head_gaze(self, pROI, extData):
+    def rendering_roi_with_head_gaze(self, pROI, extData, nMax = -1):
 
         fig = plt.figure(figsize=(10,8))
         ax3 = fig.add_subplot(111, projection='3d')
@@ -410,7 +410,7 @@ class make_gaze_and_roi(object):
         # for i in pROI:
         #     print(i)
 
-        for i in pROI.index[0:10]:
+        for i in pROI.index[0:nMax]:
             # print(pROI.tID[i])
             # print(pROI.tTargetName[i])
             # print(pROI.ttop_left[i][0],pROI.ttop_left[i][1],pROI.ttop_left[i][2])
