@@ -72,6 +72,8 @@ def render_fix_roi(pROI, nMax=-1):
         # Y = np.array([[y0, y1], [y2, y3]])
         # Z = np.array([[z0, z1], [z2, z3]])
         # ax3.plot_surface(X, Y ,Z ,edgecolor = 'black',rstride = 1,cstride = 1,alpha = 0.6)
+        # ax3.plot3D([x0, x1, x3, x2, x0], [y0, y1, y3, y2, y0], [z0, z1, z3, z2, z0],  alpha=0.6,
+        #            label=str("%.2d_" % pROI.tID[i]) + pROI.tTargetName[i])
 
     # ax3.plot_surface(X, Y, Z, edgecolor='black', rstride=1, cstride=1, alpha=0.3, color='blue')
 
@@ -84,106 +86,8 @@ def render_fix_roi(pROI, nMax=-1):
     ax3.view_init(5, -10)
 
     # plt.show()
-
-    # fig, ax = plt.subplots()
-    # ax.set_xlim(0, 2 * np.pi)
-    # ax.set_ylim(-1.2, 1.2)
-    #
-    # x, y = [], []
-    # line, = ax3.plot([], [],0, 'bo')
-    # # ani = FuncAnimation(fig, update, frames=np.linspace(0, 2*np.pi, 128))
-    # ani = FuncAnimation(fig, update, frames=(x, y, np.linspace(0, 2*np.pi, 128)))
-    # #
-    # plt.show()
-
-    # fig = plt.figure()
-    # ax = Axes3D(fig)
-
-    # Fifty lines of random 3-D lines
-    # data = [Gen_RandLine(25, 3) for index in range(50)]
-    #
-    # # Creating fifty line objects.
-    # # NOTE: Can't pass empty arrays into 3d version of plot()
-    # lines = [ax3.plot(dat[0, 0:1], dat[1, 0:1], dat[2, 0:1])[0] for dat in data]
-
-
-
-    # for tindex in extData.index.values:
-        # h_x = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_X']
-        # h_y = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Y']
-        # h_z = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Z']
-        # in_x = extData.loc[tindex, 'intersect_x_h']
-        # in_y = extData.loc[tindex, 'intersect_y_h']
-        # in_z = extData.loc[tindex, 'intersect_z_h']
-        # ax3.scatter(xs=np.array([h_x]), ys=np.array([h_y]), zs=np.array([h_z]), s=50, c='r')
-        # ax3.scatter(xs=np.array([in_x]), ys=np.array([in_y]), zs=np.array([in_z]), s=10, c='b')
-        # ax3.plot([h_x, in_x], [h_y, in_y], [h_z, in_z])  # label=str(extData.loc[tindex, 'f_frame_counter_left_camera'])
-
-
-    # Setting the axes properties
-    # ax3.set_xlim3d([0.0, 1.0])
-    # ax3.set_xlabel('X')
-    #
-    # ax3.set_ylim3d([0.0, 1.0])
-    # ax3.set_ylabel('Y')
-    #
-    # ax3.set_zlim3d([0.0, 1.0])
-    # ax3.set_zlabel('Z')
-
-    # ax3.set_title('3D Test')
-    #
-    # # Creating the Animation object
-    # line_ani = FuncAnimation(fig, update_lines, 25, fargs=(data, lines),
-    #                                    interval=50, blit=False)
-
-
-
-    # plt.show()
-
     pass
 
-def update(x, y, frame):
-    x.append(frame)
-    y.append(np.sin(frame))
-    line.set_data(x, y)
-    return line,
-
-def Gen_RandLine(length, dims=2):
-    """
-    Create a line using a random walk algorithm
-
-    length is the number of points for the line.
-    dims is the number of dimensions the line has.
-    """
-    lineData = np.empty((dims, length))
-    lineData[:, 0] = np.random.rand(dims)
-    for index in range(1, length):
-        # scaling the random numbers by 0.1 so
-        # movement is small compared to position.
-        # subtraction by 0.5 is to change the range to [-0.5, 0.5]
-        # to allow a line to move backwards.
-        step = ((np.random.rand(dims) - 0.5) * 0.1)* 1000
-        lineData[:, index] = lineData[:, index - 1] + step
-
-    return lineData
-
-def update_gaze(num, data, pntGroup):
-    for line, data in zip(lines, dataLines):
-        # NOTE: there is no .set_data() for 3 dim data...
-        line.set_data(data[0:2, :num])
-        line.set_3d_properties(data[2, :num])
-        print(data[0], data[1], data[2])
-    # print("lines", lines)
-    return lines
-
-def update_lines(num, dataLines, lines):
-    for line, data in zip(lines, dataLines):
-        # NOTE: there is no .set_data() for 3 dim data...
-        line.set_data(data[0:2, :num])
-        line.set_3d_properties(data[2, :num])
-        print(data[0], data[1], data[2])
-    # print("lines", lines)
-    return lines
 def print_current_time():
     tnow = dt.datetime.now()
     print('%s-%2s-%2s %2s:%2s:%2s' % (tnow.year, tnow.month, tnow.day, tnow.hour, tnow.minute, tnow.second))
@@ -199,11 +103,11 @@ def update_graph2(num):
     s_z= extData.HSVL_MS_S_Head_Pos_Veh_Z[idx]
     t_roi = extData.roi_idx_h[idx]
 
-    print(t_roi, "pre_roi", pre_roi)
+#    print(t_roi, "pre_roi", pre_roi)
     if (pre_roi != t_roi):
         for i in ret_ExtROI.index:
             if(t_roi == ret_ExtROI.tID[i]):
-                print(i)
+#                print(i)
                 x0 = ret_ExtROI.ttop_left[i][0] * 1000
                 y0 = ret_ExtROI.ttop_left[i][1] * 1000
                 z0 = ret_ExtROI.ttop_left[i][2] * 1000
@@ -217,25 +121,19 @@ def update_graph2(num):
                 y3 = ret_ExtROI.tbottom_right[i][1] * 1000
                 z3 = ret_ExtROI.tbottom_right[i][2] * 1000
 
-                X = np.array([[x0, x1], [x2, x3]], dtype=int)
-                Y = np.array([[y0, y1], [y2, y3]], dtype=int)
-                Z = np.array([[z0, z1], [z2, z3]], dtype=int)
-                print(X,Y,Z)
-                # plot.remove()
-                pre_roi = t_roi
-                print("update preroi", pre_roi)
 
-                # ax3.clear()
-                # graph_roi.remove()
-                # graph_roi[0] = ax3.plot_surface(X, Y ,Z, edgecolor = 'black',rstride = 1,cstride = 1,alpha = 0.6)
-                # graph_roi[0] = ax3.plot_surface(X, Y ,Z, rstride=4, cstride=4)
-                # graph_roi.set_data(X, Y)
-                # graph_roi.set_3d_properties(Z)
+                X = np.array([[x0, x1], [x2, x3]])
+                Y = np.array([[y0, y1], [y2, y3]])
+                Z = np.array([[z0, z1], [z2, z3]])
+#                print(X,Y,Z)
+                pre_roi = t_roi
+#                print("update preroi", pre_roi)
+
+                graph_roi[0].remove()
+                graph_roi[0] = ax3.plot_surface(X, Y ,Z, edgecolor = 'black',rstride = 4,cstride = 4,alpha = 0.6)
                 break
     # print(i)
-    print('idx',idx, "pos=", t_x, t_y,t_z, "//", s_x,s_y,s_z)
-    # ret_ExtROI.tID
-    # graph._offsets3d = (extData.intersect_x_h[idx], extData.intersect_x_h[idx], extData.intersect_x_h[idx])
+#    print('idx',idx, "pos=", t_x, t_y,t_z, "//", s_x,s_y,s_z)
     graph_target.set_data(t_x,t_y)
     graph_target.set_3d_properties(t_z)
     graph_mideye.set_data(s_x,s_y)
@@ -247,14 +145,15 @@ def update_graph2(num):
     # title.set_text('3D gaze target ROI, num=')
     title.set_text('3D gaze target ROI, num={}'.format(int(idx)))
     idx+=1
-    return title, graph_gaze, graph_target, graph_mideye #, graph_roi
+    return title, graph_gaze, graph_target, graph_mideye, ax3 #, graph_roi
+    # return ax3
 
 if __name__ == '__main__':
     print("\n\n\n make_gaze test/////////////////////")
     if(0):
         sys.stdout = open('DebugLog.txt', 'w')
 
-    fps = 54  # frame per sec
+    fps = 30  # frame per sec
     frn = 60  # frame number of the animation
 
     fig = plt.figure(figsize=(10, 8))
@@ -269,8 +168,6 @@ if __name__ == '__main__':
 
     extData = extract_resultRoi_from_data('./out/basegaze_output000.csv')
     print('\n\n\n')
-    # graph = ax3.scatter(extData.intersect_x_h[0], extData.intersect_y_h[0], extData.intersect_z_h[0], s=50, c='r')
-    # graph = ax3.scatter(extData.intersect_x_h, extData.intersect_y_h, extData.intersect_z_h)
 
     extData = extData.astype({'intersect_x_h': int,
                               'intersect_y_h': int,
@@ -281,21 +178,20 @@ if __name__ == '__main__':
                              [extData.HSVL_MS_S_Head_Pos_Veh_Z[0],extData.intersect_z_h[0]], linewidth=3, color='springgreen')
     # graph_gaze, = ax3.plot([extData.HSVL_MS_S_Head_Pos_Veh_X,extData.intersect_x_h], [extData.HSVL_MS_S_Head_Pos_Veh_Y,extData.intersect_y_h],
     #                          [extData.HSVL_MS_S_Head_Pos_Veh_Z,extData.intersect_z_h])
-    tpnt = np.array([[0, 1], [0, 1]])
-    tpnt2 = np.array([[0, 0], [1, 1]])
-    tpnt3 = np.array([[1, 1], [1, 1]])
-    # graph_roi = [ax3.plot_surface(tpnt, tpnt2, tpnt3, edgecolor='black', rstride=1, cstride=1, alpha=0.6)]
-    # ani = FuncAnimation(fig, update_graph2, 30, interval=1, blit=False)
-    ani = FuncAnimation(fig, update_graph2, frn, blit=True, interval=1000/fps)
+    X = np.array([[0, 1], [0, 1]])
+    graph_roi = [ax3.plot_surface(X, X, X, edgecolor='black', rstride=4, cstride=4, alpha=0.6)]
 
+
+    ani = FuncAnimation(fig, update_graph2, frn, blit=False, interval=1000/fps)
     # fargs = (extData)
     # plt.show()
 
     fn = '3d_gaze_roi_result'
     # ani.save(fn + '.mp4', writer='ffmpeg', fps=fps)
     ani.save(fn + '.gif', writer='imagemagick', fps=fps)
-    # cmd = 'magick convert %s.gif -fuzz 5%% -layers Optimize %s_r.gif' % (fn, fn)
-    # subprocess.check_output(cmd)
+    cmd = 'magick convert %s.gif -fuzz 5%% -layers Optimize %s_r.gif' % (fn, fn)
+    print(cmd)
+    subprocess.check_output(cmd)
 
     # fig, ax = plt.subplots()
     # ax.set_xlim(0, 2 * np.pi)
