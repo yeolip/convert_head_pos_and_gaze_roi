@@ -29,7 +29,7 @@ Eye and target roi 랜더링&애니메이션 추가
  3. 변환 코드 구현 (~1 weeks) - 완료
  4. 선분과 평명의 충돌여부 판별 유무 검토(ROI 매칭)(~0.5 weeks) - 완료
  5. 기존 제품 GT데이터를 이용한 Gaze 검증(~1.5 weeks) - 미완료
- 6. 타사 제품 데이터를 이용한 Gaze검증(~1 weeks) - **진행중**
+ 6. 타사 제품 데이터를 이용한 Gaze검증(~1 weeks) 
  7. Validataion (~1 weeks)
 
 # 실행파일 설명
@@ -39,12 +39,16 @@ Eye and target roi 랜더링&애니메이션 추가
 | cvt_coord_to_mra2_04.py |1.카메라 좌표계 Head pos,rot를 차량 및 디스플레이 좌표계로 변환, Head rot가 좌표계별로 다르다는 가정(계산수식 추가),<BR> 2.Eyeclosure의 iris height pixel추가| --|
 | check_gaze.py |기존 제품 GT데이터의 단일 Head pos,rot, Eye gaze, 3D target ROI 계산| --|
 | testcode_intersection.py |선과 평면의 교차점 검증 작업(3D target ROI 매칭)| --|
-| check_gaze2.py |**(진행중)** 기존 제품 GT데이터와 3D target ROI정보를 연결 인터페이스 작업| --|
-| check_gaze3.py |**(예정)** 기존 제품 GT데이터를 이용하여,3D target ROI 매칭 여부 구현| --|
-| cvt_coord_to_mra2_05.py |**(예정)** 타사 알고리즘의 결과데이터의 최종 Eye gaze vector 계산 작업| --|
-| cvt_coord_to_mra2_06.py |**(예정)** 타사 알고리즘의 결과데이터의 최종 Eye gaze vector와 3D target ROI 매칭 작업| --|
+| check_gaze2.py |기존 제품 GT데이터와 3D target ROI정보를 연결 인터페이스 작업| --|
+| check_gaze3.py |기존 제품 GT데이터를 이용하여,3D target ROI 매칭 여부 구현| --|
+| cvt_coord_to_mra2_05.py |타사 알고리즘의 결과데이터의 최종 Eye gaze vector 계산 작업| --|
+| cvt_coord_to_mra2_06.py |타사 알고리즘의 결과데이터의 최종 Eye gaze vector와 3D target ROI 매칭 작업| --|
 | render_animation.py |From eye gaze to target roi 랜더링&애니메이션 작업| --|
+| align_gaze.py |gaze roi 결과 모음(기존 제품 결과 vs 기존재품 재계산 결과 vs 타사 알고리즘 결과 모음| --|
+| check_gaze_recursive.py |Eye gaze roi 계산 및 GT데이터와의 평가| --|
+| calc_gaze_acc.py |**(진행중)** Eye gaze roi에 대한 최종 accuracy결과(단일 영역 및 주변부 포함)| --|
 |   |   |   |
+ 
  
  
 # 참고문헌
