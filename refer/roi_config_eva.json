@@ -1,0 +1,315 @@
+{
+	"type": "Gaze ROI",
+	"version": "1.3",
+	"ROI":
+		[
+		{
+			"_comment": "Windshield Driver",
+			"id": 4,
+			"head_only_id": 3,
+			"priority": 1,
+			"obj_params":
+			{
+				"top_left": [1.11911, -0.78, 1.05324],
+				"top_right": [1.11911, 0.05, 1.05324],
+				"bottom_left": [0.517, -0.78, 0.677]
+			}
+		},
+		{
+			"id": 3,
+			"head_only_id": 4,
+			"priority": 1,
+			"obj_params":
+			{
+				"top_left": [0, 0, 0],
+				"top_right": [0, 0, 0],
+				"bottom_left": [0, 0, 0]
+			}
+		},
+
+		{
+			"_comment": "Windshield Passenger",
+			"id": 5,
+			"head_only_id": 5,
+			"priority": 1,
+			"obj_params": 
+			{
+				"top_left": [1.11911, 0.05, 1.05324],
+				"top_right": [1.11911, 0.78, 1.05324],
+				"bottom_left": [0.517, 0.05, 0.677]
+			}
+		},	
+		{
+			"_comment": "Offroad Up",
+			"id": 11,
+			"head_only_id": 11,
+			"priority": 1,
+			"obj_params":
+			{
+				"top_left": [1.33, -0.78, 1.05],
+				"top_right": [1.33, 0.78, 1.05],
+				"bottom_left": [1.115, -0.78, 1.05]
+			}
+		},
+		{
+			"_comment": "Offroad Front Interior",
+			"id": 13,
+			"head_only_id": 12,
+			"priority": 1,
+			"obj_params":
+			{
+				"top_left": [0.517, -0.78, 0.677],
+				"top_right": [0.517, 0.78, 0.677],
+				"bottom_left": [0.517, -0.78, 0.237]
+			}
+		},
+		{
+			"_comment": "Offroad Up 2",
+			"id": 19,
+			"head_only_id": 11,
+			"priority": 1,
+			"obj_params": 
+			{
+				"top_left": [2.3, -0.78, 1.05],
+				"top_right": [2.3, 0.78, 1.05],
+				"bottom_left": [1.33, -0.78, 1.05]
+			}
+		},
+		{
+			"_comment": "Passenger footwell",
+			"id": 20,
+			"head_only_id": 17,
+			"priority": 1,
+			"obj_params":
+			{
+				"top_left": [0.517, 0, 0.24],
+				"top_right": [0.517, 0.78, 0.24],
+				"bottom_left": [2.3, 0, 0.24]
+			}
+		},
+		
+		{
+			"_comment": "Display Driver",
+			"id": 1,
+			"head_only_id": 13,
+			"priority": 2,
+			"obj_params": 
+			{
+				"top_left": [0.927155, -0.565, 0.727752],
+				"top_right": [0.927155, -0.21, 0.727752],
+				"bottom_left": [0.998, -0.565, 0.607]
+			}
+		},
+		{
+			"_comment": "Rear Mirror",
+			"id": 9,
+			"head_only_id": 9,
+			"priority": 2,
+			"obj_params": 
+			{
+				"top_left": [1.202, -0.16, 1.09],
+				"top_right": [1.26412, 0.0718222, 1.09],
+				"bottom_left": [1.202, -0.16, 0.92]
+			}
+		},
+		{
+			"_comment": "Offroad Driver Lap and Footwell",
+			"id": 12,
+			"head_only_id": 12,
+			"priority": 2,
+			"obj_params":
+			{
+				"top_left": [0.517, -0.78, 0.24],
+				"top_right": [0.517, -1.11022e-16, 0.24],
+				"bottom_left": [2.3, -0.78, 0.24]
+			}
+		},
+		{
+			"_comment": "Offroad Driver Interior",
+			"id": 14,
+			"head_only_id": 15,
+			"priority": 2,
+			"obj_params":
+			{
+				"top_left": [0.517, -0.779568, 0.635088],
+				"top_right": [2.3, -0.779568, 0.635088],
+				"bottom_left": [0.517, -0.67, 0.24]
+			}
+		},
+		{
+			"_comment": "Offroad Driver Exterior",
+			"id": 15,
+			"head_only_id": 15,
+			"priority": 2,
+			"obj_params":
+			{
+				"top_left": [2.0061, -0.78, 1.60984],
+				"top_right": [2.69499, -0.78, 0.507376],
+				"bottom_left": [0.31, -0.78, 0.55]
+			}
+		},
+		{
+			"_comment": "Offroad Passenger Interior",
+			"id": 16,
+			"head_only_id": 17,
+			"priority": 2,
+			"obj_params":
+			{
+				"top_left": [0.517, 0.779568, 0.635088],
+				"top_right": [2.3, 0.779568, 0.635088],
+				"bottom_left": [0.517, 0.67, 0.24]
+			}
+		},
+		{
+			"_comment": "Offroad Passenger Exterior",
+			"id": 17,
+			"head_only_id": 17,
+			"priority": 2,
+			"obj_params":
+			{
+				"top_left": [2.0061, 0.78, 1.60984],
+				"top_right": [2.69499, 0.78, 0.507376],
+				"bottom_left": [0.31, 0.78, 0.55]
+			}
+		},
+
+		{
+			"_comment": "Display HeadUnit",
+			"id": 6,
+			"head_only_id": 6,
+			"priority": 3,
+			"obj_params":
+			{
+				"top_left": [0.942802, -0.184, 0.673321],
+				"top_right": [0.942802, 0.136, 0.673321],
+				"bottom_left": [1.068, -0.184, 0.501]
+			}
+		},
+		{
+			"_comment": "Driver Mirror",
+			"id": 7,
+			"head_only_id": 15,
+			"priority": 3,
+			"obj_params": 
+			{
+				"top_left": [1.101, -1.064, 0.785],
+				"top_right": [0.978441, -0.801171, 0.785],
+				"bottom_left": [1.101, -1.064, 0.545]
+			}
+		},
+		{
+			"_comment": "Offroad Glovebox",
+			"id": 18,
+			"head_only_id": 17,
+			"priority": 3,
+			"obj_params":
+			{
+				"top_left": [1.0305, 0.183, 0.5448],
+				"top_right": [1.0305, 0.599, 0.5448],
+				"bottom_left": [0.872, 0.183, 0.296]
+			}
+		},
+		{
+			"_comment": "Display Headup",
+			"id": 2,
+			"head_only_id": 2,
+			"priority": 4,
+			"obj_params": 
+			{
+				"top_left": [0.94439, 0.06, 0.673512],
+				"top_right": [0.94439, 0.15, 0.673512],
+				"bottom_left": [1.069, 0.06, 0.502]
+			}
+		},
+		{
+			"_comment": "Passenger Mirror",
+			"id": 8,
+			"head_only_id": 17,
+			"priority": 4,
+			"obj_params":
+			{
+				"top_left": [0.724, 0.831, 0.787],
+				"top_right": [0.850785, 1.10289, 0.787],
+				"bottom_left": [0.724, 0.831, 0.545]
+			}
+		},
+		{
+			"_comment": "Display_Passenger(Only EVA2 HES)",
+			"id": 10,
+			"head_only_id": 17,
+			"priority": 4,
+			"obj_params": 
+			{
+				"top_left": [0.87171, 0.152, 0.764244],
+				"top_right": [0.87171, 0.542, 0.764244],
+				"bottom_left": [1.031, 0.152, 0.545]
+			}
+		},
+		{
+			"id": 21,
+			"head_only_id": 21,
+			"priority": 1,
+			"obj_params":
+			{
+				"top_left": [0, 0, 0],
+				"top_right": [0, 0, 0],
+				"bottom_left": [0, 0, 0]
+			}
+		},
+		{
+			"id": 22,
+			"head_only_id": 22,
+			"priority": 1,
+			"obj_params":
+			{
+				"top_left": [0, 0, 0],
+				"top_right": [0, 0, 0],
+				"bottom_left": [0, 0, 0]
+			}
+		},
+		{
+			"id": 23,
+			"head_only_id": 23,
+			"priority": 1,
+			"obj_params":
+			{
+				"top_left": [0, 0, 0],
+				"top_right": [0, 0, 0],
+				"bottom_left": [0, 0, 0]
+			}
+		},
+		{
+			"id": 24,
+			"head_only_id": 24,
+			"priority": 1,
+			"obj_params":
+			{
+				"top_left": [0, 0, 0],
+				"top_right": [0, 0, 0],
+				"bottom_left": [0, 0, 0]
+			}
+		},
+		{
+			"id": 25,
+			"head_only_id": 25,
+			"priority": 1,
+			"obj_params":
+			{
+				"top_left": [0, 0, 0],
+				"top_right": [0, 0, 0],
+				"bottom_left": [0, 0, 0]
+			}
+		},
+		{
+			"id": 26,
+			"head_only_id": 26,
+			"priority": 1,
+			"obj_params":
+			{
+				"top_left": [0, 0, 0],
+				"top_right": [0, 0, 0],
+				"bottom_left": [0, 0, 0]
+			}
+		}
+	]
+}

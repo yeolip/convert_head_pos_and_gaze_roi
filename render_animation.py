@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
+import matplotlib as mpl
 import make_gaze as mg
 from util_calc import *
 import datetime as dt
@@ -155,6 +155,8 @@ if __name__ == '__main__':
 
     fps = 30  # frame per sec
     frn = 60  # frame number of the animation
+    mpl.rcParams['path.simplify_threshold'] = 1.0
+    mpl.rcParams['agg.path.chunksize'] = 10000
 
     fig = plt.figure(figsize=(10, 8))
     ax3 = fig.add_subplot(111, projection='3d')
@@ -184,14 +186,14 @@ if __name__ == '__main__':
 
     ani = FuncAnimation(fig, update_graph2, frn, blit=False, interval=1000/fps)
     # fargs = (extData)
-    # plt.show()
+    plt.show()
 
-    fn = '3d_gaze_roi_result'
-    # ani.save(fn + '.mp4', writer='ffmpeg', fps=fps)
-    ani.save(fn + '.gif', writer='imagemagick', fps=fps)
-    cmd = 'magick convert %s.gif -fuzz 5%% -layers Optimize %s_r.gif' % (fn, fn)
-    print(cmd)
-    subprocess.check_output(cmd)
+    # fn = '3d_gaze_roi_result'
+    # # ani.save(fn + '.mp4', writer='ffmpeg', fps=fps)
+    # ani.save(fn + '.gif', writer='imagemagick', fps=fps)
+    # cmd = 'magick convert %s.gif -fuzz 5%% -layers Optimize %s_r.gif' % (fn, fn)
+    # print(cmd)
+    # subprocess.check_output(cmd)
 
     # fig, ax = plt.subplots()
     # ax.set_xlim(0, 2 * np.pi)
