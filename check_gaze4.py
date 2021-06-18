@@ -391,7 +391,7 @@ def extract_availData_from_GT(inputPath_GT):
                           'MS_S_Gaze_RE_Center_X', 'MS_S_Gaze_RE_Center_Y', 'MS_S_Gaze_RE_Center_Z',
                           'MS_S_Gaze_RE_VA_rot_X', 'MS_S_Gaze_RE_VA_rot_Y', 'MS_S_Gaze_RE_VA_rot_Z',
                           'MS_S_Gaze_rot_X',       'MS_S_Gaze_rot_Y',     'MS_S_Gaze_rot_Z']]
-    df_extGT = df_extGT.dropna()
+    # df_extGT = df_extGT.dropna()
     # print('ret_ExtGT\n\n',ret_ExtGT)
     print('df_extGT\n\n', df_extGT)
     return df_extGT
@@ -690,6 +690,9 @@ def rendering_roi_with_head_gaze(pROI, extData):
     # for i in pROI:
     #     print(i)
 
+    pROI = pROI.sort_values(['tID'], ascending=True)
+    # tdata_second_type = tdata_second_type.sort_values(['title', 'type_idx', 'point_name'], ascending=True)
+
     for i in pROI.index[0:-1]:
         # print(pROI.tID[i])
         # print(pROI.tTargetName[i])
@@ -764,10 +767,10 @@ def save_csvfile(tdatas, filename):
 
 if __name__ == '__main__':
     print("\n\n\n test/////////////////////")
-    if(1):
+    if(0):
         sys.stdout = open('DebugLog.txt', 'w')
     if(1):
-        inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
+        # inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
         # inputPath_GT = "./refer/GT_3531_96_670222_0001_small.csv"
         # inputPath_GT = "./refer/GT_3531_96_670222_0001_mix.csv"
         # inputPath_GT = "./refer/GT/3810_10_811709_0001_all.csv"
@@ -782,8 +785,14 @@ if __name__ == '__main__':
         # inputPath_GT = "./refer/GT/3810_80_811843_0001_all.csv"
         # inputPath_GT = "./refer/GT/3810_90_811862_0001_all.csv"
         # inputPath_GT = "./refer/GT/3810_100_811882_0001_all.csv"
+        # inputPath_GT = "./refer/GT_ALL/3810_91_811864_0001_all.csv"
+        # inputPath_GT = "./refer/GT_ALL/3810_158_811994_0001_all.csv"
+        # inputPath_GT = "./refer/GT_ALL/3810_2606_816850_0001_all.csv"
+        # inputPath_GT = "./refer/GT_ALL/3810_2088_815814_0001_all.csv"
+        # inputPath_GT = "./refer/GT_ALL/3810_1565_814768_0001_all.csv"
+        inputPath_GT = "./refer/GT_ALL/3810_3124_817892_0001_all.csv"
 
-        inputPath_ROI = "./refer/roi_config.json"
+        inputPath_ROI = "./refer/roi_config_eva.json"
         # roi_config.json
         ret_roi = load_jsonfile_ROI(inputPath_ROI)
 
@@ -796,7 +805,7 @@ if __name__ == '__main__':
 
         print('\n\n',ret_ExtGT_with_direction)
         ret_match = check_match_roi(ret_ExtGT_with_direction, ret_ExtROI, 0)    #150
-        save_csvfile(ret_match, "./basegaze_output.csv")
+        # save_csvfile(ret_match, "./basegaze_output.csv")
         # ret_match.to_csv("filename.csv", mode='w', index=False, header=False, sep=',', quotechar=" ",
         #                  float_format='%.4f')
 
