@@ -447,7 +447,9 @@ def make_prototype_on_pandas(frameId):
                       "Het2DLandmark.f_right_positionX7", "Het2DLandmark.f_right_positionY7",
                       "Het2DLandmark.f_stereo_face_plane_nose_residual_mm", "f_headpose_tracking_mode",
                       "S_Head_tracking_status_from_early", "Number_of_eye_blinks_haf", "timestamp_result_receive",
-                      "eyeclose_height_left", "eyeclose_height_right"]
+                      "eyeclose_height_left", "eyeclose_height_right",
+                      "cam_cvt_head_pos_X", "cam_cvt_head_pos_Y", "cam_cvt_head_pos_Z",
+                      "cam_cvt_head_rot_X", "cam_cvt_head_rot_Y", "cam_cvt_head_rot_Z"]
 
 
     toutput = pd.DataFrame(data=0, index=frameId, columns=target_columns )  # index 지정
@@ -706,6 +708,13 @@ def modify_HeadObject_from_craft_to_daimler(extData, tpd):
             tpd.loc[tindex, 'MS_S_Head_rot_Z'] = 'nan'
             tpd.loc[tindex, 'HSVL_S_Head_dir_h'] = 'nan'
             tpd.loc[tindex, 'HSVL_S_Head_dir_v'] = 'nan'
+            tpd.loc[tindex, 'cam_cvt_head_pos_X'] = 'nan'
+            tpd.loc[tindex, 'cam_cvt_head_pos_Y'] = 'nan'
+            tpd.loc[tindex, 'cam_cvt_head_pos_Z'] = 'nan'
+            tpd.loc[tindex, 'cam_cvt_head_rot_X'] = 'nan'
+            tpd.loc[tindex, 'cam_cvt_head_rot_Y'] = 'nan'
+            tpd.loc[tindex, 'cam_cvt_head_rot_Z'] = 'nan'
+
         else:
             tR, tT = changeAxis_opencv2daimler(extData.headOri.loc[tindex], extData.headPos3D.loc[tindex])
             print('tR', tR, 'tT', tT)
@@ -726,6 +735,9 @@ def modify_HeadObject_from_craft_to_daimler(extData, tpd):
 
             # cam->disp->veh
 
+            tpd.loc[tindex, 'cam_cvt_head_pos_X'] = tT[0] * 1000
+            tpd.loc[tindex, 'cam_cvt_head_pos_Y'] = tT[1] * 1000
+            tpd.loc[tindex, 'cam_cvt_head_pos_Z'] = tT[2] * 1000
             tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_X'] = mat_C2V_44[0,3]*1000
             tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Y'] = mat_C2V_44[1,3]*1000
             tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Z'] = mat_C2V_44[2,3]*1000
@@ -736,6 +748,9 @@ def modify_HeadObject_from_craft_to_daimler(extData, tpd):
             tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Disp_Y'] = np.int64(mat_C2D_44[1,3]*1000)
             tpd.loc[tindex, 'HSVL_MS_S_Head_Pos_Disp_Z'] = np.int64(mat_C2D_44[2,3]*1000)
 
+            tpd.loc[tindex, 'cam_cvt_head_rot_X'] = tR[0]
+            tpd.loc[tindex, 'cam_cvt_head_rot_Y'] = tR[1]
+            tpd.loc[tindex, 'cam_cvt_head_rot_Z'] = tR[2]
             tpd.loc[tindex, 'MS_S_Head_rot_X'] = rotationMatrixToEulerAngles(mat_C2V_44[0:3, 0:3])[0]*rad2Deg
             tpd.loc[tindex, 'MS_S_Head_rot_Y'] = rotationMatrixToEulerAngles(mat_C2V_44[0:3, 0:3])[1]*rad2Deg
             tpd.loc[tindex, 'MS_S_Head_rot_Z'] = rotationMatrixToEulerAngles(mat_C2V_44[0:3, 0:3])[2]*rad2Deg
