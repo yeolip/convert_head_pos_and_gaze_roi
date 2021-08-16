@@ -485,7 +485,7 @@ def retcalcuate_head_eye_direction(extData):
         # rt = rt1
         # rot2 = np.eye(3)
         rt_2 = np.dot(eulerAnglesToRotationMatrix(np.array([0, 0, math.pi])), np.array([1, 1, 1])).round(5)
-        rt = eulerAnglesToRotationMatrix(headOri_radian * rt_2)
+        rt = eulerAnglesToRotationMatrix(headOri_radian * rt_2 * np.array([1, 1, 1]))
 
         rot2_l = eulerAnglesToRotationMatrix(lpupil_roll_pitch_yaw_rad)
         rot2_r = eulerAnglesToRotationMatrix(rpupil_roll_pitch_yaw_rad)
@@ -602,7 +602,7 @@ def check_match_roi(extData, ret_ExtROI, errDist = 0):
             print(' ',tidx, ret_ExtROI['tID'][tidx], ret_ExtROI['tTargetName'][tidx])
             troi_id = ret_ExtROI["tID"][tidx]
             troi_name = ret_ExtROI["tTargetName"][tidx]
-            if(troi_id == 5 or troi_id == 7 or troi_id == 8):
+            if(troi_id == 7 or troi_id == 8 or troi_id == 9 ):
                 offset = errDist
             else:
                 offset = 0
@@ -770,7 +770,7 @@ if __name__ == '__main__':
     if(0):
         sys.stdout = open('DebugLog.txt', 'w')
     if(1):
-        # inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
+        inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
         # inputPath_GT = "./refer/GT_3531_96_670222_0001_small.csv"
         # inputPath_GT = "./refer/GT_3531_96_670222_0001_mix.csv"
         # inputPath_GT = "./refer/GT/3810_10_811709_0001_all.csv"
@@ -790,9 +790,9 @@ if __name__ == '__main__':
         # inputPath_GT = "./refer/GT_ALL/3810_2606_816850_0001_all.csv"
         # inputPath_GT = "./refer/GT_ALL/3810_2088_815814_0001_all.csv"
         # inputPath_GT = "./refer/GT_ALL/3810_1565_814768_0001_all.csv"
-        inputPath_GT = "./refer/GT_ALL/3810_3124_817892_0001_all.csv"
+        # inputPath_GT = "./refer/GT_ALL/3810_3124_817892_0001_all.csv"
 
-        inputPath_ROI = "./refer/roi_config_eva.json"
+        inputPath_ROI = "./refer/roi_config_eva2.json"
         # roi_config.json
         ret_roi = load_jsonfile_ROI(inputPath_ROI)
 
@@ -804,12 +804,12 @@ if __name__ == '__main__':
         ret_ExtGT_with_direction = retcalcuate_head_eye_direction(ret_ExtGT)
 
         print('\n\n',ret_ExtGT_with_direction)
-        ret_match = check_match_roi(ret_ExtGT_with_direction, ret_ExtROI, 0)    #150
-        # save_csvfile(ret_match, "./basegaze_output.csv")
+        ret_match = check_match_roi(ret_ExtGT_with_direction, ret_ExtROI, 200)    #150
+        save_csvfile(ret_match, "./basegaze_output.csv")
         # ret_match.to_csv("filename.csv", mode='w', index=False, header=False, sep=',', quotechar=" ",
         #                  float_format='%.4f')
 
-        rendering_roi_with_head_gaze(ret_ExtROI, ret_match)
+        # rendering_roi_with_head_gaze(ret_ExtROI, ret_match)
         # ret_match.to_csv("filename.csv", mode='w', index=False, header=False, sep=',', quotechar=" ", float_format='%.4f')
 
 
