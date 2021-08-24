@@ -40,8 +40,9 @@ def render_fix_roi(pROI, nMax=-1):
     # ax3 = fig.add_subplot(111, projection='3d')
     #
     # plt.title('3D gaze target ROI')
+    pROI = pROI.sort_values(['tID'], ascending=True)
 
-    for i in pROI.index[0:nMax]:
+    for i in pROI.index:  #[0:nMax]
         # print(pROI.tID[i])
         # print(pROI.tTargetName[i])
         # print(pROI.ttop_left[i][0],pROI.ttop_left[i][1],pROI.ttop_left[i][2])
@@ -83,8 +84,9 @@ def render_fix_roi(pROI, nMax=-1):
     ax3.set_ylabel('veh Y', fontsize=16)
     ax3.set_zlabel('veh Z', fontsize=16)
     ax3.legend(loc='center left', bbox_to_anchor=(-0.3, 0.5), fontsize='small')
-    ax3.view_init(5, -10)
-
+    ax3.view_init(-5, 0)
+    ax3.azim = 180
+    ax3.dist = 8
     # plt.show()
     pass
 
@@ -153,8 +155,8 @@ if __name__ == '__main__':
     if(0):
         sys.stdout = open('DebugLog.txt', 'w')
 
-    fps = 30  # frame per sec
-    frn = 60  # frame number of the animation
+    fps = 54  # frame per sec
+    frn = 3224  # frame number of the animation
     mpl.rcParams['path.simplify_threshold'] = 1.0
     mpl.rcParams['agg.path.chunksize'] = 10000
 
@@ -186,14 +188,16 @@ if __name__ == '__main__':
 
     ani = FuncAnimation(fig, update_graph2, frn, blit=False, interval=1000/fps)
     # fargs = (extData)
-    plt.show()
-
-    # fn = '3d_gaze_roi_result'
-    # # ani.save(fn + '.mp4', writer='ffmpeg', fps=fps)
+    # plt.show()
+    # print(1/0)
+    
+    fn = '3d_gaze_roi_result3'
+    ani.save(fn + '.mp4', writer='ffmpeg', fps=fps)
     # ani.save(fn + '.gif', writer='imagemagick', fps=fps)
     # cmd = 'magick convert %s.gif -fuzz 5%% -layers Optimize %s_r.gif' % (fn, fn)
     # print(cmd)
     # subprocess.check_output(cmd)
+    plt.show()
 
     # fig, ax = plt.subplots()
     # ax.set_xlim(0, 2 * np.pi)
