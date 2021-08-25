@@ -83,9 +83,17 @@ def render_fix_roi(pROI, nMax=-1):
     ax3.set_xlabel('veh X', fontsize=16)
     ax3.set_ylabel('veh Y', fontsize=16)
     ax3.set_zlabel('veh Z', fontsize=16)
-    ax3.legend(loc='center left', bbox_to_anchor=(-0.3, 0.5), fontsize='small')
-    ax3.view_init(-5, 0)
+    ax3.legend(loc='center left', bbox_to_anchor=(-0.15, 0.5), fontsize='small')
+    #camera view = up->down
+    # ax3.view_init(+95, 0)
+
+    #camera view = front->back
+    ax3.view_init(-3, 0)
     ax3.azim = 180
+
+    #camera view = back->front
+    # ax3.view_init(-3, 0)
+
     ax3.dist = 8
     # plt.show()
     pass
@@ -191,7 +199,7 @@ if __name__ == '__main__':
     # plt.show()
     # print(1/0)
     
-    fn = '3d_gaze_roi_result3'
+    fn = '3d_gaze_roi_result_15'
     ani.save(fn + '.mp4', writer='ffmpeg', fps=fps)
     # ani.save(fn + '.gif', writer='imagemagick', fps=fps)
     # cmd = 'magick convert %s.gif -fuzz 5%% -layers Optimize %s_r.gif' % (fn, fn)
