@@ -500,9 +500,12 @@ def retcalcuate_head_eye_direction(extData):
         headDir_mid = np.dot(rot2_mid, np.dot(rt, [1, 0, 0]))
         # headDir_mid = np.dot(rt, np.dot(rot2_mid, [1, 0, 0]))
 
-        headDir_l = np.dot(np.dot(rot2_l , rt), [1,0,0])
-        headDir_r = np.dot(np.dot(rot2_r , rt), [1,0,0])
-        headDir_mid = np.dot(np.dot(rot2_mid , rt), [1,0,0])
+        # headDir_l = np.dot(np.dot(rot2_l , rt), [1,0,0])
+        # headDir_r = np.dot(np.dot(rot2_r , rt), [1,0,0])
+        # headDir_mid = np.dot(np.dot(rot2_mid , rt), [1,0,0])
+        headDir_l = np.dot(np.dot(rt,rot2_l ), [1,0,0])
+        headDir_r = np.dot(np.dot(rt,rot2_r ), [1,0,0])
+        headDir_mid = np.dot(np.dot(rt,rot2_mid), [1,0,0])
         # print(headDir_mid)
         # print(rotationMatrixToEulerAngles(headDir_mid))
         # print(rotationMatrixToEulerAngles(headDir_mid)*rad2Deg)
@@ -804,7 +807,7 @@ if __name__ == '__main__':
         ret_ExtGT_with_direction = retcalcuate_head_eye_direction(ret_ExtGT)
 
         print('\n\n',ret_ExtGT_with_direction)
-        ret_match = check_match_roi(ret_ExtGT_with_direction, ret_ExtROI, 200)    #150
+        ret_match = check_match_roi(ret_ExtGT_with_direction, ret_ExtROI, 0)    #150
         save_csvfile(ret_match, "./basegaze_output.csv")
         # ret_match.to_csv("filename.csv", mode='w', index=False, header=False, sep=',', quotechar=" ",
         #                  float_format='%.4f')
