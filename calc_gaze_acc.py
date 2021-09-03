@@ -111,11 +111,11 @@ def counting_gaze_roi(tdata):
         print()
         tcount_green = tdata[(tdata['gt_s_gaze_roi_das'] == i)]['hit_green_roi'].count()
         tpass_green = tdata[(tdata['hit_green_roi'] == 'TRUE') & (tdata['gt_s_gaze_roi_das'] == i) ]['hit_green_roi'].count()
-        print('green roi',i,' - ',tpass_green, '/' , tcount_green, '=', tpass_green/tcount_green*100, '%')
+        print('green roi',i,' - ',tpass_green, '/' , tcount_green, '={:.2f}'.format(tpass_green/tcount_green*100), '%')
 
         tcount_amber = tdata[(tdata['gt_s_gaze_roi_das'] == i)]['hit_amber_roi'].count()
         tpass_amber = tdata[(tdata['hit_amber_roi'] == 'TRUE') & (tdata['gt_s_gaze_roi_das'] == i) ]['hit_amber_roi'].count()
-        print('amber roi',i,' - ',tpass_amber, '/' , tcount_amber, '=', tpass_amber/tcount_amber*100, '%')
+        print('amber roi',i,' - ',tpass_amber, '/' , tcount_amber, '={:.2f}'.format(tpass_amber/tcount_amber*100), '%')
         # print(tcount_amber, "  ", tpass_amber)
         # print(1 / 0)
 
@@ -284,7 +284,7 @@ if __name__ == '__main__':
     if(0):
         sys.stdout = open('DebugLog.txt', 'w')
 
-    inputfile = "./accuracy_output005_MRA2_vs_GT_2.csv"
+    inputfile = "./accuracy_output005.csv"
     df_data = extract_availData_from_GT_and_result(inputfile)
     df_data2 = policy_gaze_roi_accuracy(df_data, 'roi_idx_h')
     counting_gaze_roi(df_data2)
