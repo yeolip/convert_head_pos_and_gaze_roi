@@ -255,8 +255,7 @@ def retcalcuate_head_eye_direction_short(extData):
         # print(tframecnt, troi_result, troi_x, troi_y)
 
         headPos3D_mm = thead_pos
-        # headOri_radian = thead_rot * deg2Rad
-        headOri_radian = np.array([0,0,0]) * deg2Rad
+        headOri_radian = thead_rot * deg2Rad
         print("headPos3D_mm", headPos3D_mm)
         print("headOri_radian", headOri_radian)
 
@@ -312,12 +311,15 @@ def calc_score(roi_center, roi_one_of_points, target_point):
 def check_match_roi(extData, ret_ExtROI, errDist = 0):
     extData['roi_idx_h'] =  ""
     extData['roi_name_h'] = ""
-    extData['roi_X'] = 0
-    extData['roi_Y'] = 0
-    extData['intersect_x_h'] =  0
-    extData['intersect_y_h'] =  0
-    extData['intersect_z_h'] =  0
+    extData['roi_X'] = ""
+    extData['roi_Y'] = ""
+    extData['intersect_x_h'] =  ""
+    extData['intersect_y_h'] =  ""
+    extData['intersect_z_h'] =  ""
     extData['roi_score'] =  ""
+    extData['max_target_id'] =  ""
+    extData['max_roi_score'] =  ""
+
 
     for tindex in extData.index.values:
         print(tindex,"번째 index, frameID = ", extData.loc[tindex, 'f_frame_counter_left_camera'],'\n')
@@ -377,15 +379,15 @@ def check_match_roi(extData, ret_ExtROI, errDist = 0):
             print(' ','camPlaneOrthVector',camPlaneOrthVector)
             print(' ','pointOnPlan',pointOnPlan)
             ret_check, point_mapping = calc_match_roi(p0, p1, p3, p2, camPlaneOrthVector, pointOnPlan, headDir_mid, headPos)
-            if(point_mapping[0] != 0 or point_mapping[1] != 0 or point_mapping[2] != 0):
-                target_roi_score = calc_score(pointOnPlan, p0, [point_mapping[0], point_mapping[1], point_mapping[2]])
-                if(max_target_roi_score  < target_roi_score):
-                    max_target_roi_score = target_roi_score
-                    max_target_id = str(troi_id)
-                    max_target_name = troi_name
-                    max_target_point = point_mapping
-                    max_target_roi_x = int(bcheck_match.line_point_min_dist(point_mapping, p0, p2) / distance_xyz(p0, p1) * 100)
-                    max_target_roi_y = int(bcheck_match.line_point_min_dist(point_mapping, p0, p1) / distance_xyz(p0,p2) * 100)
+            # if(point_mapping[0] != 0 or point_mapping[1] != 0 or point_mapping[2] != 0):
+            #     target_roi_score = calc_score(pointOnPlan, p0, [point_mapping[0], point_mapping[1], point_mapping[2]])
+            #     if(max_target_roi_score  < target_roi_score):
+            #         max_target_roi_score = target_roi_score
+            #         max_target_id = str(troi_id)
+            #         max_target_name = troi_name
+            #         max_target_point = point_mapping
+            #         max_target_roi_x = int(bcheck_match.line_point_min_dist(point_mapping, p0, p2) / distance_xyz(p0, p1) * 100)
+            #         max_target_roi_y = int(bcheck_match.line_point_min_dist(point_mapping, p0, p1) / distance_xyz(p0,p2) * 100)
             # if(ret_check == True):
             #     extData.loc[tindex, 'roi_idx_h'] = str(extData.loc[tindex, 'roi_idx_h']) + '/' + str(troi_id)
             #     extData.loc[tindex, 'roi_name_h'] = extData.loc[tindex, 'roi_name_h'] + '/' + troi_name
@@ -397,16 +399,33 @@ def check_match_roi(extData, ret_ExtROI, errDist = 0):
             #     extData.loc[tindex, 'roi_Y'] = int(bcheck_match.line_point_min_dist(point_mapping, p0, p1) / distance_xyz(p0,p2) * 100)
             #     extData.loc[tindex, 'roi_score'] = str(extData.loc[tindex, 'roi_score']) + '/' +  str(calc_score(pointOnPlan, p0, [point_mapping[0], point_mapping[1], point_mapping[2]]))
             #     # break
+            if(point_mapping[0] != 0 or point_mapping[1] != 0 or point_mapping[2] != 0):
+                extData.loc[tindex, 'roi_idx_h'] = str(extData.loc[tindex, 'roi_idx_h']) + '/' + str(troi_id)
+                extData.loc[tindex, 'roi_name_h'] = extData.loc[tindex, 'roi_name_h'] + '/' + troi_name
+                extData.loc[tindex, 'intersect_x_h'] = str(extData.loc[tindex, 'intersect_x_h']) + '/' + str(np.round(point_mapping[0],1))
+                extData.loc[tindex, 'intersect_y_h'] = str(extData.loc[tindex, 'intersect_y_h']) + '/' + str(np.round(point_mapping[1],1))
+                extData.loc[tindex, 'intersect_z_h'] = str(extData.loc[tindex, 'intersect_z_h']) + '/' + str(np.round(point_mapping[2],1))
+                extData.loc[tindex, 'roi_X'] = str(extData.loc[tindex, 'roi_X']) + '/' + str(int(bcheck_match.line_point_min_dist(point_mapping, p0, p2) / distance_xyz(p0, p1) * 100))
+                extData.loc[tindex, 'roi_Y'] = str(extData.loc[tindex, 'roi_Y']) + '/' + str(int(bcheck_match.line_point_min_dist(point_mapping, p0, p1) / distance_xyz(p0,p2) * 100))
+                extData.loc[tindex, 'roi_score'] = str(extData.loc[tindex, 'roi_score']) + '/' +  str(calc_score(pointOnPlan, p0, [point_mapping[0], point_mapping[1], point_mapping[2]]))
+
+                target_roi_score = calc_score(pointOnPlan, p0, [point_mapping[0], point_mapping[1], point_mapping[2]])
+                if(max_target_roi_score  < target_roi_score):
+                    max_target_roi_score = target_roi_score
+                    max_target_id = str(troi_id)
+
             print('\n')
 
-        extData.loc[tindex, 'roi_idx_h'] = max_target_id
-        extData.loc[tindex, 'roi_name_h'] = max_target_name
-        extData.loc[tindex, 'intersect_x_h'] = max_target_point[0]
-        extData.loc[tindex, 'intersect_y_h'] = max_target_point[1]
-        extData.loc[tindex, 'intersect_z_h'] = max_target_point[2]
-        extData.loc[tindex, 'roi_X'] = max_target_roi_x
-        extData.loc[tindex, 'roi_Y'] = max_target_roi_y
-        extData.loc[tindex, 'roi_score'] = max_target_roi_score
+        # extData.loc[tindex, 'roi_idx_h'] = max_target_id
+        # extData.loc[tindex, 'roi_name_h'] = max_target_name
+        # extData.loc[tindex, 'intersect_x_h'] = max_target_point[0]
+        # extData.loc[tindex, 'intersect_y_h'] = max_target_point[1]
+        # extData.loc[tindex, 'intersect_z_h'] = max_target_point[2]
+        # extData.loc[tindex, 'roi_X'] = max_target_roi_x
+        # extData.loc[tindex, 'roi_Y'] = max_target_roi_y
+        # extData.loc[tindex, 'roi_score'] = max_target_roi_score
+        extData.loc[tindex, 'max_target_id'] = max_target_roi_score
+        extData.loc[tindex, 'max_roi_score'] = max_target_id
     return extData
 
 def distance_xyz(a,b):
@@ -631,8 +650,8 @@ if __name__ == '__main__':
             # print('ret_match', ret_match)
             df_merge = pd.concat([df_merge, ret_match]).reset_index(drop=True)
 
-        # save_csvfile(df_merge, 'save_output.csv')
-        # print(1/0)
+        save_csvfile(df_merge, 'save_output.csv')
+        print(1/0)
         print("df_merge",df_merge)
         df_merge = df_merge.astype({'roi_idx_h':"int64", "gt_s_gaze_roi_das":"int64"})
         df_merge['hit'] = (df_merge['roi_idx_h'] == df_merge['gt_s_gaze_roi_das'])
