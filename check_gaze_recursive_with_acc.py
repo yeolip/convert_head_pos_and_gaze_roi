@@ -363,6 +363,24 @@ def check_match_roi(extData, ret_ExtROI, errDist = 0):
             #     offset = 50
             # else:
             #     offset = 0
+            if(troi_id == 7  ):
+                offset = 135+40 + 5
+            elif (troi_id == 8):
+                offset = 170+40
+            elif(troi_id == 9):
+                offset = 60+ 40 + 20
+            elif(troi_id == 1):
+                offset = 80 + 0 + 5
+            elif (troi_id == 3 or troi_id == 4):  # or troi_id == 5
+                offset = 80
+            elif (troi_id == 5):
+                offset = 60 + 10
+            elif (troi_id == 6):
+                offset = 25 + 15 + 15
+            elif (troi_id == 14 or troi_id == 16 or troi_id == 11 or troi_id == 19 ):
+                offset = 25 + 15
+            else:
+                offset = 25
             p0 = np.array(ret_ExtROI["ttop_left"][tidx]) * 1000  + np.array([0,-offset,offset])
             p1 = np.array(ret_ExtROI["ttop_right"][tidx]) * 1000 + np.array([0,offset,offset])
             p2 = np.array(ret_ExtROI["tbottom_left"][tidx]) * 1000 + np.array([0,-offset,-offset])
@@ -626,7 +644,7 @@ if __name__ == '__main__':
             ret_ExtGT = extract_availData_from_GT_short(inputPath_GT)
             ret_ExtGT_with_direction = retcalcuate_head_eye_direction_short(ret_ExtGT)
             # print('\n\n', ret_ExtGT_with_direction)
-            ret_match = check_match_roi(ret_ExtGT_with_direction, ret_ExtROI, 250)  # 150
+            ret_match = check_match_roi(ret_ExtGT_with_direction, ret_ExtROI, 25)  # 150
             ret_match['Load_file'] =  os.path.basename(tname)
             # print('ret_match', ret_match)
             df_merge = pd.concat([df_merge, ret_match]).reset_index(drop=True)
