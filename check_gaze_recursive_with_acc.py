@@ -364,21 +364,29 @@ def check_match_roi(extData, ret_ExtROI, errDist = 0):
             # else:
             #     offset = 0
             if(troi_id == 7  ):
-                offset = 135+40 + 5
+                offset = 135+ 40 + 5 + 10 + 10 + 10
             elif (troi_id == 8):
                 offset = 170+40
             elif(troi_id == 9):
-                offset = 60+ 40 + 20
+                offset = 60+ 40 + 20 + 25 + 20 + 20 + 10
             elif(troi_id == 1):
-                offset = 80 + 0 + 5
+                offset = 80 + 0 + 5 + 10 + 20 + 10 +20
             elif (troi_id == 3 or troi_id == 4):  # or troi_id == 5
                 offset = 80
             elif (troi_id == 5):
                 offset = 60 + 10
             elif (troi_id == 6):
-                offset = 25 + 15 + 15
-            elif (troi_id == 14 or troi_id == 16 or troi_id == 11 or troi_id == 19 ):
-                offset = 25 + 15
+                offset = 25 + 15 + 15 + 20 + 20 + 10 + 20
+            elif (troi_id == 14):
+                offset = 25 + 15 + 0 + 5
+            elif (troi_id == 19):
+                offset = 25 + 15 + 0 + 5 + 0 + 0 + 5
+            elif (troi_id == 16):
+                offset = 25 + 15 + 0 + 5 + 10 + 10
+            elif (troi_id == 11):
+                offset = 25 + 15 + 0 + -5
+            elif (troi_id == 10):
+                offset = 25 + 0 + 0 + 10 + 10 + 10
             else:
                 offset = 25
             p0 = np.array(ret_ExtROI["ttop_left"][tidx]) * 1000  + np.array([0,-offset,offset])
@@ -395,15 +403,16 @@ def check_match_roi(extData, ret_ExtROI, errDist = 0):
             print(' ','camPlaneOrthVector',camPlaneOrthVector)
             print(' ','pointOnPlan',pointOnPlan)
             ret_check, point_mapping = calc_match_roi(p0, p1, p3, p2, camPlaneOrthVector, pointOnPlan, headDir_mid, headPos)
-            if(point_mapping[0] != 0 or point_mapping[1] != 0 or point_mapping[2] != 0):
-                target_roi_score = calc_score(pointOnPlan, p0, [point_mapping[0], point_mapping[1], point_mapping[2]])
-                if(max_target_roi_score  < target_roi_score):
-                    max_target_roi_score = target_roi_score
-                    max_target_id = str(troi_id)
-                    max_target_name = troi_name
-                    max_target_point = point_mapping
-                    max_target_roi_x = int(bcheck_match.line_point_min_dist(point_mapping, p0, p2) / distance_xyz(p0, p1) * 100)
-                    max_target_roi_y = int(bcheck_match.line_point_min_dist(point_mapping, p0, p1) / distance_xyz(p0,p2) * 100)
+            if(ret_check == True):
+                if(point_mapping[0] != 0 or point_mapping[1] != 0 or point_mapping[2] != 0):
+                    target_roi_score = calc_score(pointOnPlan, p0, [point_mapping[0], point_mapping[1], point_mapping[2]])
+                    if(max_target_roi_score  < target_roi_score):
+                        max_target_roi_score = target_roi_score
+                        max_target_id = str(troi_id)
+                        max_target_name = troi_name
+                        max_target_point = point_mapping
+                        max_target_roi_x = int(bcheck_match.line_point_min_dist(point_mapping, p0, p2) / distance_xyz(p0, p1) * 100)
+                        max_target_roi_y = int(bcheck_match.line_point_min_dist(point_mapping, p0, p1) / distance_xyz(p0,p2) * 100)
             # if(ret_check == True):
             #     extData.loc[tindex, 'roi_idx_h'] = str(extData.loc[tindex, 'roi_idx_h']) + '/' + str(troi_id)
             #     extData.loc[tindex, 'roi_name_h'] = extData.loc[tindex, 'roi_name_h'] + '/' + troi_name
@@ -517,7 +526,7 @@ def policy_gaze_roi_accuracy(tdata, text_column):
     tdata['hit_green_roi'] = "None"
     tdata['hit_amber_roi'] = "None"
     roi_group_green = {1: [1], 3: [3,4], 4: [3,4], 5: [5,9], 6:[6], 7:[7], 8:[8], 9:[9], 10:[10], 11:[11,19],
-                       12:[12, 13], 14:[14, 12], 15:[15], 16:[16], 17:[17], 19:[11]}
+                       12:[12, 13], 14:[14, 12], 15:[15], 16:[16], 17:[17], 19:[19, 11]}
 
     roi_group_amber = {1: [1,4,6,13], 3: [1,3,4,5,11,13,19], 4: [1,3,4,5,11,13,19], 5: [4,5,9,11,13,17,19], 6:[1,6,10,12,13,18,20], 7:[7,13,14,15],
                        8: [5,8,10,13,16,17], 9:[4,5,9,11,19], 10:[6,8,10,13,16,17,18], 11:[4,5,9,11,15,17,19],
