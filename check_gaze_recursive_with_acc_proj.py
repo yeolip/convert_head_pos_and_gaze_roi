@@ -310,14 +310,14 @@ def calc_score(roi_center, roi_one_of_points, target_point):
     return result
 
 def check_match_roi(extData, ret_ExtROI, errDist = 0):
-    extData['roi_idx_h'] =  ""
-    extData['roi_name_h'] = ""
-    extData['roi_X'] = 0
-    extData['roi_Y'] = 0
+    # extData['roi_idx_h'] =  ""
+    # extData['roi_name_h'] = ""
+    # extData['roi_X'] = 0
+    # extData['roi_Y'] = 0
     extData['intersect_x_h'] =  0
     extData['intersect_y_h'] =  0
     extData['intersect_z_h'] =  0
-    extData['roi_score'] =  ""
+    # extData['roi_score'] =  ""
 
     for tindex in extData.index.values:
         print(tindex,"번째 index, frameID = ", extData.loc[tindex, 'f_frame_counter_left_camera'],'\n')
@@ -338,85 +338,107 @@ def check_match_roi(extData, ret_ExtROI, errDist = 0):
         max_target_roi_y = 0
         max_target_roi_score = 0
 
-        for tidx in ret_ExtROI.index.values:
-            offset = 0
-            # print(tidx)
-            # print(ret_ExtROI['tID'], ret_ExtROI['tTargetName'], ret_ExtROI['ttop_left'], ret_ExtROI['ttop_right'], ret_ExtROI['tbottom_left'], ret_ExtROI['tbottom_right'])
-            print(' ',tidx, ret_ExtROI['tID'][tidx], ret_ExtROI['tTargetName'][tidx])
-            troi_id = ret_ExtROI["tID"][tidx]
-            troi_name = ret_ExtROI["tTargetName"][tidx]
+        # for tidx in ret_ExtROI.index.values:
+        #     offset = 0
+        #     # print(tidx)
+        #     # print(ret_ExtROI['tID'], ret_ExtROI['tTargetName'], ret_ExtROI['ttop_left'], ret_ExtROI['ttop_right'], ret_ExtROI['tbottom_left'], ret_ExtROI['tbottom_right'])
+        #     print(' ',tidx, ret_ExtROI['tID'][tidx], ret_ExtROI['tTargetName'][tidx])
+        #     troi_id = ret_ExtROI["tID"][tidx]
+        #     troi_name = ret_ExtROI["tTargetName"][tidx]
+        #     if(troi_id == 7  ):
+        #         offset = 135+40 + 5
+        #     elif (troi_id == 8):
+        #         offset = 170+40
+        #     elif(troi_id == 9):
+        #         offset = 60+ 40 + 20
+        #     elif(troi_id == 1):
+        #         offset = 80 + 0 + 5
+        #     elif (troi_id == 3 or troi_id == 4):  # or troi_id == 5
+        #         offset = 80
+        #     elif (troi_id == 5):
+        #         offset = 60 + 10
+        #     elif (troi_id == 6):
+        #         offset = 25 + 15 + 15
+        #     elif (troi_id == 14 or troi_id == 16 or troi_id == 11 or troi_id == 19 ):
+        #         offset = 25 + 15
+        #     else:
+        #         offset = 25
+        #     p0 = np.array(ret_ExtROI["ttop_left"][tidx]) * 1000  + np.array([0,-offset,offset])
+        #     p1 = np.array(ret_ExtROI["ttop_right"][tidx]) * 1000 + np.array([0,offset,offset])
+        #     p2 = np.array(ret_ExtROI["tbottom_left"][tidx]) * 1000 + np.array([0,-offset,-offset])
+        #     p3 = np.array(ret_ExtROI["tbottom_right"][tidx]) * 1000 + np.array([0,offset,-offset])
+        #
+        #     camPlaneOrthVector = np.cross((p3 - p1), (p2 - p3))/np.linalg.norm(np.cross((p3 - p1), (p2 - p3)))
+        #     pointOnPlan = (p0+p1+p2+p3)/4
+        #
+        #     print(' ',"p0", p0, "\n  p1",p1, "\n  p2", p2, "\n  p3", p3)
+        #     print(' ','headPos',headPos)
+        #     print(' ','headDir_mid', headDir_mid)
+        #     print(' ','camPlaneOrthVector',camPlaneOrthVector)
+        #     print(' ','pointOnPlan',pointOnPlan)
+        #     ret_check, point_mapping = calc_match_roi(p0, p1, p3, p2, camPlaneOrthVector, pointOnPlan, headDir_mid, headPos)
+        #     if(point_mapping[0] != 0 or point_mapping[1] != 0 or point_mapping[2] != 0):
+        #         target_roi_score = calc_score(pointOnPlan, p0, [point_mapping[0], point_mapping[1], point_mapping[2]])
+        #         if(max_target_roi_score  < target_roi_score):
+        #             max_target_roi_score = target_roi_score
+        #             max_target_id = str(troi_id)
+        #             max_target_name = troi_name
+        #             max_target_point = point_mapping
+        #             max_target_roi_x = int(bcheck_match.line_point_min_dist(point_mapping, p0, p2) / distance_xyz(p0, p1) * 100)
+        #             max_target_roi_y = int(bcheck_match.line_point_min_dist(point_mapping, p0, p1) / distance_xyz(p0,p2) * 100)
+        #     print('\n')
 
-            if(troi_id == 7  ):
-                offset = 135+ 40 + 5 + 10 + 10 + 10 + 10 + 5
-            elif (troi_id == 8):
-                offset = 170+40
-            elif(troi_id == 9):
-                offset = 60+ 40 + 20 + 25 + 20 + 20 + 10 + 15
-            elif(troi_id == 1):
-                offset = 80 + 0 + 5 + 10 + 20 + 10 +20 + 20 + 15
-            elif (troi_id == 3 or troi_id == 4):  # or troi_id == 5
-                offset = 80
-            elif (troi_id == 5):
-                offset = 60 + 10
-            elif (troi_id == 6):
-                offset = 25 + 15 + 15 + 20 + 20 + 10 + 20 + 20
-            elif (troi_id == 14):
-                offset = 25 + 15 + 0 + 5
-            elif (troi_id == 19):
-                offset = 25 + 15 + 0 + 5 + 0 + 0 + 5
-            elif (troi_id == 16):
-                offset = 25 + 15 + 0 + 5 + 10 + 10
-            elif (troi_id == 11):
-                offset = 25 + 15 + 0 + -5
-            elif (troi_id == 10):
-                offset = 25 + 0 + 0 + 10 + 10 + 10 + 5
-            else:
-                offset = errDist
-            p0 = np.array(ret_ExtROI["ttop_left"][tidx]) * 1000  + np.array([0,-offset,offset])
-            p1 = np.array(ret_ExtROI["ttop_right"][tidx]) * 1000 + np.array([0,offset,offset])
-            p2 = np.array(ret_ExtROI["tbottom_left"][tidx]) * 1000 + np.array([0,-offset,-offset])
-            p3 = np.array(ret_ExtROI["tbottom_right"][tidx]) * 1000 + np.array([0,offset,-offset])
+        # "top_left": [0.927155, -0.565, 0.727752],
+        # "top_right": [0.927155, -0.21, 0.727752],
+        # "bottom_left": [0.998, -0.565, 0.607]
+        p0 = np.array([0.927155, -0.565, 0.727752]) * 1000
+        p1 = np.array([0.927155, -0.21, 0.727752]) * 1000
+        p2 = np.array([0.998, -0.565, 0.607]) * 1000
+        temp = np.round((p2 + p1 - p0), 5).tolist()
+        p3 = np.array(temp)
+        # print(p0, p1, p2, p3)
+        # print(1/0)
+        camPlaneOrthVector = np.cross((p3 - p1), (p2 - p3)) / np.linalg.norm(np.cross((p3 - p1), (p2 - p3)))
+        pointOnPlan = (p0 + p1 + p2 + p3) / 4
 
-            camPlaneOrthVector = np.cross((p3 - p1), (p2 - p3))/np.linalg.norm(np.cross((p3 - p1), (p2 - p3)))
-            pointOnPlan = (p0+p1+p2+p3)/4
+        print(' ', "p0", p0, "\n  p1", p1, "\n  p2", p2, "\n  p3", p3)
+        print(' ', 'headPos', headPos)
+        print(' ', 'headDir_mid', headDir_mid)
+        print(' ', 'camPlaneOrthVector', camPlaneOrthVector)
+        print(' ', 'pointOnPlan', pointOnPlan)
+        ret_check, point_mapping = calc_match_roi(p0, p1, p3, p2, camPlaneOrthVector, pointOnPlan, headDir_mid, headPos)
+        if (point_mapping[0] != 0 or point_mapping[1] != 0 or point_mapping[2] != 0):
+            max_target_point = point_mapping
+            # target_roi_score = calc_score(pointOnPlan, p0, [point_mapping[0], point_mapping[1], point_mapping[2]])
+            # if (max_target_roi_score < target_roi_score):
+            #     max_target_roi_score = target_roi_score
+            #     max_target_id = str(troi_id)
+            #     max_target_name = troi_name
+            #     max_target_point = point_mapping
+            #     max_target_roi_x = int(
+            #         bcheck_match.line_point_min_dist(point_mapping, p0, p2) / distance_xyz(p0, p1) * 100)
+            #     max_target_roi_y = int(
+            #         bcheck_match.line_point_min_dist(point_mapping, p0, p1) / distance_xyz(p0, p2) * 100)
+        # if(ret_check == True):
+        #     extData.loc[tindex, 'roi_idx_h'] = str(extData.loc[tindex, 'roi_idx_h']) + '/' + str(troi_id)
+        #     extData.loc[tindex, 'roi_name_h'] = extData.loc[tindex, 'roi_name_h'] + '/' + troi_name
+        #     # extData.loc[tindex, 'roi_name_h'] = troi_name
+        #     extData.loc[tindex, 'intersect_x_h'] = point_mapping[0]
+        #     extData.loc[tindex, 'intersect_y_h'] = point_mapping[1]
+        #     extData.loc[tindex, 'intersect_z_h'] = point_mapping[2]
+        #     extData.loc[tindex, 'roi_X'] = int(bcheck_match.line_point_min_dist(point_mapping, p0, p2) / distance_xyz(p0, p1) * 100)
+        #     extData.loc[tindex, 'roi_Y'] = int(bcheck_match.line_point_min_dist(point_mapping, p0, p1) / distance_xyz(p0,p2) * 100)
+        #     extData.loc[tindex, 'roi_score'] = str(extData.loc[tindex, 'roi_score']) + '/' +  str(calc_score(pointOnPlan, p0, [point_mapping[0], point_mapping[1], point_mapping[2]]))
+        #     # break
 
-            print(' ',"p0", p0, "\n  p1",p1, "\n  p2", p2, "\n  p3", p3)
-            print(' ','headPos',headPos)
-            print(' ','headDir_mid', headDir_mid)
-            print(' ','camPlaneOrthVector',camPlaneOrthVector)
-            print(' ','pointOnPlan',pointOnPlan)
-            ret_check, point_mapping = calc_match_roi(p0, p1, p3, p2, camPlaneOrthVector, pointOnPlan, headDir_mid, headPos)
-            if(ret_check == True):
-                if(point_mapping[0] != 0 or point_mapping[1] != 0 or point_mapping[2] != 0):
-                    target_roi_score = calc_score(pointOnPlan, p0, [point_mapping[0], point_mapping[1], point_mapping[2]])
-                    if(max_target_roi_score  < target_roi_score):
-                        max_target_roi_score = target_roi_score
-                        max_target_id = str(troi_id)
-                        max_target_name = troi_name
-                        max_target_point = point_mapping
-                        max_target_roi_x = int(bcheck_match.line_point_min_dist(point_mapping, p0, p2) / distance_xyz(p0, p1) * 100)
-                        max_target_roi_y = int(bcheck_match.line_point_min_dist(point_mapping, p0, p1) / distance_xyz(p0,p2) * 100)
-            # if(ret_check == True):
-            #     extData.loc[tindex, 'roi_idx_h'] = str(extData.loc[tindex, 'roi_idx_h']) + '/' + str(troi_id)
-            #     extData.loc[tindex, 'roi_name_h'] = extData.loc[tindex, 'roi_name_h'] + '/' + troi_name
-            #     # extData.loc[tindex, 'roi_name_h'] = troi_name
-            #     extData.loc[tindex, 'intersect_x_h'] = point_mapping[0]
-            #     extData.loc[tindex, 'intersect_y_h'] = point_mapping[1]
-            #     extData.loc[tindex, 'intersect_z_h'] = point_mapping[2]
-            #     extData.loc[tindex, 'roi_X'] = int(bcheck_match.line_point_min_dist(point_mapping, p0, p2) / distance_xyz(p0, p1) * 100)
-            #     extData.loc[tindex, 'roi_Y'] = int(bcheck_match.line_point_min_dist(point_mapping, p0, p1) / distance_xyz(p0,p2) * 100)
-            #     extData.loc[tindex, 'roi_score'] = str(extData.loc[tindex, 'roi_score']) + '/' +  str(calc_score(pointOnPlan, p0, [point_mapping[0], point_mapping[1], point_mapping[2]]))
-            #     # break
-            print('\n')
-
-        extData.loc[tindex, 'roi_idx_h'] = max_target_id
-        extData.loc[tindex, 'roi_name_h'] = max_target_name
+        # extData.loc[tindex, 'roi_idx_h'] = max_target_id
+        # extData.loc[tindex, 'roi_name_h'] = max_target_name
         extData.loc[tindex, 'intersect_x_h'] = max_target_point[0]
         extData.loc[tindex, 'intersect_y_h'] = max_target_point[1]
         extData.loc[tindex, 'intersect_z_h'] = max_target_point[2]
-        extData.loc[tindex, 'roi_X'] = max_target_roi_x
-        extData.loc[tindex, 'roi_Y'] = max_target_roi_y
-        extData.loc[tindex, 'roi_score'] = max_target_roi_score
+        # extData.loc[tindex, 'roi_X'] = max_target_roi_x
+        # extData.loc[tindex, 'roi_Y'] = max_target_roi_y
+        # extData.loc[tindex, 'roi_score'] = max_target_roi_score
     return extData
 
 def distance_xyz(a,b):
@@ -509,7 +531,7 @@ def policy_gaze_roi_accuracy(tdata, text_column):
     tdata['hit_green_roi'] = "None"
     tdata['hit_amber_roi'] = "None"
     roi_group_green = {1: [1], 3: [3,4], 4: [3,4], 5: [5,9], 6:[6], 7:[7], 8:[8], 9:[9], 10:[10], 11:[11,19],
-                       12:[12, 13], 14:[14, 12], 15:[15], 16:[16], 17:[17], 19:[19, 11]}
+                       12:[12, 13], 14:[14, 12], 15:[15], 16:[16], 17:[17], 19:[11]}
 
     roi_group_amber = {1: [1,4,6,13], 3: [1,3,4,5,11,13,19], 4: [1,3,4,5,11,13,19], 5: [4,5,9,11,13,17,19], 6:[1,6,10,12,13,18,20], 7:[7,13,14,15],
                        8: [5,8,10,13,16,17], 9:[4,5,9,11,19], 10:[6,8,10,13,16,17,18], 11:[4,5,9,11,15,17,19],
@@ -641,8 +663,9 @@ if __name__ == '__main__':
             # print('ret_match', ret_match)
             df_merge = pd.concat([df_merge, ret_match]).reset_index(drop=True)
 
-        # save_csvfile(df_merge, 'save_output.csv')
-        # print(1/0)
+        save_csvfile(df_merge, 'save3_output.csv')
+        print(1/0)
+
         print("df_merge",df_merge)
         df_merge = df_merge.astype({'roi_idx_h':"int64", "gt_s_gaze_roi_das":"int64"})
         df_merge['hit'] = (df_merge['roi_idx_h'] == df_merge['gt_s_gaze_roi_das'])
