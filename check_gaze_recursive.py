@@ -328,9 +328,18 @@ def check_match_roi(extData, ret_ExtROI, errDist = 0):
             print(' ',tidx, ret_ExtROI['tID'][tidx], ret_ExtROI['tTargetName'][tidx])
             troi_id = ret_ExtROI["tID"][tidx]
             troi_name = ret_ExtROI["tTargetName"][tidx]
-
-            if(troi_id == 5 or troi_id == 7 or troi_id == 8):
-                offset = errDist
+            if (troi_id == 7):
+                offset = 300
+            elif (troi_id == 8):
+                offset = 400
+            elif (troi_id == 4 or troi_id == 5 or troi_id == 6):
+                offset = 50
+            elif(troi_id == 9 or troi_id == 1):
+                offset = 50
+            elif(troi_id == 10 or troi_id == 11 or troi_id == 12 or troi_id == 19):
+                offset = 200
+            elif (troi_id == 14 or troi_id == 16):
+                offset = 50
             else:
                 offset = 0
             p0 = np.array(ret_ExtROI["ttop_left"][tidx]) * 1000  + np.array([0,-offset,offset])
@@ -479,7 +488,7 @@ if __name__ == '__main__':
 
     # print(1/0)
 
-    inputPath_ROI = "./refer/roi_config_eva.json"
+    inputPath_ROI = "./refer/roi_config_eva4.json"
     # roi_config.json
     ret_roi = load_jsonfile_ROI(inputPath_ROI)
     ret_ExtROI = extract_availData_from_3D_target_ROI(ret_roi)
@@ -499,7 +508,7 @@ if __name__ == '__main__':
             ret_ExtGT = extract_availData_from_GT_short(inputPath_GT)
             ret_ExtGT_with_direction = retcalcuate_head_eye_direction_short(ret_ExtGT)
             # print('\n\n', ret_ExtGT_with_direction)
-            ret_match = check_match_roi(ret_ExtGT_with_direction, ret_ExtROI)  # 150
+            ret_match = check_match_roi(ret_ExtGT_with_direction, ret_ExtROI, 250)  # 150
             ret_match['Load_file'] =  os.path.basename(tname)
             # print('ret_match', ret_match)
             df_merge = pd.concat([df_merge, ret_match]).reset_index(drop=True)

@@ -791,6 +791,22 @@ def modify_EyeGaze_craft_to_daimler(extData, tpd):
 
     return tpd
 
+def merge_gazeroi_with_mra2roi(extData, tpd):
+    extData['CAN_S_Gaze_ROI']= 0
+    extData['MS_S_Gaze_ROI_X_Raw']= 0
+    extData['MS_S_Gaze_ROI_Y_Raw']= 0
+    for tindex in extData.index.values:
+        print(tindex)
+        print(tpd.loc[tindex, 'f_frame_counter_left_camera'])
+        extData.loc[tindex, 'CAN_S_Gaze_ROI'] = tpd.loc[tindex, 'CAN_S_Gaze_ROI']
+        extData.loc[tindex, 'MS_S_Gaze_ROI_X_Raw'] = tpd.loc[tindex, 'MS_S_Gaze_ROI_X_Raw']
+        extData.loc[tindex, 'MS_S_Gaze_ROI_Y_Raw'] = tpd.loc[tindex, 'MS_S_Gaze_ROI_Y_Raw']
+
+        # = tindex - extData.index.values[0] + 1
+    print("\n\n")
+    print(tpd.f_frame_counter_left_camera)
+    return tpd
+
 # def changeRotation_unitvec2radian_check(nR_unitvec):
 #     print("//////////", funcname(), "//////////")
 #
@@ -887,8 +903,8 @@ if __name__ == '__main__':
     save_csvfile(tout, "./final_output.csv")
 
     if (1):
-        # inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
-        # inputPath_GT = "./refer/GT_3531_96_670222_0001_small.csv"
+        inputPath_GT = "./refer/GT_3531_96_670222_0001_all.csv"
+		# inputPath_GT = "./refer/GT_3531_96_670222_0001_small.csv"
         # inputPath_GT = "./refer/GT_3531_96_670222_0001_mix.csv"
         # inputPath_GT = "./refer/GT/3810_10_811709_0001_all.csv"
         # inputPath_GT = "./refer/GT/3810_20_811728_0001_all.csv"
@@ -919,12 +935,25 @@ if __name__ == '__main__':
         ret_ExtGT_with_direction = objgaze.retcalcuate_head_eye_direction(ret_df_tout)
 
         print('\n\n', ret_ExtGT_with_direction)
-        ret_match = objgaze.check_match_roi2(ret_ExtGT_with_direction, ret_ExtROI, 25)
-        objgaze.save_csvfile(ret_match, "./roi_output.csv")
+        ret_match = objgaze.check_match_roi_cto(ret_ExtGT_with_direction, ret_ExtROI, 100)
+        ret_match = ret_match.drop(columns=['CAN_S_Gaze_ROI', 'MS_S_Gaze_ROI_X_Raw', 'MS_S_Gaze_ROI_Y_Raw'])
+
+        ret_resultGT = objgaze.extract_resultRoi_from_GT(inputPath_GT, "MRA2_")
+
+        ret_roi_result = pd.merge(ret_match, ret_resultGT, how='left', left_on="f_frame_counter_left_camera", right_on="f_frame_counter_left_camera")
+        # test = pd.concat([ret_match, ret_resultGT], axis=1)
+        print(ret_roi_result)
+        # print(1/0)
+
+	    # merge_gazeroi_with_mra2roi(ret_match, ret_resultGT)
+	    # print(test)
+	    # "f_frame_counter_left_camera"
+	    # ret_match.merge(ret_resultGT, on="f_frame_counter_left_camera")
+        objgaze.save_csvfile(ret_roi_result, "./roi_output.csv")
         # ret_match.to_csv("filename.csv", mode='w', index=False, header=False, sep=',', quotechar=" ",
         #                  float_format='%.4f')
 
-        objgaze.rendering_roi_with_head_gaze(ret_ExtROI, ret_match)
+        # objgaze.rendering_roi_with_head_gaze(ret_ExtROI, ret_match)
 
 
     print(1/0)

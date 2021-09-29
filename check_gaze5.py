@@ -619,18 +619,31 @@ def check_match_roi(extData, ret_ExtROI, errDist = 0):
             print(' ',tidx, ret_ExtROI['tID'][tidx], ret_ExtROI['tTargetName'][tidx])
             troi_id = ret_ExtROI["tID"][tidx]
             troi_name = ret_ExtROI["tTargetName"][tidx]
+
             if(troi_id == 7  ):
-                offset = 135
+                offset = 135+ 40 + 5 + 10 + 10 + 10 + 10 + 5
             elif (troi_id == 8):
-                offset = 170
+                offset = 170+40
             elif(troi_id == 9):
-                offset = 60
+                offset = 60+ 40 + 20 + 25 + 20 + 20 + 10 + 15
             elif(troi_id == 1):
-                offset = 80
-            elif (troi_id == 3 or troi_id == 4):  # or troi_id == 5
+                offset = 80 + 0 + 5 + 10 + 20 + 10 +20 + 20 + 15
+            elif (troi_id == 3 or troi_id == 4):
                 offset = 80
             elif (troi_id == 5):
-                offset = 60
+                offset = 60 + 10
+            elif (troi_id == 6):
+                offset = 25 + 15 + 15 + 20 + 20 + 10 + 20 + 20
+            elif (troi_id == 14):
+                offset = 25 + 15 + 0 + 5
+            elif (troi_id == 19):
+                offset = 25 + 15 + 0 + 5 + 0 + 0 + 5
+            elif (troi_id == 16):
+                offset = 25 + 15 + 0 + 5 + 10 + 10
+            elif (troi_id == 11):
+                offset = 25 + 15 + 0 + -5
+            elif (troi_id == 10):
+                offset = 25 + 0 + 0 + 10 + 10 + 10 + 5
             else:
                 offset = errDist
             p0 = np.array(ret_ExtROI["ttop_left"][tidx]) * 1000  + np.array([0,-offset,offset])
@@ -685,8 +698,8 @@ def check_match_roi(extData, ret_ExtROI, errDist = 0):
         # extData.loc[tindex, 'roi_X'] = max_target_roi_x
         # extData.loc[tindex, 'roi_Y'] = max_target_roi_y
         # extData.loc[tindex, 'roi_score'] = max_target_roi_score
-        extData.loc[tindex, 'max_target_id'] = max_target_roi_score
-        extData.loc[tindex, 'max_roi_score'] = max_target_id
+        extData.loc[tindex, 'max_target_id'] = max_target_id
+        extData.loc[tindex, 'max_roi_score'] = max_target_roi_score
 
     return extData
 
@@ -806,7 +819,7 @@ if __name__ == '__main__':
         # inputPath_GT = "./refer/GT_ALL/3810_1565_814768_0001_all.csv"
         # inputPath_GT = "./refer/GT_ALL/3810_3124_817892_0001_all.csv"
 
-        inputPath_ROI = "./refer/roi_config_2.json"
+        inputPath_ROI = "./refer/roi_config.json"
 
         # roi_config.json
         ret_roi = load_jsonfile_ROI(inputPath_ROI)
