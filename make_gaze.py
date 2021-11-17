@@ -362,7 +362,7 @@ class make_gaze_and_roi(object):
                 if (troi_id == 7):
                     offset = 135 + 40 + 5 + 10 + 10 + 10 + 10 + 5
                 elif (troi_id == 8):
-                    offset = errDist #170 + 40
+                    offset = 170 + 40
                 elif (troi_id == 9):
                     offset = 60 + 40 + 20 + 25 + 20 + 20 + 10 + 15
                 elif (troi_id == 1):
