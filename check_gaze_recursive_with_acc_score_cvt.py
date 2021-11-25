@@ -237,26 +237,29 @@ def retcalcuate_head_eye_direction_short(extData):
     extData['headDir_X_mid'] = 0
     extData['headDir_Y_mid'] = 0
     extData['headDir_Z_mid'] = 0
-    # extData['headDir_X_mid_rad'] = 0
-    # extData['headDir_Y_mid_rad'] = 0
-    # extData['headDir_Z_mid_rad'] = 0
+    extData['Rot_headDir_X_mid'] = 0
+    extData['Rot_headDir_Y_mid'] = 0
+    extData['Rot_headDir_Z_mid'] = 0
 
     for tindex in extData.index.values:
         print(tindex)
         tframecnt = extData.loc[tindex, 'f_frame_counter_left_camera']
         # troi_result = extData.loc[tindex, 'gt_s_gaze_roi_das']
-        # troi_x = extData.loc[tindex, 'MS_S_Gaze_ROI_X_Raw']
+        # troi_x = extData.loc[tindex
+        # , 'MS_S_Gaze_ROI_X_Raw']
         # troi_y = extData.loc[tindex, 'MS_S_Gaze_ROI_Y_Raw']
         thead_pos = np.array((extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_X'], extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Y'], extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Z']))
         thead_rot = np.array((extData.loc[tindex, 'MS_S_Head_rot_X'], extData.loc[tindex, 'MS_S_Head_rot_Y'], extData.loc[tindex, 'MS_S_Head_rot_Z']))
-        tgaze_vec_mid = np.array((extData.loc[tindex, 'MS_S_Gaze_rot_X'], extData.loc[tindex, 'MS_S_Gaze_rot_Y'], extData.loc[tindex, 'MS_S_Gaze_rot_Z']))
+        #lipcheck 임의 수정(이미 데이터 추출을 완료한뒤, 계산된 값에서 pitch가 뒤바꿔있는것을 확인하여, 계산된 값을 수정하여 계산
+        tgaze_vec_mid = np.array((extData.loc[tindex, 'MS_S_Gaze_rot_X'], -(extData.loc[tindex, 'MS_S_Gaze_rot_Y']*31/22) -11-16.6, extData.loc[tindex, 'MS_S_Gaze_rot_Z']))
 
         # print(tframecnt, troi_result, troi_x, troi_y, thead_pos, thead_rot,  tgaze_vec_mid)
         print(tframecnt, thead_pos, thead_rot,  tgaze_vec_mid)
         # print(tframecnt, troi_result, troi_x, troi_y)
 
         headPos3D_mm = thead_pos
-        headOri_radian = thead_rot * deg2Rad
+        # headOri_radian = thead_rot * deg2Rad
+        headOri_radian = np.array([0, 0, 0]) * deg2Rad
         print("headPos3D_mm", headPos3D_mm)
         print("headOri_radian", headOri_radian)
 
@@ -270,17 +273,17 @@ def retcalcuate_head_eye_direction_short(extData):
 
         print('rot2_mid',rot2_mid)
         headDir_mid = np.dot(rot2_mid, np.dot(rt, [1, 0, 0]))
-        # headDir_mid = np.dot(np.dot(rot2_mid , rt), [1,0,0])
+        headDir_mid = np.dot(np.dot(rot2_mid , rt), [1,0,0])
         print('headDir_mid',headDir_mid)
         extData.loc[tindex, 'headDir_X_mid'] = headDir_mid[0]
         extData.loc[tindex, 'headDir_Y_mid'] = headDir_mid[1]
         extData.loc[tindex, 'headDir_Z_mid'] = headDir_mid[2]
 
-        # ccc = changeRotation_unitvec2radian('RPY', headDir_mid, 'RPY') * rad2Deg
+        ccc = changeRotation_unitvec2radian('RPY', headDir_mid, 'RPY') * rad2Deg
         # print('ccc',ccc)
-        # extData.loc[tindex,'headDir_X_mid_rad'] = ccc[0]
-        # extData.loc[tindex,'headDir_Y_mid_rad'] = ccc[1]
-        # extData.loc[tindex,'headDir_Z_mid_rad'] = ccc[2]
+        extData.loc[tindex,'Rot_headDir_X_mid'] = ccc[0]
+        extData.loc[tindex,'Rot_headDir_Y_mid'] = ccc[1]
+        extData.loc[tindex,'Rot_headDir_Z_mid'] = ccc[2]
 
     return extData
 
@@ -312,8 +315,8 @@ def calc_score(roi_center, roi_one_of_points, target_point):
 def check_match_roi_cto(extData, ret_ExtROI, errDist = 0):
     extData['roi_idx_h'] = ""
     extData['roi_name_h'] = ""
-    extData['roi_X'] = 0
-    extData['roi_Y'] = 0
+    extData['roi_X'] = ""
+    extData['roi_Y'] = ""
     extData['intersect_x_h'] = 0
     extData['intersect_y_h'] = 0
     extData['intersect_z_h'] = 0
@@ -338,6 +341,7 @@ def check_match_roi_cto(extData, ret_ExtROI, errDist = 0):
         max_target_roi_y = 0
         max_target_roi_score = 0
 
+        ret_ExtROI["offset"] = 0
         for tidx in ret_ExtROI.index.values:
             # offset = 0
             # print(tidx)
@@ -347,35 +351,40 @@ def check_match_roi_cto(extData, ret_ExtROI, errDist = 0):
             troi_name = ret_ExtROI["tTargetName"][tidx]
 
             if (troi_id == 7):
-                offset = errDist + 30 + 20 + 10  # 225 + 30 + 30 + 30
+                offset = errDist + 100 + 120   # 225 + 30 + 30 + 30
             elif (troi_id == 8):
-                offset = errDist + 30 + 30 + 20 + 20 + 30 + 30  # 210 + 30 + 30 + 30
+                offset = errDist + 100 + 100 + 20  # 210 + 30 + 30 + 30
             elif (troi_id == 9):
-                offset = errDist - 60  # 210
+                offset = errDist+ 110 + 50 # 210
             elif (troi_id == 1):
-                offset = errDist - 100 - 20  # 180 - 30 - 50 - 30
+                offset = errDist - 40  # 180 - 30 - 50 - 30
             elif (troi_id == 3 or troi_id == 4):  # or troi_id == 5
-                offset = errDist + 20 + 20 + 10 + 20 + 30 + 70 + 30  # 80 + 30 + 50
+                offset = errDist + 20 + 20 + 10   # 80 + 30 + 50
             elif (troi_id == 5):
-                offset = errDist - 100  # 70 - 20 - 10
+                offset = errDist + 100  # 70 - 20 - 10
             elif (troi_id == 6):
-                offset = errDist  # 145
+                offset = errDist + 45 + 30 + 20 # 145
             elif (troi_id == 14):
-                offset = errDist  # 45
+                offset = errDist + 65  # 45
             elif (troi_id == 19):
-                offset = errDist  # 50
+                offset = errDist - 30 # 50
             elif (troi_id == 16):
-                offset = errDist  # 65
+                offset = errDist  + 30# 65
             elif (troi_id == 11):
-                offset = errDist  # 35s
+                offset = errDist + 30 + 50 + 30  # 35s
             elif (troi_id == 10):
-                offset = errDist  # 50
+                offset = errDist + 30 + 30 # 50
             elif (troi_id == 15):
                 offset = errDist - 30  # 0
             elif (troi_id == 13):
-                offset = errDist - 100 - 20  # 0
+                offset = errDist - 100   # 0
+            elif (troi_id == 12):
+                offset = errDist + 70   # 0
+            elif (troi_id == 18):
+                offset = errDist - 30 # 50
             else:
                 offset = errDist
+            ret_ExtROI["offset"][tidx] = offset
             p0 = np.array(ret_ExtROI["ttop_left"][tidx]) * 1000 + np.array([0, -offset, offset])
             p1 = np.array(ret_ExtROI["ttop_right"][tidx]) * 1000 + np.array([0, offset, offset])
             p2 = np.array(ret_ExtROI["tbottom_left"][tidx]) * 1000 + np.array([0, -offset, -offset])
@@ -405,12 +414,12 @@ def check_match_roi_cto(extData, ret_ExtROI, errDist = 0):
 
                     extData.loc[tindex, 'roi_idx_h'] = str(extData.loc[tindex, 'roi_idx_h']) + '/' + str(troi_id)
                     extData.loc[tindex, 'roi_name_h'] = extData.loc[tindex, 'roi_name_h'] + '/' + troi_name
-                    extData.loc[tindex, 'intersect_x_h'] = str(extData.loc[tindex, 'intersect_x_h']) + '/' + str(
-                        np.round(point_mapping[0], 1))
-                    extData.loc[tindex, 'intersect_y_h'] = str(extData.loc[tindex, 'intersect_y_h']) + '/' + str(
-                        np.round(point_mapping[1], 1))
-                    extData.loc[tindex, 'intersect_z_h'] = str(extData.loc[tindex, 'intersect_z_h']) + '/' + str(
-                        np.round(point_mapping[2], 1))
+                    # extData.loc[tindex, 'intersect_x_h'] = str(extData.loc[tindex, 'intersect_x_h']) + '/' + str(
+                    #     np.round(point_mapping[0], 1))
+                    # extData.loc[tindex, 'intersect_y_h'] = str(extData.loc[tindex, 'intersect_y_h']) + '/' + str(
+                    #     np.round(point_mapping[1], 1))
+                    # extData.loc[tindex, 'intersect_z_h'] = str(extData.loc[tindex, 'intersect_z_h']) + '/' + str(
+                    #     np.round(point_mapping[2], 1))
                     extData.loc[tindex, 'roi_X'] = str(extData.loc[tindex, 'roi_X']) + '/' + str(
                         int(bcheck_match.line_point_min_dist(point_mapping, p0, p2) / distance_xyz(p0, p1) * 100))
                     extData.loc[tindex, 'roi_Y'] = str(extData.loc[tindex, 'roi_Y']) + '/' + str(
@@ -420,14 +429,17 @@ def check_match_roi_cto(extData, ret_ExtROI, errDist = 0):
 
                     if (max_target_roi_score < target_roi_score):
                         max_target_roi_score = target_roi_score
+                        # max_target_point[0] = str(extData.loc[tindex, 'intersect_x_h'])
+                        max_target_point = point_mapping #np.array([extData.loc[tindex, 'intersect_x_h'],extData.loc[tindex, 'intersect_y_h'],extData.loc[tindex, 'intersect_z_h']])
+
                         max_target_id = str(troi_id)
             print('\n')
 
         # extData.loc[tindex, 'roi_idx_h'] = max_target_id
         # extData.loc[tindex, 'roi_name_h'] = max_target_name
-        # extData.loc[tindex, 'intersect_x_h'] = max_target_point[0]
-        # extData.loc[tindex, 'intersect_y_h'] = max_target_point[1]
-        # extData.loc[tindex, 'intersect_z_h'] = max_target_point[2]
+        extData.loc[tindex, 'intersect_x_h'] = max_target_point[0]
+        extData.loc[tindex, 'intersect_y_h'] = max_target_point[1]
+        extData.loc[tindex, 'intersect_z_h'] = max_target_point[2]
         # extData.loc[tindex, 'roi_X'] = max_target_roi_x
         # extData.loc[tindex, 'roi_Y'] = max_target_roi_y
         # extData.loc[tindex, 'roi_score'] = max_target_roi_score
@@ -447,6 +459,7 @@ def rendering_roi_with_head_gaze(pROI, extData):
     ax3 = fig.add_subplot(111, projection='3d')
 
     plt.title('3D Target ROI')
+    pROI = pROI.sort_values(['tID'], ascending=True)
     # for i in pROI:
     #     print(i)
 
@@ -458,20 +471,20 @@ def rendering_roi_with_head_gaze(pROI, extData):
         # print(pROI.tbottom_left[i])
         # print(pROI.tbottom_right[i])
         x0 = pROI.ttop_left[i][0] * 1000
-        y0 = pROI.ttop_left[i][1] * 1000
-        z0 = pROI.ttop_left[i][2] * 1000
+        y0 = pROI.ttop_left[i][1] * 1000 -pROI.offset[i]
+        z0 = pROI.ttop_left[i][2] * 1000 +pROI.offset[i]
         # ax3.scatter(xs=x, ys=y, zs=z, label=i[1])
         x1 = pROI.ttop_right[i][0] * 1000
-        y1 = pROI.ttop_right[i][1] * 1000
-        z1 = pROI.ttop_right[i][2] * 1000
+        y1 = pROI.ttop_right[i][1] * 1000 +pROI.offset[i]
+        z1 = pROI.ttop_right[i][2] * 1000 +pROI.offset[i]
         # ax3.scatter(xs=x, ys=y, zs=z, label=i[1])
         x2 = pROI.tbottom_left[i][0] * 1000
-        y2 = pROI.tbottom_left[i][1] * 1000
-        z2 = pROI.tbottom_left[i][2] * 1000
+        y2 = pROI.tbottom_left[i][1] * 1000 -pROI.offset[i]
+        z2 = pROI.tbottom_left[i][2] * 1000 -pROI.offset[i]
         # ax3.scatter(xs=x, ys=y, zs=z, label=i[1])
         x3 = pROI.tbottom_right[i][0] * 1000
-        y3 = pROI.tbottom_right[i][1] * 1000
-        z3 = pROI.tbottom_right[i][2] * 1000
+        y3 = pROI.tbottom_right[i][1] * 1000 +pROI.offset[i]
+        z3 = pROI.tbottom_right[i][2] * 1000 -pROI.offset[i]
         # print([x0,x1,x3,x2])
         ax3.scatter(xs=np.array([x0,x1,x3,x2]), ys=np.array([y0,y1,y3,y2]), zs=np.array([z0,z1,z3,z2]) )
         ax3.plot([x0,x1,x3,x2,x0], [y0,y1,y3,y2,y0], [z0,z1,z3,z2,z0], label=str("%.2d_"%pROI.tID[i])+pROI.tTargetName[i])
@@ -481,9 +494,12 @@ def rendering_roi_with_head_gaze(pROI, extData):
         h_x = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_X']
         h_y = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Y']
         h_z = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Z']
-        in_x = extData.loc[tindex, 'intersect_x_h']
-        in_y = extData.loc[tindex, 'intersect_y_h']
-        in_z = extData.loc[tindex, 'intersect_z_h']
+        # in_x = float(str(extData.loc[tindex, 'intersect_x_h']).split('/')[1])
+        # in_y = float(str(extData.loc[tindex, 'intersect_y_h']).split('/')[1])
+        # in_z = float(str(extData.loc[tindex, 'intersect_z_h']).split('/')[1])
+        in_x = float(extData.loc[tindex, 'intersect_x_h'])
+        in_y = float(extData.loc[tindex, 'intersect_y_h'])
+        in_z = float(extData.loc[tindex, 'intersect_z_h'])
         # ax3.scatter(xs=np.array([h_x, in_x]), ys=np.array([h_y, in_y]), zs=np.array([h_z, in_z]), s=50, c='r')
         ax3.scatter(xs=np.array([h_x]), ys=np.array([h_y]), zs=np.array([h_z]), s=50, c='r')
         ax3.scatter(xs=np.array([in_x]), ys=np.array([in_y]), zs=np.array([in_z]), s=10, c='b')
@@ -526,7 +542,7 @@ def policy_gaze_roi_accuracy(tdata, text_column):
     tdata['hit_green_roi'] = "None"
     tdata['hit_amber_roi'] = "None"
     roi_group_green = {1: [1], 3: [3,4], 4: [3,4], 5: [5,9], 6:[6], 7:[7], 8:[8], 9:[9], 10:[10], 11:[11,19],
-                       12:[12, 13], 14:[14, 12], 15:[15], 16:[16], 17:[17], 19:[11]}
+                       12:[12, 13], 14:[14, 12], 15:[15], 16:[16], 17:[17], 19:[19, 11]}
 
     roi_group_amber = {1: [1,4,6,13], 3: [1,3,4,5,11,13,19], 4: [1,3,4,5,11,13,19], 5: [4,5,9,11,13,17,19], 6:[1,6,10,12,13,18,20], 7:[7,13,14,15],
                        8: [5,8,10,13,16,17], 9:[4,5,9,11,19], 10:[6,8,10,13,16,17,18], 11:[4,5,9,11,15,17,19],
@@ -584,6 +600,8 @@ def counting_gaze_roi(tdata):
     print(tdata[(tdata['hit_amber_roi'] == 'TRUE') & (tdata['gt_s_gaze_roi_das'] == 1)])
 
     for i in tdata['gt_s_gaze_roi_das'].unique():
+        if(i == 13 or i == 18 or i == 20):
+            continue
         print()
         tcount_green = tdata[(tdata['gt_s_gaze_roi_das'] == i)]['hit_green_roi'].count()
         tpass_green = tdata[(tdata['hit_green_roi'] == 'TRUE') & (tdata['gt_s_gaze_roi_das'] == i) ]['hit_green_roi'].count()
@@ -644,6 +662,10 @@ if __name__ == '__main__':
     df_merge = pd.DataFrame()
     if(1):
         for i, tname in enumerate(files_to_replace_base):
+            # if (i<2):
+            #     continue
+            # elif (i==3):
+            #     break
             ttext = str(i) + '/' + str(len(files_to_replace_base)) +' - ' + os.path.basename(tname)
             print_current_time(ttext)
             # print('\n',i,'/',len(files_to_replace_base), tname)
@@ -653,7 +675,7 @@ if __name__ == '__main__':
             ret_ExtGT = extract_availData_from_GT_short(inputPath_GT)
             ret_ExtGT_with_direction = retcalcuate_head_eye_direction_short(ret_ExtGT)
             # print('\n\n', ret_ExtGT_with_direction)
-            ret_match = check_match_roi_cto(ret_ExtGT_with_direction, ret_ExtROI, 100)
+            ret_match = check_match_roi_cto(ret_ExtGT_with_direction, ret_ExtROI, 80)
             #ret_match['Load_file'] =  os.path.basename(tname)
             # print('ret_match', ret_match)
             df_merge = pd.concat([df_merge, ret_match]).reset_index(drop=True)
@@ -664,7 +686,8 @@ if __name__ == '__main__':
         df_merge = df_merge.astype({'max_roi_idx_h':"int64", "gt_s_gaze_roi_das":"int64"})
         df_merge['hit'] = (df_merge['max_roi_idx_h'] == df_merge['gt_s_gaze_roi_das'])
 
-        print("***Final hit accuracy\nTrue={}개, Total={}개, {}%".format(df_merge['hit'].size-df_merge['hit'].value_counts()[0], df_merge['hit'].size, (df_merge['hit'].size-df_merge['hit'].value_counts()[0])/df_merge['hit'].size*100))
+        # print("***Final hit accuracy\nTrue={}개, Total={}개, {}%".format(df_merge['hit'].size-df_merge['hit'].value_counts()[0], df_merge['hit'].size, (df_merge['hit'].size-df_merge['hit'].value_counts()[0])/df_merge['hit'].size*100))
+        print("***Final hit accuracy\nTrue={}개, Total={}개, {}%".format(df_merge['hit'].value_counts()[True], df_merge['hit'].size, (df_merge['hit'].value_counts()[True])/df_merge['hit'].size*100))
 
         df_data2 = policy_gaze_roi_accuracy(df_merge, 'max_roi_idx_h')
         counting_gaze_roi(df_data2)
@@ -672,6 +695,6 @@ if __name__ == '__main__':
 
         # save_csvfile(df_merge, "./accuracy_output.csv")
 
-        # rendering_roi_with_head_gaze(ret_ExtROI, df_merge)
+        rendering_roi_with_head_gaze(ret_ExtROI, df_merge)
 
     # print(1/0)

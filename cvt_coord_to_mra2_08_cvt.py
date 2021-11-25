@@ -694,9 +694,9 @@ def modify_EyeGaze_craft_to_daimler(extData, tpd):
     # print('extData.fusedGazeStart3D', extData.fusedGazeStart3D, '\n\n')
     # print('extData.fusedGazeVector3D', extData.fusedGazeVector3D, '\n\n')
     print('extData.isLeftGazeValid', extData.isLeftGazeValid, '\n\n')
-    print('extData.leftGazeStart3D', extData.leftGazeStart3D, '\n\n')
-    print('extData.leftGazeVector3D', extData.leftGazeVector3D, '\n\n')
-    # print('extData.isRightGazeValid', extData.isRightGazeValid, '\n\n')
+    # print('extData.leftGazeStart3D', extData.leftGazeStart3D, '\n\n')
+    # print('extData.leftGazeVector3D', extData.leftGazeVector3D, '\n\n')
+    print('extData.isRightGazeValid', extData.isRightGazeValid, '\n\n')
     # print('extData.rightGazeStart3D', extData.rightGazeStart3D, '\n\n')
     # print('extData.rightGazeVector3D', extData.rightGazeVector3D, '\n\n')
 
@@ -741,6 +741,8 @@ def modify_EyeGaze_craft_to_daimler(extData, tpd):
             tpd.loc[tindex, 'MS_S_Gaze_LE_Center_X'] = mat_C2V[0]*1000
             tpd.loc[tindex, 'MS_S_Gaze_LE_Center_Y'] = mat_C2V[1]*1000
             tpd.loc[tindex, 'MS_S_Gaze_LE_Center_Z'] = mat_C2V[2]*1000
+            mat_C2V_44, _ = transform_A2Bcoord_with_Object_Of_Acoord(cam2veh_rot, cam2veh_trans, tR, tT.T)
+            print(mat_C2V_44)
 
         if (extData.isRightGazeValid[tindex] == True):
             flag_gaze_right = True
