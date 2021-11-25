@@ -350,38 +350,36 @@ def check_match_roi_cto(extData, ret_ExtROI, errDist = 0):
             troi_id = ret_ExtROI["tID"][tidx]
             troi_name = ret_ExtROI["tTargetName"][tidx]
 
-            if (troi_id == 7):
-                offset = errDist + 100 + 120   # 225 + 30 + 30 + 30
+            if(troi_id == 7  ):
+                offset = 180+ 200 + 100
             elif (troi_id == 8):
-                offset = errDist + 100 + 100 + 20  # 210 + 30 + 30 + 30
-            elif (troi_id == 9):
-                offset = errDist+ 110 + 50 # 210
-            elif (troi_id == 1):
-                offset = errDist - 40  # 180 - 30 - 50 - 30
+                offset = 170+40 + 50 + 100 + 20
+            elif(troi_id == 9):
+                offset = 100 + 50 + 70 + 50 + 40 + 20 + 20 + 20 + 20 +30
+            elif(troi_id == 1):
+                offset = 80 + 50
             elif (troi_id == 3 or troi_id == 4):  # or troi_id == 5
-                offset = errDist + 20 + 20 + 10   # 80 + 30 + 50
+                offset = 30
             elif (troi_id == 5):
-                offset = errDist + 100  # 70 - 20 - 10
+                offset = 60 + 30 + 40 -5
             elif (troi_id == 6):
-                offset = errDist + 45 + 30 + 20 # 145
+                offset = 25 + 15 + 15 + 20 + 20 + 20 + 20
             elif (troi_id == 14):
-                offset = errDist + 65  # 45
+                offset = 25 + 5 + 10
             elif (troi_id == 19):
-                offset = errDist - 30 # 50
+                offset = 25 + 15 + 10
             elif (troi_id == 16):
-                offset = errDist  + 30# 65
+                offset = 25 + 10
             elif (troi_id == 11):
-                offset = errDist + 30 + 50 + 30  # 35s
+                offset = 25 + 50 + 50 + 20
             elif (troi_id == 10):
-                offset = errDist + 30 + 30 # 50
-            elif (troi_id == 15):
-                offset = errDist - 30  # 0
+                offset = 25 + 25
+            elif (troi_id == 17 or troi_id == 18):
+                offset = -10
             elif (troi_id == 13):
-                offset = errDist - 100   # 0
+                offset = -40
             elif (troi_id == 12):
-                offset = errDist + 70   # 0
-            elif (troi_id == 18):
-                offset = errDist - 30 # 50
+                offset = 25 + 30 + 50 + 30
             else:
                 offset = errDist
             ret_ExtROI["offset"][tidx] = offset
@@ -664,7 +662,11 @@ if __name__ == '__main__':
         for i, tname in enumerate(files_to_replace_base):
             # if (i<2):
             #     continue
-            # elif (i==3):
+            # elif (i==8):
+            #     break
+            # if (i<2):
+            #     continue
+            # elif (i==4):
             #     break
             ttext = str(i) + '/' + str(len(files_to_replace_base)) +' - ' + os.path.basename(tname)
             print_current_time(ttext)
@@ -675,7 +677,7 @@ if __name__ == '__main__':
             ret_ExtGT = extract_availData_from_GT_short(inputPath_GT)
             ret_ExtGT_with_direction = retcalcuate_head_eye_direction_short(ret_ExtGT)
             # print('\n\n', ret_ExtGT_with_direction)
-            ret_match = check_match_roi_cto(ret_ExtGT_with_direction, ret_ExtROI, 80)
+            ret_match = check_match_roi_cto(ret_ExtGT_with_direction, ret_ExtROI, 25)
             #ret_match['Load_file'] =  os.path.basename(tname)
             # print('ret_match', ret_match)
             df_merge = pd.concat([df_merge, ret_match]).reset_index(drop=True)
