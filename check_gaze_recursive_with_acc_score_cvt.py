@@ -499,8 +499,8 @@ def rendering_roi_with_head_gaze(pROI, extData):
                  "blanchedalmond", "blue", "blueviolet", "brown", "burlywood", "cadetblue", "chartreuse", "chocolate",
                  "coral", "cornflowerblue", "cornsilk", "crimson"]
     # checklist = [99,0,99,99,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
-    # checkidx = [1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
-    checkidx = [4,5,8,9,11,17,19,20]
+    checkidx = [1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+    # checkidx = [4,5,8,9,11,17,19,20]
     # for i in pROI.index[0:]:
     #     for j in checkidx:
     #         if(pROI.tID[i]==j):
@@ -509,8 +509,6 @@ def rendering_roi_with_head_gaze(pROI, extData):
 
     # for i in pROI.index[3:13]:
     for i in pROI.index[0:]:
-        # for j in [checklist[k] for k in checkidx]:
-        #     if(i==j):
         for j in checkidx:
             if(pROI.tID[i]==j):
                 print('idx=',j, colorlist[j])
@@ -539,22 +537,24 @@ def rendering_roi_with_head_gaze(pROI, extData):
                 ax3.scatter(xs=np.array([x0,x1,x3,x2]), ys=np.array([y0,y1,y3,y2]), zs=np.array([z0,z1,z3,z2]), c=colorlist[j])
                 ax3.plot([x0,x1,x3,x2,x0], [y0,y1,y3,y2,y0], [z0,z1,z3,z2,z0], label=str("%.2d_"%pROI.tID[i])+pROI.tTargetName[i], c=colorlist[j])
 
-    # for tindex in extData.index.values:
-    #     # print(tindex, "번째 index, frameID = ",extData.loc[tindex, 'f_frame_counter_left_camera'], extData.loc[tindex, 'intersect_x_h'],extData.loc[tindex, 'intersect_y_h'],extData.loc[tindex, 'intersect_z_h'], '\n')
-    #     h_x = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_X']
-    #     h_y = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Y']
-    #     h_z = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Z']
-    #     # in_x = float(str(extData.loc[tindex, 'intersect_x_h']).split('/')[1])
-    #     # in_y = float(str(extData.loc[tindex, 'intersect_y_h']).split('/')[1])
-    #     # in_z = float(str(extData.loc[tindex, 'intersect_z_h']).split('/')[1])
-    #     in_x = float(extData.loc[tindex, 'intersect_x_h'])
-    #     in_y = float(extData.loc[tindex, 'intersect_y_h'])
-    #     in_z = float(extData.loc[tindex, 'intersect_z_h'])
-    #     # ax3.scatter(xs=np.array([h_x, in_x]), ys=np.array([h_y, in_y]), zs=np.array([h_z, in_z]), s=50, c='r')
-    #     ax3.scatter(xs=np.array([h_x]), ys=np.array([h_y]), zs=np.array([h_z]), s=50, c='r')
-    #     ax3.scatter(xs=np.array([in_x]), ys=np.array([in_y]), zs=np.array([in_z]), s=10, c='b')
-    #     ax3.plot([h_x, in_x], [h_y, in_y], [h_z, in_z] ) #label=str(extData.loc[tindex, 'f_frame_counter_left_camera'])
-    #     # ax3.scatter(xs=np.array([h_x0, x1, x3, x2]), ys=np.array([y0, y1, y3, y2]), zs=np.array([z0, z1, z3, z2]))
+    for tindex in extData.index.values:
+        # print(tindex, "번째 index, frameID = ",extData.loc[tindex, 'f_frame_counter_left_camera'], extData.loc[tindex, 'intersect_x_h'],extData.loc[tindex, 'intersect_y_h'],extData.loc[tindex, 'intersect_z_h'], '\n')
+        h_x = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_X']
+        h_y = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Y']
+        h_z = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Z']
+        # in_x = float(str(extData.loc[tindex, 'intersect_x_h']).split('/')[1])
+        # in_y = float(str(extData.loc[tindex, 'intersect_y_h']).split('/')[1])
+        # in_z = float(str(extData.loc[tindex, 'intersect_z_h']).split('/')[1])
+        in_x = float(extData.loc[tindex, 'intersect_x_h'])
+        in_y = float(extData.loc[tindex, 'intersect_y_h'])
+        in_z = float(extData.loc[tindex, 'intersect_z_h'])
+        match_roi_idx = int(extData.loc[tindex, 'max_roi_idx_h'])
+
+        # ax3.scatter(xs=np.array([h_x, in_x]), ys=np.array([h_y, in_y]), zs=np.array([h_z, in_z]), s=50, c='r')
+        ax3.scatter(xs=np.array([h_x]), ys=np.array([h_y]), zs=np.array([h_z]), s=50, c='r')
+        ax3.scatter(xs=np.array([in_x]), ys=np.array([in_y]), zs=np.array([in_z]), s=10, c='b')
+        ax3.plot([h_x, in_x], [h_y, in_y], [h_z, in_z], c=colorlist[match_roi_idx]) #label=str(extData.loc[tindex, 'f_frame_counter_left_camera'])
+        # ax3.scatter(xs=np.array([h_x0, x1, x3, x2]), ys=np.array([y0, y1, y3, y2]), zs=np.array([z0, z1, z3, z2]))
 
     # print(1/0)
     # for ii in extData.index:
@@ -714,7 +714,7 @@ if __name__ == '__main__':
 
     checklist = [99,0,99,99,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]
     # checkidx = [1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
-    checkidx = [11]
+    checkidx = [1]
     # for i in checkidx:
     #     print(checklist[i])
     # print([checklist[k] for k in checkidx])
