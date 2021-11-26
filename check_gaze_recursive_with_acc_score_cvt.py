@@ -374,7 +374,9 @@ def check_match_roi_cto(extData, ret_ExtROI, errDist = 0):
                 offset = 25 + 50 + 50 + 20
             elif (troi_id == 10):
                 offset = 25 + 25
-            elif (troi_id == 17 or troi_id == 18):
+            elif (troi_id == 17 ):
+                offset = -10
+            elif (troi_id == 18):
                 offset = -10
             elif (troi_id == 13):
                 offset = -40
@@ -451,6 +453,36 @@ def distance_xyz(a,b):
     dist = np.sqrt(temp[0] * temp[0] + temp[1] * temp[1] + temp[2] * temp[2])
     return dist
 
+def show_color_map():
+
+    for name, hex in mpl.colors.cnames.items():
+        print(name, hex)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
+    ratio = 1.0 / 3.0
+    count = math.ceil(math.sqrt(len(mpl.colors.cnames)))
+    x_count = count * ratio
+    y_count = count / ratio
+    x = 0
+    y = 0
+    w = 1 / x_count
+    h = 1 / y_count
+
+    for c in mpl.colors.cnames:
+        pos = (x / x_count, y / y_count)
+        ax.add_patch(mpl.patches.Rectangle(pos, w, h, color=c))
+        ax.annotate(c, xy=pos)
+        if y >= y_count - 1:
+            x += 1
+            y = 0
+        else:
+            y += 1
+
+    plt.show()
+
+
 def rendering_roi_with_head_gaze(pROI, extData):
 
     fig = plt.figure(figsize=(10,8))
@@ -458,51 +490,71 @@ def rendering_roi_with_head_gaze(pROI, extData):
 
     plt.title('3D Target ROI')
     pROI = pROI.sort_values(['tID'], ascending=True)
+    pROI = pROI.reset_index(drop=True)
     # for i in pROI:
     #     print(i)
+    colorlist = [99, "black", 99, 99, "green", "mediumturquoise", "yellow", "blueviolet", "brown", "navy", "cyan", "gray", "deeppink", 'darkorange','pink', 'lightcyan', "yellowgreen", "darkkhaki", 'skyblue', 'gold', 'goldenrod',
+                                        # 4            5              6           7         8         9     10      11      12          13            14     15           16             17           18          19     20
+                 "aliceblue", "antiquewhite", "aqua", "aquamarine", "azure", "beige", "bisque", "black",
+                 "blanchedalmond", "blue", "blueviolet", "brown", "burlywood", "cadetblue", "chartreuse", "chocolate",
+                 "coral", "cornflowerblue", "cornsilk", "crimson"]
+    # checklist = [99,0,99,99,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
+    # checkidx = [1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+    checkidx = [4,5,8,9,11,17,19,20]
+    # for i in pROI.index[0:]:
+    #     for j in checkidx:
+    #         if(pROI.tID[i]==j):
+    #             print('idx=',j, checklist[j], colorlist[j])
+    # print(1/0)
 
-    for i in pROI.index[0:-1]:
-        # print(pROI.tID[i])
-        # print(pROI.tTargetName[i])
-        # print(pROI.ttop_left[i][0],pROI.ttop_left[i][1],pROI.ttop_left[i][2])
-        # print(pROI.ttop_right[i])
-        # print(pROI.tbottom_left[i])
-        # print(pROI.tbottom_right[i])
-        x0 = pROI.ttop_left[i][0] * 1000
-        y0 = pROI.ttop_left[i][1] * 1000 -pROI.offset[i]
-        z0 = pROI.ttop_left[i][2] * 1000 +pROI.offset[i]
-        # ax3.scatter(xs=x, ys=y, zs=z, label=i[1])
-        x1 = pROI.ttop_right[i][0] * 1000
-        y1 = pROI.ttop_right[i][1] * 1000 +pROI.offset[i]
-        z1 = pROI.ttop_right[i][2] * 1000 +pROI.offset[i]
-        # ax3.scatter(xs=x, ys=y, zs=z, label=i[1])
-        x2 = pROI.tbottom_left[i][0] * 1000
-        y2 = pROI.tbottom_left[i][1] * 1000 -pROI.offset[i]
-        z2 = pROI.tbottom_left[i][2] * 1000 -pROI.offset[i]
-        # ax3.scatter(xs=x, ys=y, zs=z, label=i[1])
-        x3 = pROI.tbottom_right[i][0] * 1000
-        y3 = pROI.tbottom_right[i][1] * 1000 +pROI.offset[i]
-        z3 = pROI.tbottom_right[i][2] * 1000 -pROI.offset[i]
-        # print([x0,x1,x3,x2])
-        ax3.scatter(xs=np.array([x0,x1,x3,x2]), ys=np.array([y0,y1,y3,y2]), zs=np.array([z0,z1,z3,z2]) )
-        ax3.plot([x0,x1,x3,x2,x0], [y0,y1,y3,y2,y0], [z0,z1,z3,z2,z0], label=str("%.2d_"%pROI.tID[i])+pROI.tTargetName[i])
+    # for i in pROI.index[3:13]:
+    for i in pROI.index[0:]:
+        # for j in [checklist[k] for k in checkidx]:
+        #     if(i==j):
+        for j in checkidx:
+            if(pROI.tID[i]==j):
+                print('idx=',j, colorlist[j])
+                # print(pROI.tID[i])
+                # print(pROI.tTargetName[i])
+                # print(pROI.ttop_left[i][0],pROI.ttop_left[i][1],pROI.ttop_left[i][2])
+                # print(pROI.ttop_right[i])
+                # print(pROI.tbottom_left[i])
+                # print(pROI.tbottom_right[i])
+                x0 = pROI.ttop_left[i][0] * 1000
+                y0 = pROI.ttop_left[i][1] * 1000 -pROI.offset[i]
+                z0 = pROI.ttop_left[i][2] * 1000 +pROI.offset[i]
+                # ax3.scatter(xs=x, ys=y, zs=z, label=i[1])
+                x1 = pROI.ttop_right[i][0] * 1000
+                y1 = pROI.ttop_right[i][1] * 1000 +pROI.offset[i]
+                z1 = pROI.ttop_right[i][2] * 1000 +pROI.offset[i]
+                # ax3.scatter(xs=x, ys=y, zs=z, label=i[1])
+                x2 = pROI.tbottom_left[i][0] * 1000
+                y2 = pROI.tbottom_left[i][1] * 1000 -pROI.offset[i]
+                z2 = pROI.tbottom_left[i][2] * 1000 -pROI.offset[i]
+                # ax3.scatter(xs=x, ys=y, zs=z, label=i[1])
+                x3 = pROI.tbottom_right[i][0] * 1000
+                y3 = pROI.tbottom_right[i][1] * 1000 +pROI.offset[i]
+                z3 = pROI.tbottom_right[i][2] * 1000 -pROI.offset[i]
+                # print([x0,x1,x3,x2])
+                ax3.scatter(xs=np.array([x0,x1,x3,x2]), ys=np.array([y0,y1,y3,y2]), zs=np.array([z0,z1,z3,z2]), c=colorlist[j])
+                ax3.plot([x0,x1,x3,x2,x0], [y0,y1,y3,y2,y0], [z0,z1,z3,z2,z0], label=str("%.2d_"%pROI.tID[i])+pROI.tTargetName[i], c=colorlist[j])
 
-    for tindex in extData.index.values:
-        # print(tindex, "번째 index, frameID = ",extData.loc[tindex, 'f_frame_counter_left_camera'], extData.loc[tindex, 'intersect_x_h'],extData.loc[tindex, 'intersect_y_h'],extData.loc[tindex, 'intersect_z_h'], '\n')
-        h_x = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_X']
-        h_y = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Y']
-        h_z = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Z']
-        # in_x = float(str(extData.loc[tindex, 'intersect_x_h']).split('/')[1])
-        # in_y = float(str(extData.loc[tindex, 'intersect_y_h']).split('/')[1])
-        # in_z = float(str(extData.loc[tindex, 'intersect_z_h']).split('/')[1])
-        in_x = float(extData.loc[tindex, 'intersect_x_h'])
-        in_y = float(extData.loc[tindex, 'intersect_y_h'])
-        in_z = float(extData.loc[tindex, 'intersect_z_h'])
-        # ax3.scatter(xs=np.array([h_x, in_x]), ys=np.array([h_y, in_y]), zs=np.array([h_z, in_z]), s=50, c='r')
-        ax3.scatter(xs=np.array([h_x]), ys=np.array([h_y]), zs=np.array([h_z]), s=50, c='r')
-        ax3.scatter(xs=np.array([in_x]), ys=np.array([in_y]), zs=np.array([in_z]), s=10, c='b')
-        ax3.plot([h_x, in_x], [h_y, in_y], [h_z, in_z] ) #label=str(extData.loc[tindex, 'f_frame_counter_left_camera'])
-        # ax3.scatter(xs=np.array([h_x0, x1, x3, x2]), ys=np.array([y0, y1, y3, y2]), zs=np.array([z0, z1, z3, z2]))
+    # for tindex in extData.index.values:
+    #     # print(tindex, "번째 index, frameID = ",extData.loc[tindex, 'f_frame_counter_left_camera'], extData.loc[tindex, 'intersect_x_h'],extData.loc[tindex, 'intersect_y_h'],extData.loc[tindex, 'intersect_z_h'], '\n')
+    #     h_x = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_X']
+    #     h_y = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Y']
+    #     h_z = extData.loc[tindex, 'HSVL_MS_S_Head_Pos_Veh_Z']
+    #     # in_x = float(str(extData.loc[tindex, 'intersect_x_h']).split('/')[1])
+    #     # in_y = float(str(extData.loc[tindex, 'intersect_y_h']).split('/')[1])
+    #     # in_z = float(str(extData.loc[tindex, 'intersect_z_h']).split('/')[1])
+    #     in_x = float(extData.loc[tindex, 'intersect_x_h'])
+    #     in_y = float(extData.loc[tindex, 'intersect_y_h'])
+    #     in_z = float(extData.loc[tindex, 'intersect_z_h'])
+    #     # ax3.scatter(xs=np.array([h_x, in_x]), ys=np.array([h_y, in_y]), zs=np.array([h_z, in_z]), s=50, c='r')
+    #     ax3.scatter(xs=np.array([h_x]), ys=np.array([h_y]), zs=np.array([h_z]), s=50, c='r')
+    #     ax3.scatter(xs=np.array([in_x]), ys=np.array([in_y]), zs=np.array([in_z]), s=10, c='b')
+    #     ax3.plot([h_x, in_x], [h_y, in_y], [h_z, in_z] ) #label=str(extData.loc[tindex, 'f_frame_counter_left_camera'])
+    #     # ax3.scatter(xs=np.array([h_x0, x1, x3, x2]), ys=np.array([y0, y1, y3, y2]), zs=np.array([z0, z1, z3, z2]))
 
     # print(1/0)
     # for ii in extData.index:
@@ -619,6 +671,7 @@ def counting_gaze_roi(tdata):
 
 if __name__ == '__main__':
     print("\n\n\n test/////////////////////")
+    # show_color_map()
     if(0):
         sys.stdout = open('DebugLog.txt', 'w')
 
@@ -658,38 +711,47 @@ if __name__ == '__main__':
     test1 = ['D:\Source\convert_head_pos_and_gaze_roi/refer\GT/3810_8600_827980_0001_all_19.csv']
     test2 = ['./refer/GT_3531_96_670222_0001_all.csv']
     df_merge = pd.DataFrame()
+
+    checklist = [99,0,99,99,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]
+    # checkidx = [1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+    checkidx = [11]
+    # for i in checkidx:
+    #     print(checklist[i])
+    # print([checklist[k] for k in checkidx])
+    # if(checklist[k] for k in checkidx):
+    #     print('dap')
+    # for i, tname in enumerate(files_to_replace_base):
+    #     for j in [checklist[k] for k in checkidx]:
+    #         if(i==j):
+    #             print(j)
+
     if(1):
         for i, tname in enumerate(files_to_replace_base):
             # if (i<2):
             #     continue
             # elif (i==8):
             #     break
-            # if (i<2):
-            #     continue
-            # elif (i==4):
-            #     break
-            ttext = str(i) + '/' + str(len(files_to_replace_base)) +' - ' + os.path.basename(tname)
-            print_current_time(ttext)
-            # print('\n',i,'/',len(files_to_replace_base), tname)
-            # print(1/0)
-            inputPath_GT = tname
+            for j in [checklist[k] for k in checkidx]:
+                if (i == j):
+                    ttext = str(i) + '/' + str(len(files_to_replace_base)) +' - ' + os.path.basename(tname)
+                    print_current_time(ttext)
+                    # print('\n',i,'/',len(files_to_replace_base), tname)
+                    # print(1/0)
+                    inputPath_GT = tname
 
-            ret_ExtGT = extract_availData_from_GT_short(inputPath_GT)
-            ret_ExtGT_with_direction = retcalcuate_head_eye_direction_short(ret_ExtGT)
-            # print('\n\n', ret_ExtGT_with_direction)
-            ret_match = check_match_roi_cto(ret_ExtGT_with_direction, ret_ExtROI, 25)
-            #ret_match['Load_file'] =  os.path.basename(tname)
-            # print('ret_match', ret_match)
-            df_merge = pd.concat([df_merge, ret_match]).reset_index(drop=True)
+                    ret_ExtGT = extract_availData_from_GT_short(inputPath_GT)
+                    ret_ExtGT_with_direction = retcalcuate_head_eye_direction_short(ret_ExtGT)
+                    # print('\n\n', ret_ExtGT_with_direction)
+                    ret_match = check_match_roi_cto(ret_ExtGT_with_direction, ret_ExtROI, 25)
+                    #ret_match['Load_file'] =  os.path.basename(tname)
+                    # print('ret_match', ret_match)
+                    df_merge = pd.concat([df_merge, ret_match]).reset_index(drop=True)
 
         # save_csvfile(df_merge, 'save5_output.csv')
         # print(1/0)
         print("df_merge",df_merge)
         df_merge = df_merge.astype({'max_roi_idx_h':"int64", "gt_s_gaze_roi_das":"int64"})
         df_merge['hit'] = (df_merge['max_roi_idx_h'] == df_merge['gt_s_gaze_roi_das'])
-
-        # print("***Final hit accuracy\nTrue={}개, Total={}개, {}%".format(df_merge['hit'].size-df_merge['hit'].value_counts()[0], df_merge['hit'].size, (df_merge['hit'].size-df_merge['hit'].value_counts()[0])/df_merge['hit'].size*100))
-        print("***Final hit accuracy\nTrue={}개, Total={}개, {}%".format(df_merge['hit'].value_counts()[True], df_merge['hit'].size, (df_merge['hit'].value_counts()[True])/df_merge['hit'].size*100))
 
         df_data2 = policy_gaze_roi_accuracy(df_merge, 'max_roi_idx_h')
         counting_gaze_roi(df_data2)
@@ -698,5 +760,16 @@ if __name__ == '__main__':
         # save_csvfile(df_merge, "./accuracy_output.csv")
 
         rendering_roi_with_head_gaze(ret_ExtROI, df_merge)
+
+        # print("***Final hit accuracy\nTrue={}개, Total={}개, {}%".format(df_merge['hit'].size-df_merge['hit'].value_counts()[0], df_merge['hit'].size, (df_merge['hit'].size-df_merge['hit'].value_counts()[0])/df_merge['hit'].size*100))
+        btrue = False
+        for btf in df_merge['hit'].value_counts().index.values:
+            if(btf == True):
+                btrue = True
+                break
+        if(btrue == True):
+            print("***Final hit accuracy\nTrue={}개, Total={}개, {}%".format(df_merge['hit'].value_counts()[True], df_merge['hit'].size, (df_merge['hit'].value_counts()[True])/df_merge['hit'].size*100))
+        else:
+            print("***Final hit accuracy\nTrue={}개, Total={}개, {}%".format(df_merge['hit'].size-df_merge['hit'].value_counts()[False], df_merge['hit'].size, (df_merge['hit'].size-df_merge['hit'].value_counts()[False])/df_merge['hit'].size*100))
 
     # print(1/0)
