@@ -143,7 +143,8 @@ def changeRotation_unitvec2radian(typeIn, nR_unitvec, typeOut ):
         t_roll_vec = nR_unitvec[0]
     else:
         print("Not support!!",1/0)
-
+    up = up * np.array([t_yaw_vec,t_pitch_vec,t_roll_vec])
+    print('up',up)
     # Yaw is the bearing of the forward vector's shadow in the xy plane.
     # yaw = math.atan2(t_pitch_vec[1], t_roll_vec[0])
     print(t_pitch_vec, t_roll_vec)
@@ -164,6 +165,7 @@ def changeRotation_unitvec2radian(typeIn, nR_unitvec, typeOut ):
     print('!!!!!!!roll////', roll * rad2Deg)
     if(up[2] < 0):
         roll = np.sign(roll) * math.pi - roll
+        # roll = ((0.0 <= roll) - (roll < 0.0)) * 3.14 - roll;
     # Convert radians to degrees.
     # angles[YAW]   =   yaw * 180 / math.pi
     # angles[PITCH] = pitch * 180 / math.pi
