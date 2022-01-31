@@ -1,12 +1,10 @@
 # Convert head position and eye gaze roi on 3D
 
 2021년타사업체의 얼굴 인식 알고리즘의성능을 검증하기 위해,<BR>
-기존 개발했던 얼굴 인식의 GT데이터와 녹화된 영상으로 관계를 검토 하려한다.<BR>
-(대외비 관련된 내용은 언급하지 않으려함)<BR>
+기존 개발했던 얼굴 인식의 GT데이터와 녹화된 영상으로 관계를 검토 하려한다. (대외비 관련된 내용은 언급하지 않으려함)<BR>
  
 In order to verify the performance of face recognition algorithms of other companies in 2021, <BR>
-we are going to review the relationship between GT data and recorded images of face recognition that we have developed.<BR> 
-(I do not want to mention the contents related to external expenses)<BR>
+we are going to review the relationship between GT data and recorded images of face recognition that we have developed. (I do not want to mention the contents related to external expenses)<BR>
 
  <img  src = "./desc/coordinate.png"  width="800px" > 
  
