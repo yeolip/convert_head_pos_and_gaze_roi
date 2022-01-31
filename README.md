@@ -1,18 +1,30 @@
 # Convert head position and eye gaze roi on 3D
 
-2021년타사업체의 얼굴 인식 알고리즘의성능을 검증하기 위해,
-기존 개발했던 얼굴 인식의 GT데이터와 녹화된 영상으로 관계를 검토 하려한다.
-(대외비 관련된 내용은 언급하지 않으려함)
+2021년타사업체의 얼굴 인식 알고리즘의성능을 검증하기 위해,<BR>
+기존 개발했던 얼굴 인식의 GT데이터와 녹화된 영상으로 관계를 검토 하려한다.<BR>
+(대외비 관련된 내용은 언급하지 않으려함)<BR>
+ 
+In order to verify the performance of face recognition algorithms of other companies in 2021, <BR>
+we are going to review the relationship between GT data and recorded images of face recognition that we have developed.<BR> 
+(I do not want to mention the contents related to external expenses)<BR>
 
- 1. 기존 개발 얼굴인식 GT의 Head position, rotation의 차량,카메라,디스플레이 좌표계 변환 및 검증
- 2. 기존 개발 얼굴인식 GT의 Eye gaze를 이용해, Head와 Eye의 최종 vector를 도출
- 3. 기존 개발 얼굴인식 GT의 gaze를 이용해, 차량 좌표계상의 3차원 공간들과의 통과 유무 검토(ROI 매칭)
-   (앞유리, 사이드 미러, 룸미러, 계기판 등등)
- 4. 타사업체의 얼굴 인식 알고리즘의 결과와 기존 개발 얼굴인식의 차이점 검토
- 5. 타사업체의 최종 gaze vector를 도출 
- 6. ROI 매칭 검토후, accuracy 계산
+ <img  src = "./desc/coordinate.png"  width="800px" > 
+ 
+ 1. **기존 개발 얼굴인식 GT의 Head position, rotation의 차량,카메라,디스플레이 좌표계 변환 및 검증** <BR>
+    (Transformation and verification of vehicle, camera, and display coordinate system of head position and rotation of existing developed face recognition GT)
+ 2. **기존 개발 얼굴인식 GT의 Eye gaze를 이용해, Head와 Eye의 최종 vector를 도출** <BR>
+    (Using the eye gaze of the previously developed face recognition GT, the final vector of Head and Eye is derived.)
+ 3. **기존 개발 얼굴인식 GT의 gaze를 이용해, 차량 좌표계상의 3차원 공간들과의 통과 유무 및 ROI 매칭 검토** <BR>
+    (앞유리(windshield), 사이드 미러(side mirror), 룸미러(rearview mirror), 계기판(instrument panel) 등등) <BR>
+    (Using the gaze of the existing developed face recognition GT, reviewing whether or not passing with 3D spaces and matching ROI on the vehicle coordinate system 
+ 4. **타사업체의 얼굴 인식 알고리즘의 결과와 기존 개발 얼굴인식의 차이점 검토** <BR>
+    (Reviewing the difference between the results of third-party face recognition algorithms and the existing developed face recognition)
+ 5. **타사업체의 최종 gaze vector를 도출**  <BR>
+    (Deriving the final gaze vector of other companies)
+ 6. **ROI 매칭 검토후, accuracy 계산** <BR>
+    (After reviewing the ROI matching, calculate the accuracy)
 
-<img  src = "./desc/coordinate.png"  width="800px" > 
+
 
 # 3D target ROI 영역
 <img  src = "./desc/3d_target_roi3.png"  width="1000px" > 
